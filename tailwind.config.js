@@ -7,7 +7,7 @@ module.exports = {
         primary: '#2194D2',
       },
       backgroundImage: {
-        'home-image': "url('shared/assets/images/main.png')",
+        'home-image': "url('./images/main.png')",
       },
     },
   },

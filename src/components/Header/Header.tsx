@@ -11,25 +11,20 @@ const inter = Inter({ subsets: ['latin'] })
 
 const Header = () => {
   return (
-    <header className='flex py-8 justify-between max-w-[1450px] mx-auto'>
-      <div className='flex gap-24'>
+    <header className="flex py-8 justify-between layout-container">
+      <div className="flex gap-24">
         <LogoIcon />
-        <nav className='self-end font-bold flex gap-11'>
-          <Link href='/booking'>Бронирование</Link>
-          <Link href='/map'>Карта парка</Link>
-          <Link href='/services'>Услуги</Link>
-          <Link href='/photos'>Фотогалерея</Link>
-          <Link href='/reviews'>Отзывы</Link>
-          <Link href='/contacts'>Контакты</Link>
+        <nav className="self-end font-bold flex gap-11">
+          <Link href="/booking">Бронирование</Link>
+          <Link href="/map">Карта парка</Link>
+          <Link href="/services">Услуги</Link>
+          <Link href="/photos">Фотогалерея</Link>
+          <Link href="/reviews">Отзывы</Link>
+          <Link href="/contacts">Контакты</Link>
         </nav>
       </div>
-      <div
-        className={twMerge(
-          inter.className,
-          'flex flex-col font-semibold justify-between'
-        )}
-      >
-        <div className='flex gap-4 self-end'>
+      <div className={twMerge(inter.className, 'flex flex-col font-semibold justify-between')}>
+        <div className="flex gap-4 self-end">
           <InstagramIcon />
           <TelegramIcon />
           <VkIcon />

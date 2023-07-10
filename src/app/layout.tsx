@@ -1,9 +1,8 @@
+import Header from 'components/Header/Header'
 import type { Metadata } from 'next'
 import { Raleway } from 'next/font/google'
-import Head from 'next/head'
 import { twMerge } from 'tailwind-merge'
-import { Header } from 'widgets/header'
-import '../globals.css'
+import '../assets/globals.css'
 
 const raleway = Raleway({ subsets: ['latin'] })
 
