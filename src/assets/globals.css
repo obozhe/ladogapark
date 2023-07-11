@@ -8,3 +8,9 @@
     margin-inline: auto;
   }
 }
+
+@layer base {
+  h2 {
+    @apply font-semibold text-4xl font-inter
+  }
+}

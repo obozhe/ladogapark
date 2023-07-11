@@ -3,11 +3,8 @@ import LogoIcon from 'icons/logo.svg'
 import TelegramIcon from 'icons/telegram.svg'
 import VkIcon from 'icons/vk.svg'
 import WhatsAppIcon from 'icons/whatsapp.svg'
-import { Inter } from 'next/font/google'
 import Link from 'next/link'
-import { twMerge } from 'tailwind-merge'
 
-const inter = Inter({ subsets: ['latin'] })
 
 const Header = () => {
   return (
@@ -23,7 +20,7 @@ const Header = () => {
           <Link href="/contacts">Контакты</Link>
         </nav>
       </div>
-      <div className={twMerge(inter.className, 'flex flex-col font-semibold justify-between')}>
+      <div className='flex flex-col font-semibold justify-between font-inter'>
         <div className="flex gap-4 self-end">
           <InstagramIcon />
           <TelegramIcon />
