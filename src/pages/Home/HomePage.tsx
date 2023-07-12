@@ -1,11 +1,7 @@
-import { getWeather } from 'api/weather'
+import Button from 'ui/Button/Button';
+import Houses from './components/Houses/Houses';
 
-import Button from 'ui/Button/Button'
-import Houses from './components/Houses/Houses'
-
-const HomePage = async () => {
-  const weather = await getWeather()
-
+const HomePage = ({ weather }: { weather?: string[] }) => {
   return (
     <main>
       <section className="relative flex flex-col justify-center items-center gap-14 pt-[153px] pb-[253px] ">
@@ -29,7 +25,7 @@ const HomePage = async () => {
       </section>
       <Houses />
     </main>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

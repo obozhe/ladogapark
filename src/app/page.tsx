@@ -1,5 +1,8 @@
-import HomePage from 'pages/Home/HomePage'
+import HomePage from 'pages/Home/HomePage';
+import { getWeather } from 'api/weather';
 
-export default function Home() {
-  return <HomePage />
+export default async function Home() {
+  const weather = await getWeather();
+
+  return <HomePage weather={weather} />;
 }
