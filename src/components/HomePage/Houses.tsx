@@ -9,7 +9,7 @@ const Houses = () => {
   const [activeOption, sentActiveOption] = useState(rentOptions[0])
 
   return (
-    <section className="pt-[150px] layout-container flex flex-col gap-8">
+    <section className="flex flex-col gap-8">
       <h2>Каталог домов</h2>
       <div className="flex justify-between">
         <div className="flex gap-5">

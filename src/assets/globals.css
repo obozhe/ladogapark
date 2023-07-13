@@ -11,6 +11,16 @@
 
 @layer base {
   h2 {
-    @apply font-semibold text-4xl font-inter
+    @apply font-semibold text-4xl font-inter;
   }
+}
+
+.short {
+  display: grid;
+  transition: grid-template-rows 0.5s;
+  grid-template-rows: minmax(0,max-content) 0fr;
+}
+
+.full {
+  grid-template-rows: max-content 1fr;
 }

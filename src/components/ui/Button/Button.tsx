@@ -10,7 +10,7 @@ const Button = ({ color = 'primary', className, children, ...rest }: Props) => {
     <button
       className={twMerge(
         'text-center align-middle rounded-lg',
-        color === 'primary' && 'bg-primary text-white px-8 py-3',
+        color === 'primary' && 'bg-primary text-white px-[41px] py-[8px]',
         className
       )}
       {...rest}
