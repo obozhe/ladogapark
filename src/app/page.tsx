@@ -1,4 +1,3 @@
-import { Map, YMaps } from '@pbe/react-yandex-maps';
 import { getWeather } from 'api/weather';
 import House1Image from 'assets/images/house-1.png';
 import House2Image from 'assets/images/house-2.png';
@@ -12,6 +11,7 @@ import GoodsIcon from 'icons/goods.svg';
 import LocationIcon from 'icons/location.svg';
 import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
+import prisma from 'lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';

@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import HumanIcon from 'icons/human.svg'
-import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import HumanIcon from 'icons/human.svg';
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 const Houses = () => {
-  const rentOptions = ['На сутки', 'На день', 'Бани']
-  const [activeOption, sentActiveOption] = useState(rentOptions[0])
+  const rentOptions = ['На сутки', 'На день', 'Бани'];
+  const [activeOption, sentActiveOption] = useState(rentOptions[0]);
 
   return (
     <section className="flex flex-col gap-8">
@@ -25,16 +25,16 @@ const Houses = () => {
               >
                 {option}
               </span>
-            )
+            );
           })}
         </div>
-        <div className='flex flex-col font-semibold text-xs font-inter text-black gap-1'>
-          <div className='flex gap-2 items-center'>
-            <div className='bg-secondary w-4 h-4'/>
+        <div className="flex flex-col font-semibold text-xs font-inter text-black gap-1">
+          <div className="flex gap-2 items-center">
+            <div className="bg-secondary w-4 h-4" />
             <span>Пятница - Воскресенье</span>
           </div>
-          <div className='flex gap-2 items-center'>
-            <div className='bg-primary w-4 h-4'/>
+          <div className="flex gap-2 items-center">
+            <div className="bg-primary w-4 h-4" />
             <span>Понедельник - Четверг</span>
           </div>
         </div>
@@ -61,11 +61,11 @@ const Houses = () => {
               </div>
               <span className="p-4 font-semibold text-4xl">Браунхаус</span>
             </div>
-          )
+          );
         })}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Houses
+export default Houses;
