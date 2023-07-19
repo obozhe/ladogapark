@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,55 +13,370 @@ model User {
   login     String   @unique
   password  String
   role      String
+  salt      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// model Post {
-//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
-//   slug     String    @unique
-//   title    String
-//   body     String
-//   author   User      @relation(fields: [authorId], references: [id])
-//   authorId String    @db.ObjectId
-//   comments Comment[]
+// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+// model booking {
+//   id                Int      @id @default(autoincrement()) @db.UnsignedInt
+//   number            String   @unique(map: "number") @default("") @db.VarChar(50)
+//   object_number     Int      @db.UnsignedInt
+//   type_id           Int      @db.UnsignedInt
+//   datetime_start    DateTime @db.DateTime(0)
+//   datetime_end      DateTime @db.DateTime(0)
+//   datetime_created  DateTime @db.DateTime(0)
+//   amount            Float    @default(0) @db.Float
+//   prepay            Float    @default(0) @db.Float
+//   paid_total        Float    @default(0) @db.Float
+//   partner_id        Int      @default(0) @db.UnsignedInt
+//   partner_fee       Float    @default(0) @db.Float
+//   name              String   @default("") @db.VarChar(100)
+//   company_name      String   @default("") @db.VarChar(100)
+//   phone             String   @default("") @db.VarChar(100)
+//   email             String   @default("") @db.VarChar(100)
+//   client_id         Int      @default(0) @db.UnsignedInt
+//   comment           String   @db.Text
+//   comment_admin     String   @db.Text
+//   extraseats        Int      @default(0) @db.UnsignedInt
+//   type_services_ids String   @db.VarChar(255)
+//   parking           Int      @default(0) @db.UnsignedTinyInt
+//   arrived           Boolean  @default(false)
+//   count_payments    Int      @default(0) @db.UnsignedTinyInt
+//   count_attachments Int      @default(0) @db.UnsignedInt
+//   promocode_id      Int      @default(0) @db.UnsignedInt
+//   sourcepoll        Int      @default(0) @db.UnsignedTinyInt
+//   payaccdata        String   @db.Text
+//   token             String   @db.VarChar(100)
+//   status            Int      @default(0) @db.UnsignedTinyInt
+//   user_id           Int      @default(0) @db.UnsignedInt
+//   undelitable       Boolean  @default(false)
+
+//   @@index([object_number, datetime_start, datetime_end, status], map: "object_number")
 // }
 
-// model Comment {
-//   id      String @id @default(auto()) @map("_id") @db.ObjectId
-//   comment String
-//   post    Post   @relation(fields: [postId], references: [id])
-//   postId  String @db.ObjectId
+// model booking_attachments {
+//   id          Int      @id @default(autoincrement()) @db.UnsignedInt
+//   booking_id  Int      @db.UnsignedInt
+//   file        String   @default("") @db.VarChar(255)
+//   description String   @db.Text
+//   datetime    DateTime @default(now()) @db.DateTime(0)
+//   user_id     Int      @default(0) @db.UnsignedInt
 // }
 
-// // Address is an embedded document
-// type Address {
-//   street String
-//   city   String
-//   state  String
-//   zip    String
+// model clients {
+//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
+//   name             String   @default("") @db.VarChar(100)
+//   phone            String   @default("") @db.VarChar(100)
+//   email            String   @default("") @db.VarChar(100)
+//   vip              Boolean
+//   datetime_added   DateTime @default(now()) @db.DateTime(0)
+//   datetime_updated DateTime @default(now()) @db.DateTime(0)
+//   count_orders     Int      @db.UnsignedInt
+
+//   @@index([name, phone, email], map: "name")
 // }
 
-// model Object {
-//   id               String    @id @default(auto()) @map("_id") @db.ObjectId
-//   group_id
-//   title
-//   images
-//   description
-//   content
-//   seats
-//   extraseats
-//   price_weekdays
-//   price_weekends
-//   price_renewal
-//   price_extraseat
-//   prepay
-//   minorder
-//   parking
-//   services
-//   goodslist
-//   count_numbers
-//   sorting
-//   status
-//   datetime_updated
+// model close_numbers {
+//   id        Int      @id @default(autoincrement()) @db.UnsignedInt
+//   number_id Int      @db.UnsignedInt
+//   date_from DateTime @db.Date
+//   date_to   DateTime @db.Date
+// }
+
+// model gallery {
+//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
+//   photo       String  @default("") @db.VarChar(255)
+//   description String  @db.Text
+//   season      Boolean
+//   sorting     Int     @db.UnsignedInt
+//   status      Boolean @default(true)
+// }
+
+// model goodslist {
+//   id             Int     @id @default(autoincrement()) @db.UnsignedInt
+//   title          String  @default("") @db.VarChar(255)
+//   icon           String  @default("") @db.VarChar(255)
+//   selling        Boolean @default(false)
+//   price          Float   @default(0) @db.Float
+//   sport          Boolean @default(false)
+//   sorting        Int     @default(0) @db.UnsignedInt
+//   status         Boolean @default(true)
+//   count_payments Int     @default(0) @db.UnsignedInt
+// }
+
+// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+// model goodslist_orders {
+//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
+//   booking_id       Int      @db.UnsignedInt
+//   number           String   @default("") @db.VarChar(50)
+//   email            String   @default("") @db.VarChar(100)
+//   datetime_created DateTime @default(now()) @db.DateTime(0)
+//   date_paid        DateTime @db.Date
+//   yandextoken      String   @db.VarChar(100)
+//   status           Int      @db.UnsignedTinyInt
+// }
+
+// model logs_emails {
+//   id        Int      @id @default(autoincrement()) @db.UnsignedInt
+//   module    Boolean  @default(false)
+//   recepient String   @default("") @db.VarChar(100)
+//   subject   String   @default("") @db.VarChar(255)
+//   text      String   @db.Text
+//   html      String   @db.Text
+//   datetime  DateTime @default(now()) @db.DateTime(0)
+//   target_id Int      @default(0) @db.UnsignedInt
+//   user_id   Int      @default(0) @db.UnsignedInt
+//   status    Boolean  @default(false)
+
+//   @@index([target_id], map: "target_id")
+// }
+
+// model news {
+//   id           Int      @id @default(autoincrement()) @db.UnsignedInt
+//   title        String   @default("") @db.VarChar(250)
+//   content      String   @db.Text
+//   date_publish DateTime @db.Date
+//   date_end     DateTime @db.Date
+//   status       Boolean  @default(true)
+// }
+
+// model objects_days_discounts {
+//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
+//   type_id    Int      @db.UnsignedInt
+//   days       Int      @db.UnsignedInt
+//   discount   Int      @db.UnsignedInt
+//   date_start DateTime @db.Date
+//   date_end   DateTime @db.Date
+// }
+
+// model objects_discounts {
+//   id          Int @id @default(autoincrement()) @db.UnsignedInt
+//   type_when   Int @db.UnsignedInt
+//   type_target Int @db.UnsignedInt
+//   discount    Int @default(0) @db.UnsignedTinyInt
+
+//   @@index([type_target], map: "type_target")
+//   @@index([type_when], map: "type_when")
+// }
+
+// model objects_groups {
+//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
+//   title       String  @default("") @db.VarChar(150)
+//   alias       String  @db.VarChar(50)
+//   bookingtype Boolean @default(true)
+//   count_types Int     @default(0) @db.UnsignedInt
+//   sorting     Int     @default(0) @db.UnsignedInt
+//   status      Boolean @default(false)
+// }
+
+// model objects_minbooking {
+//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
+//   type_id    Int      @db.UnsignedInt
+//   min        Int      @db.UnsignedInt
+//   date_start DateTime @db.Date
+//   date_end   DateTime @db.Date
+// }
+
+// model objects_numbers {
+//   id           Int     @id @default(autoincrement()) @db.UnsignedInt
+//   number       Int     @db.UnsignedInt
+//   type_id      Int     @db.UnsignedInt
+//   count_orders Int     @default(0) @db.UnsignedInt
+//   status       Boolean @default(true)
+// }
+
+// model objects_promocodes {
+//   id              Int    @id @default(autoincrement()) @db.UnsignedInt
+//   booking_type_id Int    @default(0) @db.UnsignedInt
+//   min_days        Int    @default(0) @db.UnsignedInt
+//   sale            Float  @default(0) @db.Float
+//   limit_days      Int    @default(0) @db.UnsignedInt
+//   types_ids       String @db.Text
+// }
+
+// model objects_services {
+//   id      Int     @id @default(autoincrement()) @db.UnsignedInt
+//   type_id Int     @db.UnsignedInt
+//   title   String  @default("") @db.VarChar(150)
+//   price   Float   @default(0) @db.Float
+//   active  Boolean @default(true)
+// }
+
+// model objects_types {
+//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
+//   group_id         Int      @db.UnsignedInt
+//   title            String   @db.VarChar(150)
+//   images           String   @db.Text
+//   description      String   @db.Text
+//   content          String   @db.Text
+//   seats            Int      @db.UnsignedTinyInt
+//   extraseats       Int      @db.UnsignedTinyInt
+//   price_weekdays   Float    @db.Float
+//   price_weekends   Float    @db.Float
+//   price_renewal    Float    @db.Float
+//   price_extraseat  Float    @db.Float
+//   prepay           Int      @db.UnsignedTinyInt
+//   minorder         Int      @db.UnsignedInt
+//   parking          Int      @db.UnsignedTinyInt
+//   services         String   @db.Text
+//   goodslist        String   @db.Text
+//   count_numbers    Int      @db.UnsignedInt
+//   sorting          Int      @db.UnsignedInt
+//   status           Boolean
+//   datetime_updated DateTime @db.DateTime(0)
+// }
+
+// model partners {
+//   id           Int    @id @default(autoincrement()) @db.UnsignedInt
+//   title        String @default("") @db.VarChar(255)
+//   fee          Int    @default(0) @db.UnsignedTinyInt
+//   fee_objects  String @db.Text
+//   count_orders Int    @default(0) @db.UnsignedInt
+// }
+
+// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+// model payments_booking {
+//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
+//   booking_id       Int      @db.UnsignedInt
+//   amount           Float    @db.Float
+//   type             Int      @db.UnsignedTinyInt
+//   yandextoken      String   @default("") @db.VarChar(100)
+//   datetime_created DateTime @default(now()) @db.DateTime(0)
+//   datetime_updated DateTime @default(now()) @db.DateTime(0)
+//   date_paid        DateTime @db.Date
+//   status           Int      @default(0) @db.UnsignedTinyInt
+//   user_id          Int      @default(0) @db.UnsignedInt
+
+//   @@index([booking_id], map: "booking_id")
+//   @@index([datetime_created, datetime_updated, status], map: "datetime_created")
+// }
+
+// model payments_booking_moves {
+//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
+//   payment_id Int      @db.UnsignedInt
+//   from_id    Int      @db.UnsignedInt
+//   to_id      Int      @db.UnsignedInt
+//   datetime   DateTime @default(now()) @db.DateTime(0)
+//   user_id    Int      @default(0) @db.UnsignedInt
+// }
+
+// model payments_goodslist {
+//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
+//   goodslist_id     Int      @db.UnsignedInt
+//   order_id         Int      @default(0) @db.UnsignedInt
+//   count            Int      @default(0) @db.UnsignedInt
+//   amount           Float    @default(0) @db.Float
+//   datetime_created DateTime @default(now()) @db.DateTime(0)
+//   date_paid        DateTime @db.Date
+//   status           Int      @default(0) @db.UnsignedTinyInt
+//   type             Boolean
+//   user_id          Int      @default(0) @db.UnsignedInt
+// }
+
+// model prices_future {
+//   id             Int      @id @default(autoincrement()) @db.UnsignedInt
+//   type_id        Int      @db.UnsignedInt
+//   price_weekdays Float    @db.Float
+//   price_weekends Float    @db.Float
+//   date           DateTime @db.Date
+// }
+
+// model prices_hollidays {
+//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
+//   type_id    Int      @db.UnsignedInt
+//   price      Float    @db.Float
+//   date_start DateTime @db.Date
+//   date_end   DateTime @db.Date
+// }
+
+// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+// model promocodes {
+//   id           Int      @id @default(autoincrement()) @db.UnsignedInt
+//   promocode    String   @unique(map: "promocode") @default("") @db.VarChar(15)
+//   sale         Float    @default(0) @db.Float
+//   sale_type    Boolean  @default(true)
+//   comment      String   @default("") @db.VarChar(150)
+//   limit_count  Int      @default(0) @db.UnsignedInt
+//   limit_date   DateTime @db.Date
+//   types_ids    String   @db.Text
+//   count_orders Int      @default(0) @db.UnsignedInt
+//   status       Boolean  @default(false)
+//   deleted      Int      @default(0) @db.UnsignedInt
+//   booking_id   Int      @default(0) @db.UnsignedInt
+// }
+
+// model referrers {
+//   id           Int      @id @default(autoincrement()) @db.UnsignedInt
+//   booking_id   Int      @default(0) @db.UnsignedInt
+//   client_id    Int      @default(0) @db.UnsignedInt
+//   http_referer String   @db.Text
+//   datetime     DateTime @default(now()) @db.DateTime(0)
+// }
+
+// model services {
+//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
+//   title       String  @default("") @db.VarChar(150)
+//   alias       String  @default("") @db.VarChar(50)
+//   icon        String  @db.VarChar(150)
+//   description String  @db.Text
+//   content     String  @db.Text
+//   location    String  @default("") @db.VarChar(255)
+//   sorting     Int     @db.UnsignedInt
+//   homepage    Boolean
+//   status      Boolean
+// }
+
+// model testimonials {
+//   id          Int      @id @default(autoincrement()) @db.UnsignedInt
+//   name        String   @default("") @db.VarChar(150)
+//   photo       String   @default("") @db.VarChar(255)
+//   testimonial String   @db.Text
+//   source      String   @default("") @db.VarChar(255)
+//   email       String   @db.VarChar(255)
+//   date        DateTime @db.Date
+//   homepage    Boolean  @default(false)
+//   status      Boolean  @default(false)
+// }
+
+// model unsubscribes {
+//   id       Int      @id @default(autoincrement()) @db.UnsignedInt
+//   email    String   @unique(map: "email") @default("") @db.VarChar(100)
+//   ip       String   @default("") @db.VarChar(100)
+//   datetime DateTime @default(now()) @db.DateTime(0)
+// }
+
+// model users {
+//   id                    Int      @id @default(autoincrement()) @db.UnsignedInt
+//   name                  String   @default("") @db.VarChar(50)
+//   login                 String   @default("") @db.VarChar(50)
+//   password              String   @default("") @db.VarChar(100)
+//   datetime_registered   DateTime @default(now()) @db.DateTime(0)
+//   banned                Boolean  @default(false)
+//   p_booking_edit        Boolean  @default(false)
+//   p_booking_manage      Boolean  @default(false)
+//   p_goods_manage        Boolean  @default(false)
+//   p_objects_manage      Boolean  @default(false)
+//   p_partners_manage     Boolean  @default(false)
+//   p_clients_manage      Boolean  @default(false)
+//   p_gallery_manage      Boolean  @default(false)
+//   p_news_manage         Boolean  @default(false)
+//   p_promocodes_manage   Boolean  @default(false)
+//   p_testimonials_manage Boolean  @default(false)
+//   p_users_manage        Boolean  @default(false)
+//   p_config_manage       Boolean  @default(false)
+//   p_stats               Boolean  @default(false)
+//   p_marketing           Boolean  @default(false)
+//   p_techdata            Boolean  @default(false)
+// }
+
+// model users_logins {
+//   id        Int      @id @default(autoincrement()) @db.UnsignedInt
+//   user_id   Int      @db.UnsignedInt
+//   token     String   @default("") @db.VarChar(100)
+//   datetime  DateTime @default(now()) @db.DateTime(0)
+//   ip        String   @default("") @db.VarChar(50)
+//   useragent String   @default("") @db.VarChar(255)
+//   status    Boolean  @default(true)
 // }
