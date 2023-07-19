@@ -2,20 +2,17 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
-    colors: {
-      black: '#221F20',
-      white: '#FFF',
-    },
-    boxShadow: {
-      DEFAULT: '1px 1px 30px 0px rgba(0, 0, 0, 0.05)',
-    },
     extend: {
-      borderWidth: {
-        3: '3px',
-      },
       colors: {
+        black: 'rgb(var(--color-primary) / <alpha-value>)',
         primary: '#2194D2',
         secondary: '#FFAA05',
+      },
+      boxShadow: {
+        DEFAULT: '1px 1px 30px 0px rgba(0, 0, 0, 0.05)',
+      },
+      borderWidth: {
+        3: '3px',
       },
       backgroundImage: {
         'home-image': "url('./images/main.png')",

@@ -10,15 +10,25 @@
 }
 
 @layer base {
+  :root {
+    /* #221F20 */
+    --color-primary: 34 31 32;
+  }
+
   h2 {
     @apply font-semibold text-4xl font-inter;
   }
 }
 
+html,
+body {
+  height: 100%;
+}
+
 .short {
   display: grid;
   transition: grid-template-rows 0.5s;
-  grid-template-rows: minmax(0,max-content) 0fr;
+  grid-template-rows: minmax(0, max-content) 0fr;
 }
 
 .full {

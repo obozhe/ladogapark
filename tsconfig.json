@@ -21,10 +21,9 @@
     ],
     "baseUrl": "src",
     "paths": {
-      "icons/*": ["assets/icons/*"],
+      "icons/*": ["../public/icons/*"],
       "ui/*": ["components/ui/*"],
-      "components/*": ["components/*"],
-      "pages/*": ["pages/*"]
+      "components/*": ["components/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".eslintrc.js"],

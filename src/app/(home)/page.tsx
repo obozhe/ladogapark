@@ -1,8 +1,8 @@
 import { getWeather } from 'api/weather';
-import House1Image from 'assets/images/house-1.png';
-import House2Image from 'assets/images/house-2.png';
-import House3Image from 'assets/images/house-3.png';
-import House4Image from 'assets/images/house-4.png';
+import House1Image from '../../../public/images/house-1.png';
+import House2Image from '../../../public/images/house-2.png';
+import House3Image from '../../../public/images/house-3.png';
+import House4Image from '../../../public/images/house-4.png';
 import Houses from 'components/HomePage/Houses';
 import YandexMap from 'components/HomePage/YandexMap';
 import BusIcon from 'icons/bus.svg';
@@ -11,12 +11,22 @@ import GoodsIcon from 'icons/goods.svg';
 import LocationIcon from 'icons/location.svg';
 import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
-import prisma from 'lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
-import Button from 'ui/Button/Button';
-import Disclosure from 'ui/Disclosure/Disclosure';
+import Button from 'ui/Button';
+import Disclosure from 'ui/Disclosure';
+import { AppProps } from 'next/app';
+import { ReactElement, ReactNode } from 'react';
+import { NextPage } from 'next';
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 
 const Search = async () => {
   const weather = await getWeather();
@@ -188,7 +198,7 @@ const Contacts = () => {
   );
 };
 
-export default async function Home() {
+export default function Home() {
   return (
     <main>
       <Search />

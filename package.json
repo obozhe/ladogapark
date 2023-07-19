@@ -12,6 +12,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.15",
     "@pbe/react-yandex-maps": "^1.2.4",
     "@prisma/client": "^5.0.0",
     "@svgr/webpack": "^8.0.1",

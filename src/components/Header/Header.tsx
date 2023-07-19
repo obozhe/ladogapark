@@ -4,7 +4,7 @@ import TelegramIcon from 'icons/telegram.svg';
 import VkIcon from 'icons/vk.svg';
 import WhatsAppIcon from 'icons/whatsapp.svg';
 import Link from 'next/link';
-import prisma from 'lib/prisma';
+
 const Header = () => {
   return (
     <header className="flex py-8 justify-between layout-container">
