@@ -5,8 +5,6 @@ import userService from './service';
 import bcrypt from 'bcrypt';
 
 export async function GET() {
-  const salt = await bcrypt.genSalt();
-  console.log(salt);
   return NextResponse.json(await prisma.user.findMany());
 }
 
