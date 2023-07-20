@@ -7,16 +7,83 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
+enum Roles {
+  Manager
+  Admin
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   login     String   @unique
   password  String
-  role      String
+  role      Roles    @default(Manager)
   salt      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model ObjectEntry {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId  String      @db.ObjectId
+  objectGroup    ObjectGroup @relation(fields: [objectGroupId], references: [id])
+  title          String
+  images         String[]
+  description    String
+  content        String
+  seats          Int
+  extraseats     Int
+  priceWeekdays  Float
+  priceWeekends  Float
+  priceRenewal   Float
+  priceExtraseat Float
+  prepay         Int
+  minorder       Int
+  parking        Int
+  sorting        Int
+  status         Boolean
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model ObjectGroup {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  title         String        @default("")
+  alias         String        @default("")
+  bookingType   Boolean       @default(true)
+  sorting       Int           @default(0)
+  isActive      Boolean       @default(false)
+  objectEntries ObjectEntry[]
+}
+
+// model Service {
+//   id               String        @id @default(auto()) @map("_id") @db.ObjectId
+//   title            String        @default("")
+//   alias            String        @default("")
+//   icon             String        @default("")
+//   description      String        @default("")
+//   content          String        @default("")
+//   location         String        @default("")
+//   sorting          Int           @default(0)
+//   homepage         Boolean       @default(true)
+//   isActive         Boolean       @default(true)
+//   objectEntries    ObjectEntry[] @relation(fields: [objectEntriesIds], references: [id])
+//   objectEntriesIds String[]      @db.ObjectId
+// }
+
+// model Good {
+//   id            String       @id @default(auto()) @map("_id") @db.ObjectId
+//   title         String       @default("")
+//   icon          String       @default("")
+//   selling       Boolean      @default(false)
+//   price         Float        @default(0)
+//   sport         Boolean      @default(false)
+//   sorting       Int          @default(0)
+//   isActive      Boolean      @default(true)
+//   countPayments Int          @default(0)
+//   objectEntry   ObjectEntry? @relation(fields: [objectEntryId], references: [id])
+//   objectEntryId String?      @db.ObjectId
+// }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 // model booking {
@@ -202,30 +269,6 @@ model User {
 //   title   String  @default("") @db.VarChar(150)
 //   price   Float   @default(0) @db.Float
 //   active  Boolean @default(true)
-// }
-
-// model objects_types {
-//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
-//   group_id         Int      @db.UnsignedInt
-//   title            String   @db.VarChar(150)
-//   images           String   @db.Text
-//   description      String   @db.Text
-//   content          String   @db.Text
-//   seats            Int      @db.UnsignedTinyInt
-//   extraseats       Int      @db.UnsignedTinyInt
-//   price_weekdays   Float    @db.Float
-//   price_weekends   Float    @db.Float
-//   price_renewal    Float    @db.Float
-//   price_extraseat  Float    @db.Float
-//   prepay           Int      @db.UnsignedTinyInt
-//   minorder         Int      @db.UnsignedInt
-//   parking          Int      @db.UnsignedTinyInt
-//   services         String   @db.Text
-//   goodslist        String   @db.Text
-//   count_numbers    Int      @db.UnsignedInt
-//   sorting          Int      @db.UnsignedInt
-//   status           Boolean
-//   datetime_updated DateTime @db.DateTime(0)
 // }
 
 // model partners {
