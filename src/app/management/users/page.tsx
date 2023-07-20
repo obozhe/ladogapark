@@ -2,9 +2,6 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 import axios from 'axios';
-import prisma from 'core/prisma';
-import useFetch from 'hooks/useFetch';
-import { getUsers } from 'server/users/UserCollection';
 import { UserDTO } from 'server/users/types';
 import useSWR from 'swr';
 import Table from 'ui/Table';
