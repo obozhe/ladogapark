@@ -1,11 +1,8 @@
-import { UserCreate } from './types';
-import prisma from 'lib/prisma';
-import { NextRequest, NextResponse } from 'next/server';
-import userService from './service';
-import bcrypt from 'bcrypt';
+import { NextResponse } from 'next/server';
+import { getUsers } from 'server/users/UserCollection';
 
 export async function GET() {
-  return NextResponse.json(await prisma.user.findMany());
+  return NextResponse.json(await getUsers());
 }
 
 // export async function POST(req: NextRequest) {

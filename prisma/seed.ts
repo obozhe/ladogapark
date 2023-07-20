@@ -1,4 +1,5 @@
-import prisma from '../src/lib/prisma';
+import { objectGroups } from './consts';
+import prisma from '../src/core/prisma';
 import bcrypt from 'bcrypt';
 
 async function main() {
@@ -11,11 +12,20 @@ async function main() {
     create: {
       name: 'Admin Adminovich',
       login: 'admin',
-      role: 'admin',
+      role: 'Admin',
       password,
       salt,
     },
   });
+
+  objectGroups.forEach(
+    async (group) =>
+      await prisma.objectGroup.upsert({
+        where: { alias: group.alias },
+        update: {},
+        create: group,
+      })
+  );
 }
 
 main()

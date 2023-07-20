@@ -12,6 +12,12 @@ enum Roles {
   Admin
 }
 
+enum ObjectType {
+  House
+  Daily
+  Bath
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -32,27 +38,27 @@ model ObjectEntry {
   description    String
   content        String
   seats          Int
-  extraseats     Int
+  extraSeats     Int
   priceWeekdays  Float
   priceWeekends  Float
   priceRenewal   Float
-  priceExtraseat Float
+  priceExtraSeat Float
   prepay         Int
-  minorder       Int
+  minOrder       Int
   parking        Int
   sorting        Int
-  status         Boolean
+  isActive       Boolean
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
 
 model ObjectGroup {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  title         String        @default("")
-  alias         String        @default("")
-  bookingType   Boolean       @default(true)
-  sorting       Int           @default(0)
-  isActive      Boolean       @default(false)
+  title         String
+  alias         String        @unique
+  type          ObjectType
+  sorting       Int
+  isActive      Boolean       @default(true)
   objectEntries ObjectEntry[]
 }
 

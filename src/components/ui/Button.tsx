@@ -1,23 +1,55 @@
-import { ButtonHTMLAttributes } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge';
+import { Size, sizes } from 'core/enums/ui-sizes';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type Props = {
-  color?: 'primary'
-} & ButtonHTMLAttributes<HTMLButtonElement>
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: ReactNode;
+  color?: 'secondary' | 'primary' | 'transparent' | 'error';
+  isIconButton?: boolean;
+  size?: Size;
+  fullWidth?: boolean;
+  circle?: boolean;
+};
 
-const Button = ({ color = 'primary', className, children, ...rest }: Props) => {
+const Button = ({
+  children,
+  color = 'transparent',
+  type = 'button',
+  isIconButton,
+  className,
+  size = 'md',
+  fullWidth = false,
+  circle = false,
+  disabled = false,
+  ...rest
+}: ButtonProps) => {
   return (
     <button
+      {...rest}
+      type={type}
       className={twMerge(
-        'text-center align-middle rounded-lg',
-        color === 'primary' && 'bg-primary text-white px-[41px] py-[8px]',
+        'flex justify-center items-center',
+        'uppercase transition-all border-none text-sm font-medium',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-secondary',
+        color === 'primary' ? 'bg-primary text-white hover:bg-opacity-70' : '',
+        color === 'secondary' ? 'bg-gray-500 text-white hover:bg-opacity-70' : '',
+        color === 'error' ? 'bg-error text-white hover:bg-opacity-70' : '',
+        color === 'transparent' ? 'bg-transparent text-primary hover:bg-gray-200' : '',
+        disabled ? '!bg-gray-200 !text-gray-400 !pointer-events-none' : '',
+        !isIconButton ? 'px-4 py-2' : '',
+        isIconButton ? 'p-1' : '',
+        circle ? 'rounded-full' : 'rounded-md',
+        fullWidth ? 'w-full' : 'w-fit',
         className
       )}
-      {...rest}
+      style={{
+        height: sizes[size],
+        width: isIconButton ? sizes[size] : '',
+      }}
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;

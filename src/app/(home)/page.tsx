@@ -19,6 +19,7 @@ import Disclosure from 'ui/Disclosure';
 import { AppProps } from 'next/app';
 import { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
+import { getObjectEntries, getObjectGroups } from 'server/objects/ObjectsCollection';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -42,7 +43,9 @@ const Search = async () => {
         <div className="flex gap-3">
           <div className="h-[50px] bg-white w-[220px]" />
           <div className="h-[50px] bg-white w-[220px]" />
-          <Button>Показать объекты</Button>
+          <Button size="xxl" color="primary">
+            Показать объекты
+          </Button>
         </div>
         {weather && (
           <span className="text-white font-semibold text-xl">
@@ -198,7 +201,10 @@ const Contacts = () => {
   );
 };
 
-export default function Home() {
+export default async function Home() {
+  console.log(await getObjectEntries());
+  console.log(await getObjectGroups());
+
   return (
     <main>
       <Search />
