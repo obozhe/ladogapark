@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <NavTabs tabs={tabs} vertical />
       </div>
 
-      <div className="p-4">{children}</div>
+      <div className="px-8 py-4 bg-gray-200">{children}</div>
     </div>
   );
 }

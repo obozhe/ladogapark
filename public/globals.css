@@ -13,10 +13,18 @@
   :root {
     /* #221F20 */
     --color-primary: 34 31 32;
+    /* #A42222 */
+    --color-error: 164 34 34;
+    /* #29ab3c */
+    --color-success: 41 171 60;
   }
 
   h2 {
     @apply font-semibold text-4xl font-inter;
+  }
+
+  h3 {
+    @apply font-semibold text-lg font-inter;
   }
 }
 
