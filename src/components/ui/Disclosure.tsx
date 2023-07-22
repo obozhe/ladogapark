@@ -1,34 +1,46 @@
 'use client';
 
+import { Disclosure as DisclosureUI, Transition } from '@headlessui/react';
 import ArrowCircleIcon from 'icons/arrow-circle.svg';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 type Props = {
   title: string;
   description: string;
-  isOpen?: boolean;
 };
 
-const Disclosure = ({ title, description, isOpen = false }: Props) => {
-  const [showFull, setShowFull] = useState(isOpen);
+const Disclosure = ({ title, description }: Props) => {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [maxHeight, setMaxHeight] = useState<string | 0>(0);
 
   return (
-    <div
-      className={twMerge(
-        'border-t-2 last:border-b-2 border-black py-4 grid grid-rows-disclosure-0 transition-[grid-template-rows] duration-300',
-        showFull && 'grid-rows-disclosure-2'
-      )}
-    >
-      <div className={twMerge('flex justify-between items-center', showFull && 'mb-4')}>
-        <span className="font-semibold text-2xl cursor-pointer" onClick={() => setShowFull((prev) => !prev)}>
-          {title}
-        </span>
-        <span className={twMerge('rotate-180', showFull && 'rotate-0')}>
-          <ArrowCircleIcon />
-        </span>
-      </div>
-      <p className="font-semibold overflow-hidden">{description}</p>
+    <div className="w-full border-t-2 border-black last:border-b-2 py-4">
+      <DisclosureUI>
+        {({ open }) => (
+          <>
+            <DisclosureUI.Button
+              className="flex w-full justify-between"
+              onClick={() =>
+                setMaxHeight((prev) => (prev === 0 ? (panelRef?.current?.scrollHeight ?? 0) + 32 + 'px' : 0))
+              }
+            >
+              <span className="font-semibold text-2xl">{title}</span>
+              <span className={twMerge('rotate-180 transition', open && 'rotate-0')}>
+                <ArrowCircleIcon />
+              </span>
+            </DisclosureUI.Button>
+            <DisclosureUI.Panel
+              static
+              ref={panelRef}
+              className="font-semibold transition-[max-height] overflow-hidden duration-300 ease-out"
+              style={{ maxHeight }}
+            >
+              <div className="py-4">{description}</div>
+            </DisclosureUI.Panel>
+          </>
+        )}
+      </DisclosureUI>
     </div>
   );
 };

@@ -1,8 +1,4 @@
 import { getWeather } from 'api/weather';
-import House1Image from '../../../public/images/house-1.png';
-import House2Image from '../../../public/images/house-2.png';
-import House3Image from '../../../public/images/house-3.png';
-import House4Image from '../../../public/images/house-4.png';
 import Houses from 'components/HomePage/Houses';
 import YandexMap from 'components/HomePage/YandexMap';
 import BusIcon from 'icons/bus.svg';
@@ -13,21 +9,14 @@ import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getObjectGroups } from 'server/objects/ObjectsCollection';
 import { twMerge } from 'tailwind-merge';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';
-import { AppProps } from 'next/app';
-import { ReactElement, ReactNode } from 'react';
-import { NextPage } from 'next';
-import { getObjectEntries, getObjectGroups } from 'server/objects/ObjectsCollection';
-
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
-
-type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout;
-};
+import House1Image from '../../../public/images/house-1.png';
+import House2Image from '../../../public/images/house-2.png';
+import House3Image from '../../../public/images/house-3.png';
+import House4Image from '../../../public/images/house-4.png';
 
 const Search = async () => {
   const weather = await getWeather();
@@ -202,14 +191,13 @@ const Contacts = () => {
 };
 
 export default async function Home() {
-  console.log(await getObjectEntries());
-  console.log(await getObjectGroups());
+  const sortedObjectGroups = await getObjectGroups();
 
   return (
     <main>
       <Search />
       <div className="flex flex-col gap-36 pt-[150px] layout-container">
-        <Houses />
+        <Houses objectGroups={sortedObjectGroups} />
         <Services />
         <Faq />
         <Photos />

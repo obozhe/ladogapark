@@ -32,13 +32,3 @@ html,
 body {
   height: 100%;
 }
-
-.short {
-  display: grid;
-  transition: grid-template-rows 0.5s;
-  grid-template-rows: minmax(0, max-content) 0fr;
-}
-
-.full {
-  grid-template-rows: max-content 1fr;
-}
