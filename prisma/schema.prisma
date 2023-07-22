@@ -18,6 +18,11 @@ enum ObjectType {
   Bath
 }
 
+enum UnitStatus {
+  Available
+  Booked
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -25,14 +30,15 @@ model User {
   password  String
   role      Roles    @default(Manager)
   salt      String
+  banned    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ObjectEntry {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId  String      @db.ObjectId
-  objectGroup    ObjectGroup @relation(fields: [objectGroupId], references: [id])
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId  String       @db.ObjectId
+  objectGroup    ObjectGroup  @relation(fields: [objectGroupId], references: [id])
   title          String
   images         String[]
   description    String
@@ -48,8 +54,9 @@ model ObjectEntry {
   parking        Int
   sorting        Int
   isActive       Boolean
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  units          ObjectUnit[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model ObjectGroup {
@@ -60,6 +67,68 @@ model ObjectGroup {
   sorting       Int
   isActive      Boolean       @default(true)
   objectEntries ObjectEntry[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model ObjectUnit {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  number        Int         @unique()
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  bookings      Booking[]
+  isActive      Boolean     @default(true)
+  status        UnitStatus  @default(Available)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Booking {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  number           String     @unique()
+  objectUnitId     String     @db.ObjectId
+  objectUnit       ObjectUnit @relation(fields: [objectUnitId], references: [id])
+  // type_id           Int        @db.UnsignedInt
+  datetimeStart    DateTime
+  datetimeEnd      DateTime
+  amount           Float      @default(0)
+  prepay           Float      @default(0)
+  paidTotal        Float      @default(0)
+  partnerId        Int        @default(0)
+  partnerFee       Float      @default(0)
+  name             String     @default("")
+  companyName      String     @default("")
+  phone            String     @default("")
+  email            String     @default("")
+  clientId         String     @db.ObjectId
+  client           Client     @relation(fields: [clientId], references: [id])
+  comment          String     @default("")
+  commentAdmin     String     @default("")
+  extraSeats       Int        @default(0)
+  typeServicesIds  String
+  parking          Int        @default(0)
+  arrived          Boolean    @default(false)
+  countPayments    Int        @default(0)
+  countAttachments Int        @default(0)
+  promocodeId      Int        @default(0)
+  sourcePoll       Int        @default(0)
+  payAccData       String
+  // token            String
+  status           Int        @default(0)
+  undelitable      Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Client {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @default("")
+  phone     String    @default("")
+  email     String    @default("")
+  vip       Boolean
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // model Service {
@@ -92,42 +161,6 @@ model ObjectGroup {
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-// model booking {
-//   id                Int      @id @default(autoincrement()) @db.UnsignedInt
-//   number            String   @unique(map: "number") @default("") @db.VarChar(50)
-//   object_number     Int      @db.UnsignedInt
-//   type_id           Int      @db.UnsignedInt
-//   datetime_start    DateTime @db.DateTime(0)
-//   datetime_end      DateTime @db.DateTime(0)
-//   datetime_created  DateTime @db.DateTime(0)
-//   amount            Float    @default(0) @db.Float
-//   prepay            Float    @default(0) @db.Float
-//   paid_total        Float    @default(0) @db.Float
-//   partner_id        Int      @default(0) @db.UnsignedInt
-//   partner_fee       Float    @default(0) @db.Float
-//   name              String   @default("") @db.VarChar(100)
-//   company_name      String   @default("") @db.VarChar(100)
-//   phone             String   @default("") @db.VarChar(100)
-//   email             String   @default("") @db.VarChar(100)
-//   client_id         Int      @default(0) @db.UnsignedInt
-//   comment           String   @db.Text
-//   comment_admin     String   @db.Text
-//   extraseats        Int      @default(0) @db.UnsignedInt
-//   type_services_ids String   @db.VarChar(255)
-//   parking           Int      @default(0) @db.UnsignedTinyInt
-//   arrived           Boolean  @default(false)
-//   count_payments    Int      @default(0) @db.UnsignedTinyInt
-//   count_attachments Int      @default(0) @db.UnsignedInt
-//   promocode_id      Int      @default(0) @db.UnsignedInt
-//   sourcepoll        Int      @default(0) @db.UnsignedTinyInt
-//   payaccdata        String   @db.Text
-//   token             String   @db.VarChar(100)
-//   status            Int      @default(0) @db.UnsignedTinyInt
-//   user_id           Int      @default(0) @db.UnsignedInt
-//   undelitable       Boolean  @default(false)
-
-//   @@index([object_number, datetime_start, datetime_end, status], map: "object_number")
-// }
 
 // model booking_attachments {
 //   id          Int      @id @default(autoincrement()) @db.UnsignedInt
@@ -136,19 +169,6 @@ model ObjectGroup {
 //   description String   @db.Text
 //   datetime    DateTime @default(now()) @db.DateTime(0)
 //   user_id     Int      @default(0) @db.UnsignedInt
-// }
-
-// model clients {
-//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
-//   name             String   @default("") @db.VarChar(100)
-//   phone            String   @default("") @db.VarChar(100)
-//   email            String   @default("") @db.VarChar(100)
-//   vip              Boolean
-//   datetime_added   DateTime @default(now()) @db.DateTime(0)
-//   datetime_updated DateTime @default(now()) @db.DateTime(0)
-//   count_orders     Int      @db.UnsignedInt
-
-//   @@index([name, phone, email], map: "name")
 // }
 
 // model close_numbers {
@@ -234,30 +254,12 @@ model ObjectGroup {
 //   @@index([type_when], map: "type_when")
 // }
 
-// model objects_groups {
-//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
-//   title       String  @default("") @db.VarChar(150)
-//   alias       String  @db.VarChar(50)
-//   bookingtype Boolean @default(true)
-//   count_types Int     @default(0) @db.UnsignedInt
-//   sorting     Int     @default(0) @db.UnsignedInt
-//   status      Boolean @default(false)
-// }
-
 // model objects_minbooking {
 //   id         Int      @id @default(autoincrement()) @db.UnsignedInt
 //   type_id    Int      @db.UnsignedInt
 //   min        Int      @db.UnsignedInt
 //   date_start DateTime @db.Date
 //   date_end   DateTime @db.Date
-// }
-
-// model objects_numbers {
-//   id           Int     @id @default(autoincrement()) @db.UnsignedInt
-//   number       Int     @db.UnsignedInt
-//   type_id      Int     @db.UnsignedInt
-//   count_orders Int     @default(0) @db.UnsignedInt
-//   status       Boolean @default(true)
 // }
 
 // model objects_promocodes {
@@ -394,30 +396,6 @@ model ObjectGroup {
 //   email    String   @unique(map: "email") @default("") @db.VarChar(100)
 //   ip       String   @default("") @db.VarChar(100)
 //   datetime DateTime @default(now()) @db.DateTime(0)
-// }
-
-// model users {
-//   id                    Int      @id @default(autoincrement()) @db.UnsignedInt
-//   name                  String   @default("") @db.VarChar(50)
-//   login                 String   @default("") @db.VarChar(50)
-//   password              String   @default("") @db.VarChar(100)
-//   datetime_registered   DateTime @default(now()) @db.DateTime(0)
-//   banned                Boolean  @default(false)
-//   p_booking_edit        Boolean  @default(false)
-//   p_booking_manage      Boolean  @default(false)
-//   p_goods_manage        Boolean  @default(false)
-//   p_objects_manage      Boolean  @default(false)
-//   p_partners_manage     Boolean  @default(false)
-//   p_clients_manage      Boolean  @default(false)
-//   p_gallery_manage      Boolean  @default(false)
-//   p_news_manage         Boolean  @default(false)
-//   p_promocodes_manage   Boolean  @default(false)
-//   p_testimonials_manage Boolean  @default(false)
-//   p_users_manage        Boolean  @default(false)
-//   p_config_manage       Boolean  @default(false)
-//   p_stats               Boolean  @default(false)
-//   p_marketing           Boolean  @default(false)
-//   p_techdata            Boolean  @default(false)
 // }
 
 // model users_logins {

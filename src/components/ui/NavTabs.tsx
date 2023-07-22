@@ -19,7 +19,7 @@ export default function NavTabs({ tabs, vertical = false }: Props) {
             className={twMerge(
               'p-2 leading-5 text-left rounded',
               'ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-              pathname === tab.path ? 'text-white' : 'text-gray-400 hover:bg-white/[0.12] hover:text-white'
+              pathname.includes(tab.path) ? 'text-white' : 'text-gray-400 hover:bg-white/[0.12] hover:text-white'
             )}
           >
             {tab.label}

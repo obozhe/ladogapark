@@ -3,3 +3,8 @@ export enum ObjectTypes {
   House = 'House',
   Bath = 'Bath',
 }
+
+export enum UnitStatus {
+  Available = 'Available',
+  Booked = 'Booked',
+}
