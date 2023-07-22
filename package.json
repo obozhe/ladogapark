@@ -6,10 +6,20 @@
     "dev": "prisma generate && next dev",
     "build": "prisma generate && prisma db push && prisma db seed && next build",
     "start": "next start",
-    "lint": "next lint"
+    "check-types": "tsc --noemit",
+    "lint": "npm run check-types && next lint",
+    "prepare": "husky install",
+    "pre-commit": "next lint"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "lint-staged": {
+    "src/**/*.{tsx,ts,js}": [
+      "tsc --noemit",
+      "eslint",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
@@ -18,13 +28,9 @@
     "@svgr/webpack": "^8.0.1",
     "@tanstack/react-table": "^8.9.3",
     "@tippyjs/react": "^4.2.6",
-    "@types/react": "18.2.14",
-    "@types/react-dom": "18.2.6",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
-    "eslint": "8.44.0",
-    "eslint-config-next": "^13.4.9",
     "isomorphic-dompurify": "^1.8.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.262.0",
@@ -42,7 +48,14 @@
     "@types/bcrypt": "^5.0.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.4.2",
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
+    "eslint": "8.44.0",
+    "eslint-config-next": "^13.4.9",
     "eslint-config-prettier": "^8.8.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
     "prisma": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
