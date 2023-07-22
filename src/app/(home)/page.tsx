@@ -9,7 +9,7 @@ import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getObjectEntries } from 'server/objects/ObjectsCollection';
+import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { twMerge } from 'tailwind-merge';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';

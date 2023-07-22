@@ -1,10 +1,11 @@
 import { fieldsMapping } from 'core/fieldsMapping';
+import formatToRuble from 'core/helpers/formatNumbers';
 import { redirect } from 'next/navigation';
-import { getObjectEntryById } from 'server/objects/ObjectsCollection';
+import { getObjectEntryById } from 'server/objects/ObjectCollection';
 import Breadcrumbs from 'ui/Breadcrumbs';
 import Card from 'ui/Card';
-import Field from 'ui/Field';
-import IsActiveField from 'ui/IsActiveField';
+import Field from 'components/ManagementPage/Field';
+import IsActiveField from 'components/ManagementPage/IsActiveField';
 
 export default async function ObjectEntryPage({ params }: { params: { objectEntry: string } }) {
   const objectEntry = await getObjectEntryById(params.objectEntry);
@@ -34,8 +35,12 @@ export default async function ObjectEntryPage({ params }: { params: { objectEntr
 
         <Card title="Стоимость">
           <div className="flex flex-col gap-1">
-            <Field label="Предоплата" value={objectEntry.prepay || 'Нет'} rightAlignment />
-            <Field label="Доп. место" value={objectEntry.priceExtraSeat || 'Нет'} rightAlignment />
+            <Field label="Предоплата" value={objectEntry.prepay ? objectEntry.prepay + '%' : 'Нет'} rightAlignment />
+            <Field
+              label="Доп. место"
+              value={objectEntry.extraSeats ? formatToRuble(objectEntry.priceExtraSeat) : 'Нет'}
+              rightAlignment
+            />
           </div>
         </Card>
       </div>
