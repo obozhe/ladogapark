@@ -7,6 +7,7 @@ module.exports = {
         black: 'rgb(var(--color-primary) / <alpha-value>)',
         primary: '#2194D2',
         secondary: '#FFAA05',
+        "tertiary": "#898989",
         success: 'rgb(var(--color-success) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
       },

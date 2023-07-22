@@ -1,13 +1,14 @@
 'use client';
 
-import { ObjectGroup } from '@prisma/client';
+import { ObjectEntry } from '@prisma/client';
 import HumanIcon from 'icons/human.svg';
+import Link from 'next/link';
 import { useState } from 'react';
 import { ObjectTypes } from 'server/objects/types';
 import { twMerge } from 'tailwind-merge';
 
 type Props = {
-  objectGroups: ObjectGroup[];
+  objectEntries: ObjectEntry[];
 };
 const rentOptions: Record<'label' | 'type', string | ObjectTypes>[] = [
   { label: 'На сутки', type: ObjectTypes.House },
@@ -15,9 +16,11 @@ const rentOptions: Record<'label' | 'type', string | ObjectTypes>[] = [
   { label: 'Бани', type: ObjectTypes.Bath },
 ];
 
-const Houses = ({ objectGroups }: Props) => {
+const Houses = ({ objectEntries }: Props) => {
   const [activeOption, sentActiveOption] = useState(rentOptions[0]);
-  const filteredObjectGroups = objectGroups.filter((group) => group.type === activeOption.type);
+  // const filteredObjectGroups = objectEntries.filter((entry) => entry.type === activeOption.type);
+
+  console.log(objectEntries);
 
   return (
     <section className="flex flex-col gap-8">
@@ -30,7 +33,7 @@ const Houses = ({ objectGroups }: Props) => {
                 key={option.type}
                 onClick={() => sentActiveOption(option)}
                 className={twMerge(
-                  'border-3 rounded-md border-black py-1 px-14 font-semibold text-lg cursor-pointer',
+                  'border-3 rounded-md border-black py-1 px-9 font-semibold text-lg cursor-pointer',
                   activeOption === option && 'bg-primary text-white border-primary'
                 )}
               >
@@ -51,11 +54,12 @@ const Houses = ({ objectGroups }: Props) => {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-9 row-auto">
-        {filteredObjectGroups.map((group) => {
+        {objectEntries.map((entry) => {
           return (
-            <div
+            <Link
+              href={'booking/' + entry.id}
               className="relative h-64 text-white font-semibold flex flex-col justify-between font-inter"
-              key={group.id}
+              key={entry.id}
             >
               <div className="absolute top-0 h-full w-full brightness-[60%] -z-10 bg-house-image bg-auto bg-left-top" />
               <div className="flex justify-between p-4">
@@ -63,15 +67,15 @@ const Houses = ({ objectGroups }: Props) => {
                   <span>
                     <HumanIcon />
                   </span>
-                  <span>x4</span>
+                  <span>x{entry.seats}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="bg-primary rounded-md p-1 text-xs">6 000 ₽</span>
-                  <span className="bg-secondary rounded-md p-1 text-xs">7 000 ₽</span>
+                  <span className="bg-primary rounded-md p-1 text-xs">{entry.priceWeekdays} ₽</span>
+                  <span className="bg-secondary rounded-md p-1 text-xs">{entry.priceWeekends} ₽</span>
                 </div>
               </div>
-              <span className="p-4 font-semibold text-4xl">{group.title}</span>
-            </div>
+              <span className="p-4 font-semibold text-4xl">{entry.title}</span>
+            </Link>
           );
         })}
       </div>

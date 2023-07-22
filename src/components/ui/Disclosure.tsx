@@ -2,15 +2,16 @@
 
 import { Disclosure as DisclosureUI, Transition } from '@headlessui/react';
 import ArrowCircleIcon from 'icons/arrow-circle.svg';
-import { useRef, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 type Props = {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
+  showIcon?: boolean;
 };
 
-const Disclosure = ({ title, description }: Props) => {
+const Disclosure = ({ title, description, showIcon = true }: Props) => {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [maxHeight, setMaxHeight] = useState<string | 0>(0);
 
@@ -25,10 +26,12 @@ const Disclosure = ({ title, description }: Props) => {
                 setMaxHeight((prev) => (prev === 0 ? (panelRef?.current?.scrollHeight ?? 0) + 32 + 'px' : 0))
               }
             >
-              <span className="font-semibold text-2xl">{title}</span>
-              <span className={twMerge('rotate-180 transition', open && 'rotate-0')}>
-                <ArrowCircleIcon />
-              </span>
+              {title}
+              {showIcon && (
+                <span className={twMerge('rotate-180 transition', open && 'rotate-0')}>
+                  <ArrowCircleIcon />
+                </span>
+              )}
             </DisclosureUI.Button>
             <DisclosureUI.Panel
               static

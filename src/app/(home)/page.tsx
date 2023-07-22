@@ -9,7 +9,7 @@ import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getObjectGroups } from 'server/objects/ObjectsCollection';
+import { getObjectEntries } from 'server/objects/ObjectsCollection';
 import { twMerge } from 'tailwind-merge';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';
@@ -124,9 +124,12 @@ const Faq = () => {
     <section>
       <h2 className="mb-10">FAQ</h2>
       <div className="pl-[35%]">
-        {questions.map((question) => (
-          <Disclosure {...question} key={question.title} />
-        ))}
+        {questions.map((question) => {
+          const title = <span className="font-semibold text-2xl">{question.title}</span>;
+          const description = question.description;
+
+          return <Disclosure title={title} description={description} key={question.title} />;
+        })}
       </div>
     </section>
   );
@@ -191,13 +194,13 @@ const Contacts = () => {
 };
 
 export default async function Home() {
-  const sortedObjectGroups = await getObjectGroups();
+  const objectEntries = await getObjectEntries();
 
   return (
     <main>
       <Search />
       <div className="flex flex-col gap-36 pt-[150px] layout-container">
-        <Houses objectGroups={sortedObjectGroups} />
+        <Houses objectEntries={objectEntries} />
         <Services />
         <Faq />
         <Photos />
