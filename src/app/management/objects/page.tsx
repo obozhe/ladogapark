@@ -1,8 +1,8 @@
 import NavHeader from 'ui/Breadcrumbs';
 import { fieldsMapping } from 'core/fieldsMapping';
 import Link from 'next/link';
-import { getObjectGroupsWithObjects } from 'server/objects/ObjectsCollection';
-import Field from 'ui/Field';
+import { getObjectGroupsWithObjects } from 'server/objects/ObjectCollection';
+import Field from 'components/ManagementPage/Field';
 import Breadcrumbs from 'ui/Breadcrumbs';
 import Card from 'ui/Card';
 

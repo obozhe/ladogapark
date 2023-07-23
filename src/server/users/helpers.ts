@@ -6,6 +6,7 @@ export const userDocToDto = (user: User): UserDTO => ({
   name: user.name,
   login: user.login,
   role: user.role,
+  banned: user.banned,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });

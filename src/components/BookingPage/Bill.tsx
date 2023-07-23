@@ -1,5 +1,5 @@
 import { ObjectEntry } from '@prisma/client';
-import formatToRuble from 'core/formatToRuble';
+import formatToRuble from 'core/helpers/formatNumbers';
 import Disclosure from 'ui/Disclosure';
 
 type InfoProps = {
@@ -23,10 +23,7 @@ const Bill = ({ objectEntry }: InfoProps) => {
         ))}
       </div>
       <div>
-        <Disclosure
-          title={<span className="text-primary">Дополнительные товары</span>}
-          description={<div>test</div>}
-        />
+        <Disclosure title={<span className="text-primary">Дополнительные товары</span>} description={<div>test</div>} />
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 import NavHeader from 'ui/Breadcrumbs';
 import { redirect } from 'next/navigation';
-import { getObjectEntryById, getObjectGroupById } from 'server/objects/ObjectsCollection';
+import { getObjectEntryById, getObjectGroupById } from 'server/objects/ObjectCollection';
 import Breadcrumbs from 'ui/Breadcrumbs';
 
 export default async function ObjectGroupPage({ params }: { params: { objectGroup: string } }) {

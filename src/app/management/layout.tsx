@@ -19,8 +19,8 @@ const tabs = [
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-full grid grid-cols-[260px,_1fr]">
-      <div className="p-4 bg-black">
-        <div className="fixed">
+      <div className="bg-black relative">
+        <div className="fixed w-[260px] p-4">
           <NavTabs tabs={tabs} vertical />
         </div>
       </div>
