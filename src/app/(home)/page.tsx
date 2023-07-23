@@ -128,7 +128,14 @@ const Faq = () => {
           const title = <span className="font-semibold text-2xl">{question.title}</span>;
           const description = question.description;
 
-          return <Disclosure title={title} description={description} key={question.title} />;
+          return (
+            <Disclosure
+              className="border-t-2 border-black last:border-b-2 py-4"
+              title={title}
+              description={description}
+              key={question.title}
+            />
+          );
         })}
       </div>
     </section>

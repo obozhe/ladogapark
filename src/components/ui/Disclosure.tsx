@@ -9,14 +9,15 @@ type Props = {
   title: ReactNode;
   description: ReactNode;
   showIcon?: boolean;
+  className?: string
 };
 
-const Disclosure = ({ title, description, showIcon = true }: Props) => {
+const Disclosure = ({ title, description, showIcon = true, className }: Props) => {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [maxHeight, setMaxHeight] = useState<string | 0>(0);
 
   return (
-    <div className="w-full border-t-2 border-black last:border-b-2 py-4">
+    <div className={twMerge("w-full", className)}>
       <DisclosureUI>
         {({ open }) => (
           <>
