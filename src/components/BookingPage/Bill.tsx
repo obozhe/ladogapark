@@ -1,6 +1,6 @@
 import { ObjectEntry } from '@prisma/client';
 import formatToRuble from 'core/helpers/formatNumbers';
-import Disclosure from 'components/shared/Disclosure';
+import Disclosure from 'ui/Disclosure';
 
 type InfoProps = {
   objectEntry: ObjectEntry;
