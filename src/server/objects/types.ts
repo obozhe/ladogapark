@@ -1,10 +1,13 @@
+import { Prisma } from '@prisma/client';
+
 export enum ObjectTypes {
   Daily = 'Daily',
   House = 'House',
   Bath = 'Bath',
 }
 
-export enum UnitStatus {
-  Available = 'Available',
-  Booked = 'Booked',
-}
+// https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types
+const objectEntryWithGroup = Prisma.validator<Prisma.ObjectEntryArgs>()({
+  include: { objectGroup: true },
+});
+export type ObjectEntryWithGroup = Prisma.ObjectEntryGetPayload<typeof objectEntryWithGroup>;

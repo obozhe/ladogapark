@@ -5,12 +5,20 @@ const axios = a.create({ baseURL: `/api` });
 axios.interceptors.response.use(
   (response) => response.data,
   (err) => {
-    if (err instanceof CanceledError) {
-      return Promise.reject(err);
-    }
-
     return Promise.reject(err);
   }
 );
 
 export default axios;
+
+declare module 'axios' {
+  export interface AxiosInstance {
+    request<T = any>(config: AxiosRequestConfig): Promise<T>;
+    get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+    delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+    head<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+    post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+    put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+    patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+  }
+}

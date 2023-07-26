@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <div className="px-8 py-4 bg-gray-200">{children}</div>
+      <div className="px-8 py-4 bg-gray-200 relative">{children}</div>
     </div>
   );
 }

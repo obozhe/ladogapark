@@ -29,8 +29,7 @@ const Button = ({
       type={type}
       className={twMerge(
         'flex justify-center items-center',
-        'uppercase transition-all border-none text-sm font-medium',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-secondary',
+        'transition-all border-none text-sm font-medium',
         color === 'primary' ? 'bg-primary text-white hover:bg-opacity-70' : '',
         color === 'secondary' ? 'bg-gray-500 text-white hover:bg-opacity-70' : '',
         color === 'error' ? 'bg-error text-white hover:bg-opacity-70' : '',

@@ -15,7 +15,7 @@ import Button from 'ui/Button';
 import Input from 'ui/Input';
 import Loader from 'ui/Loader';
 import Select from 'ui/Select';
-import { Tooltip } from 'react-tooltip';
+import Tooltip from 'ui/Tooltip';
 import { twMerge } from 'tailwind-merge';
 import { useDidMountEffect } from 'hooks/useDidMountEffect';
 import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
@@ -126,16 +126,9 @@ const Table = <TRow extends { id: string }>({
                   {row.getVisibleCells().map((cell, cellIndex) => (
                     <div key={cell.id} className="flex md:items-center">
                       {cell.column.accessorFn ? (
-                        <>
-                          <span
-                            data-tooltip-id={`${rowIndex}_${cellIndex}`}
-                            data-tooltip-content={cell.getValue() as string}
-                            data-tooltip-place="top"
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </span>
-                          <Tooltip id={`${rowIndex}_${cellIndex}`} />
-                        </>
+                        <Tooltip id={`${rowIndex}_${cellIndex}`} content={cell.getValue() as string}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Tooltip>
                       ) : (
                         flexRender(cell.column.columnDef.cell, cell.getContext())
                       )}

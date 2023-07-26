@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { twMerge } from 'tailwind-merge';
 import Button from 'ui/Button';
-import Disclosure from 'ui/Disclosure';
+import Disclosure from 'components/shared/Disclosure';
 import House1Image from '../../../public/images/house-1.png';
 import House2Image from '../../../public/images/house-2.png';
 import House3Image from '../../../public/images/house-3.png';

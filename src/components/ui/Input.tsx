@@ -22,7 +22,7 @@ const Input = React.forwardRef(
       <fieldset>
         {label && (
           <label htmlFor={label + '-field'}>
-            <span className="font-semibold uppercase">{label}</span>
+            <span className="font-semibold text-sm">{label}</span>
           </label>
         )}
 

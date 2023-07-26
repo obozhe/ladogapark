@@ -18,11 +18,6 @@ enum ObjectType {
   Bath
 }
 
-enum UnitStatus {
-  Available
-  Booked
-}
-
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -33,6 +28,18 @@ model User {
   banned    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ObjectGroup {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  alias         String        @unique
+  type          ObjectType
+  sorting       Int
+  isActive      Boolean       @default(true)
+  objectEntries ObjectEntry[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model ObjectEntry {
@@ -59,28 +66,24 @@ model ObjectEntry {
   updatedAt      DateTime     @updatedAt
 }
 
-model ObjectGroup {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  alias         String        @unique
-  type          ObjectType
-  sorting       Int
-  isActive      Boolean       @default(true)
-  objectEntries ObjectEntry[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+model ObjectUnit {
+  id              String                @id @default(auto()) @map("_id") @db.ObjectId
+  number          String                @unique()
+  objectEntryId   String                @db.ObjectId
+  objectEntry     ObjectEntry           @relation(fields: [objectEntryId], references: [id])
+  bookings        Booking[]
+  isActive        Boolean               @default(true)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  temporaryClosed TemporaryClosedUnit[]
 }
 
-model ObjectUnit {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  number        Int         @unique()
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  bookings      Booking[]
-  isActive      Boolean     @default(true)
-  status        UnitStatus  @default(Available)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+model TemporaryClosedUnit {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  objectUnitId String     @db.ObjectId
+  objectUnit   ObjectUnit @relation(fields: [objectUnitId], references: [id])
+  dateFrom     DateTime
+  dateTo       DateTime
 }
 
 model Booking {
@@ -169,13 +172,6 @@ model Client {
 //   description String   @db.Text
 //   datetime    DateTime @default(now()) @db.DateTime(0)
 //   user_id     Int      @default(0) @db.UnsignedInt
-// }
-
-// model close_numbers {
-//   id        Int      @id @default(autoincrement()) @db.UnsignedInt
-//   number_id Int      @db.UnsignedInt
-//   date_from DateTime @db.Date
-//   date_to   DateTime @db.Date
 // }
 
 // model gallery {

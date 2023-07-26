@@ -1,20 +1,32 @@
+'use client';
+
 import { fieldsMapping } from 'core/fieldsMapping';
 import formatToRuble from 'core/helpers/formatNumbers';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter, useSearchParams } from 'next/navigation';
 import { getObjectEntryById } from 'server/objects/ObjectCollection';
 import Breadcrumbs from 'ui/Breadcrumbs';
 import Card from 'ui/Card';
 import Field from 'components/ManagementPage/Field';
 import IsActiveField from 'components/ManagementPage/IsActiveField';
-import ActionIconButton from 'ui/ActionIconButton';
 import { Plus } from 'lucide-react';
 import Button from 'ui/Button';
-import { ObjectTypes } from 'server/objects/types';
+import { ObjectEntryWithGroup, ObjectTypes } from 'server/objects/types';
+import { sanitize } from 'isomorphic-dompurify';
+import UnitsCard from './UnitsCard';
+import useSWR from 'swr';
+import axios from 'core/axios';
+import Loader from 'ui/Loader';
 
-export default async function ObjectEntryPage({ params }: { params: { objectEntry: string } }) {
-  const objectEntry = await getObjectEntryById(params.objectEntry);
+const request = (url: string) => axios.get<ObjectEntryWithGroup>(url);
 
-  if (!objectEntry) {
+export default function ObjectEntryPage({ params }: { params: { objectEntry: string } }) {
+  const { data: objectEntry, isLoading, error } = useSWR(`/management/objects/entries/${params.objectEntry}`, request);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error || !objectEntry) {
     return redirect('/not-found');
   }
 
@@ -37,7 +49,15 @@ export default async function ObjectEntryPage({ params }: { params: { objectEntr
 
   const Description = () => (
     <Card title="Описание">
-      <></>
+      <div className="flex flex-col gap-1">
+        <p>{objectEntry.description}</p>
+        <div
+          className="border-t pt-1"
+          dangerouslySetInnerHTML={{
+            __html: sanitize(objectEntry.content),
+          }}
+        />
+      </div>
     </Card>
   );
 
@@ -69,19 +89,6 @@ export default async function ObjectEntryPage({ params }: { params: { objectEntr
     </Card>
   );
 
-  const Units = () => (
-    <Card
-      title="Юниты"
-      titleComponent={
-        <Button isIconButton color="primary" size="xs">
-          <Plus />
-        </Button>
-      }
-    >
-      <></>
-    </Card>
-  );
-
   const MinOrderDays = () => (
     <Card
       title="Ограничения бронирований"
@@ -97,7 +104,7 @@ export default async function ObjectEntryPage({ params }: { params: { objectEntr
 
   const DiscountByDaysCount = () => (
     <Card
-      title="Скидка при брони на число дней"
+      title="Скидка при бронировании на число дней"
       titleComponent={
         <Button isIconButton color="primary" size="xs">
           <Plus />
@@ -152,7 +159,7 @@ export default async function ObjectEntryPage({ params }: { params: { objectEntr
 
           <div className="flex flex-col gap-8">
             <Prices />
-            <Units />
+            <UnitsCard objectEntryId={objectEntry.id} />
           </div>
         </div>
 

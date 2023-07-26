@@ -26,6 +26,19 @@ export const objectGroups = [
           parking: 3,
           sorting: 1,
           isActive: true,
+          units: {
+            create: [
+              {
+                number: '101',
+              },
+              {
+                number: '102',
+              },
+              {
+                number: '103',
+              },
+            ],
+          },
         },
       ],
     },

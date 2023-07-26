@@ -36,3 +36,8 @@ body {
 .link {
   @apply font-semibold text-sky-500 hover:text-sky-700 transition;
 }
+
+a,
+button {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary;
+}

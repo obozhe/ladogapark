@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from 'ui/Button';
 import { random } from 'lodash';
-import { Tooltip } from 'react-tooltip';
+import Tooltip from 'ui/Tooltip';
 
 type Props = ButtonProps & {
   title: string;
@@ -9,13 +9,9 @@ type Props = ButtonProps & {
 };
 
 const ActionIconButton = ({ title, disabled, children, request, setLoading, color = 'primary', ...rest }: Props) => {
-  const tooltipId = `${title}_${random()}`;
   return (
-    <>
+    <Tooltip id={`${title}_${random()}`} content={title}>
       <Button
-        data-tooltip-id={tooltipId}
-        data-tooltip-content={title}
-        data-tooltip-place="top"
         {...rest}
         isIconButton
         color={color}
@@ -30,8 +26,7 @@ const ActionIconButton = ({ title, disabled, children, request, setLoading, colo
       >
         {children}
       </Button>
-      <Tooltip id={tooltipId} />
-    </>
+    </Tooltip>
   );
 };
 
