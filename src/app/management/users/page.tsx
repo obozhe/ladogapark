@@ -4,7 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import axios from 'axios';
 import { UserDTO } from 'server/users/types';
 import useSWR from 'swr';
-import Table from 'ui/Table';
+import Table from 'features/Table';
 
 const columnHelper = createColumnHelper<UserDTO>();
 
@@ -38,6 +38,6 @@ const columns = [
 ];
 
 export default function UsersPage() {
-  const { data } = useSWR('/users', () => axios.get<UserDTO[]>('/api/users').then((res) => res.data));
+  const { data } = useSWR('/users', (url) => axios.get<UserDTO[]>(url));
   return <Table rows={data} columns={columns} />;
 }

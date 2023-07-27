@@ -1,8 +1,8 @@
 'use client';
 
+import React, { ForwardedRef, InputHTMLAttributes } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
-import React, { ForwardedRef, InputHTMLAttributes } from 'react';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -22,13 +22,14 @@ const Input = React.forwardRef(
       <fieldset>
         {label && (
           <label htmlFor={label + '-field'}>
-            <span className="font-semibold text-sm">{label}</span>
+            <span className={twMerge('font-semibold text-sm', error ? 'text-error' : '')}>{label}</span>
           </label>
         )}
 
         <div className="relative">
           <input
             {...rest}
+            aria-invalid={Boolean(error)}
             ref={ref}
             style={{ height: sizes[_size] }}
             className={twMerge(

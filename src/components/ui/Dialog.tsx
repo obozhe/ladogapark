@@ -1,7 +1,6 @@
-import { Dialog as HeadlessDialog, Transition } from '@headlessui/react';
 import { Fragment, ReactNode } from 'react';
+import { Dialog as HeadlessDialog, Transition } from '@headlessui/react';
 import BlockLoader from './BlockLoader';
-
 import Button from './Button';
 
 type Props = {

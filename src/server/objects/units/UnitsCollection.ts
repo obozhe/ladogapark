@@ -18,9 +18,7 @@ export const getObjectUnitsByObjectEntryId = (id: string) => {
 };
 
 export const getObjectUnitsNumbers = () => {
-  return prisma.objectUnit.findMany({
-    select: { number: true },
-  });
+  return prisma.objectUnit.findMany({ select: { number: true } });
 };
 
 export const updateObjectUnit = (id: string, { number, isActive }: UpdateObjectUnitDTO) => {
@@ -28,4 +26,8 @@ export const updateObjectUnit = (id: string, { number, isActive }: UpdateObjectU
     where: { id },
     data: { ...(number ? { number } : {}), ...(isActive !== undefined ? { isActive } : {}) },
   });
+};
+
+export const deleteObjectUnit = (id: string) => {
+  return prisma.objectUnit.delete({ where: { id } });
 };

@@ -5,9 +5,18 @@
   "printWidth": 120,
   "tabWidth": 2,
   "bracketSpacing": true,
-  "importOrder": ["^@m/(.*)$", "^[./]"],
-  "importOrderSeparation": true,
+  "importOrder": [
+    "@prisma/(.*)$",
+    "containers/(.*)$",
+    "components/(.*)$",
+    "hooks/(.*)$",
+    "core/(.*)$",
+    "server/(.*)$",
+    "ui/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": false,
   "importOrderSortSpecifiers": true,
-  "importOrderParserPlugins": ["jsx", "typescript", "decorators-legacy"],
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

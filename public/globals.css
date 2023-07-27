@@ -13,8 +13,8 @@
   :root {
     /* #221F20 */
     --color-primary: 34 31 32;
-    /* #A42222 */
-    --color-error: 164 34 34;
+    /* #cc2727 */
+    --color-error: 204 39 39;
     /* #29ab3c */
     --color-success: 41 171 60;
   }
