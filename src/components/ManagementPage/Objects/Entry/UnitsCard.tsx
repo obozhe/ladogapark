@@ -98,7 +98,7 @@ export default function UnitsCard({ objectEntryId }: Props) {
   };
 
   return (
-    <BlockLoader isLoading={isLoading || isUpdating || isValidating}>
+    <BlockLoader isLoading={isLoading || isUpdating}>
       <Card
         title="Юниты"
         titleComponent={
