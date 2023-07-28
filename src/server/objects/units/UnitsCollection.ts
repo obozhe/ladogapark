@@ -30,7 +30,8 @@ export const updateObjectUnit = (id: string, { number, isActive }: UpdateObjectU
   });
 };
 
-export const deleteObjectUnit = (id: string) => {
+export const deleteObjectUnit = async (id: string) => {
+  await prisma.unitTemporaryClosure.deleteMany({ where: { objectUnitId: id } });
   return prisma.objectUnit.delete({ where: { id } });
 };
 
