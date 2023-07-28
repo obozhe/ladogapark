@@ -1,8 +1,8 @@
-import { Listbox, Transition } from '@headlessui/react';
-import { twMerge } from 'tailwind-merge';
-import { Size, sizes } from 'core/enums/ui-sizes';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Fragment, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { Size, sizes } from 'core/enums/ui-sizes';
+import { Listbox, Transition } from '@headlessui/react';
 
 type Value = string | number;
 
@@ -29,8 +29,8 @@ const Select = ({ label, options, value, fullWidth, showAbove, onChange, size = 
   return (
     <fieldset style={{ width: fullWidth ? '100%' : 'fit-content' }}>
       {label && (
-        <label>
-          <span className="font-semibold uppercase">{label}</span>
+        <label htmlFor={label + '-field'}>
+          <span className={twMerge('font-semibold text-sm')}>{label}</span>
         </label>
       )}
 

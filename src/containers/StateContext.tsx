@@ -5,6 +5,7 @@ import { ReactNode, createContext, useState } from 'react';
 export enum DialogNames {
   CreateUnit = 'CreateUnit',
   EditUnitNumber = 'EditUnitNumber',
+  TemporaryCloseUnit = 'TemporaryCloseUnit',
 }
 
 type State = {

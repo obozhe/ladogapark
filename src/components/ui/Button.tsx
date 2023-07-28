@@ -1,6 +1,6 @@
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
-import { ButtonHTMLAttributes, ReactNode } from 'react';
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;

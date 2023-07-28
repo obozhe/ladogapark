@@ -1,5 +1,6 @@
-import { CreateObjectUnitDTO, UpdateObjectUnitDTO } from './types';
+import dayjs from 'dayjs';
 import prisma from 'core/prisma';
+import { CreateObjectUnitDTO, UpdateObjectUnitDTO } from './types';
 
 export const createObjectUnit = ({ objectEntryId, number }: CreateObjectUnitDTO) => {
   return prisma.objectUnit.create({
@@ -13,6 +14,7 @@ export const createObjectUnit = ({ objectEntryId, number }: CreateObjectUnitDTO)
 export const getObjectUnitsByObjectEntryId = (id: string) => {
   return prisma.objectUnit.findMany({
     where: { objectEntryId: id },
+    include: { temporaryClosures: true },
     orderBy: [{ number: 'asc' }],
   });
 };
@@ -30,4 +32,14 @@ export const updateObjectUnit = (id: string, { number, isActive }: UpdateObjectU
 
 export const deleteObjectUnit = (id: string) => {
   return prisma.objectUnit.delete({ where: { id } });
+};
+
+export const createTemporaryClosure = (id: string, start: string, end: string) => {
+  return prisma.unitTemporaryClosure.create({
+    data: { start: dayjs(start).toDate(), end: dayjs(end).toDate(), objectUnitId: id },
+  });
+};
+
+export const deleteTemporaryClosure = (id: string) => {
+  return prisma.unitTemporaryClosure.delete({ where: { id } });
 };

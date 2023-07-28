@@ -62,8 +62,8 @@ const Dialog = ({
                     <div className="p-4">{children}</div>
 
                     {!disableActions && (
-                      <div className="flex gap-2 border-t p-4">
-                        <Button onClick={onClose} fullWidth color="secondary">
+                      <div className="flex gap-2 border-t p-4 justify-end">
+                        <Button onClick={onClose} color="secondary">
                           Отмена
                         </Button>
                         <Button
@@ -71,7 +71,6 @@ const Dialog = ({
                           color="primary"
                           type="button"
                           onClick={onSubmit}
-                          fullWidth
                           className="-order-1 sm:order-1"
                         >
                           {submitLabel}

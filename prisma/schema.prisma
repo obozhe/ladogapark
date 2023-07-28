@@ -67,23 +67,23 @@ model ObjectEntry {
 }
 
 model ObjectUnit {
-  id              String                @id @default(auto()) @map("_id") @db.ObjectId
-  number          String                @unique()
-  objectEntryId   String                @db.ObjectId
-  objectEntry     ObjectEntry           @relation(fields: [objectEntryId], references: [id])
-  bookings        Booking[]
-  isActive        Boolean               @default(true)
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  temporaryClosed TemporaryClosedUnit[]
+  id                String                 @id @default(auto()) @map("_id") @db.ObjectId
+  number            String                 @unique()
+  objectEntryId     String                 @db.ObjectId
+  objectEntry       ObjectEntry            @relation(fields: [objectEntryId], references: [id])
+  bookings          Booking[]
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  temporaryClosures UnitTemporaryClosure[]
 }
 
-model TemporaryClosedUnit {
+model UnitTemporaryClosure {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
   objectUnitId String     @db.ObjectId
   objectUnit   ObjectUnit @relation(fields: [objectUnitId], references: [id])
-  dateFrom     DateTime
-  dateTo       DateTime
+  start        DateTime
+  end          DateTime
 }
 
 model Booking {

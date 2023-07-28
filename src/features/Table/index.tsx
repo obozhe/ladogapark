@@ -11,17 +11,16 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { useDidMountEffect } from 'hooks/useDidMountEffect';
+import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import Button from 'ui/Button';
 import Input from 'ui/Input';
 import Loader from 'ui/Loader';
 import Select from 'ui/Select';
 import Tooltip from 'ui/Tooltip';
-import { twMerge } from 'tailwind-merge';
-import { useDidMountEffect } from 'hooks/useDidMountEffect';
-import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { useRef, useState } from 'react';
-
 import getSelectionColumn from './consts/selectionColumn';
 
 type Props<TRow> = {
@@ -127,7 +126,7 @@ const Table = <TRow extends { id: string }>({
                     <div key={cell.id} className="flex md:items-center">
                       {cell.column.accessorFn ? (
                         <Tooltip id={`${rowIndex}_${cellIndex}`} content={cell.getValue() as string}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          <span>{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
                         </Tooltip>
                       ) : (
                         flexRender(cell.column.columnDef.cell, cell.getContext())

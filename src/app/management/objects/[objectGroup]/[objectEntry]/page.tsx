@@ -1,20 +1,19 @@
 'use client';
 
-import { fieldsMapping } from 'core/fieldsMapping';
-import formatToRuble from 'core/helpers/formatNumbers';
+import { sanitize } from 'isomorphic-dompurify';
+import { Plus } from 'lucide-react';
 import { redirect, useRouter, useSearchParams } from 'next/navigation';
-import { getObjectEntryById } from 'server/objects/ObjectCollection';
-import Breadcrumbs from 'ui/Breadcrumbs';
-import Card from 'ui/Card';
+import useSWR from 'swr';
 import Field from 'components/ManagementPage/Field';
 import IsActiveField from 'components/ManagementPage/IsActiveField';
-import { Plus } from 'lucide-react';
-import Button from 'ui/Button';
-import { ObjectEntryWithGroup, ObjectTypes } from 'server/objects/types';
-import { sanitize } from 'isomorphic-dompurify';
-import UnitsCard from './UnitsCard';
-import useSWR from 'swr';
+import UnitsCard from 'components/ManagementPage/Objects/Entry/UnitsCard';
 import axios from 'core/axios';
+import { fieldsMapping } from 'core/fieldsMapping';
+import formatToRuble from 'core/helpers/number';
+import { ObjectEntryWithGroup, ObjectTypes } from 'server/objects/types';
+import Breadcrumbs from 'ui/Breadcrumbs';
+import Button from 'ui/Button';
+import Card from 'ui/Card';
 import Loader from 'ui/Loader';
 
 const request = (url: string) => axios.get<ObjectEntryWithGroup>(url);
@@ -150,30 +149,30 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
   return (
     <>
       <Breadcrumbs links={breadcrumbs} />
-      <div className="grid grid-cols-[2fr,_1fr] gap-8">
-        <div className="grid grid-cols-[2fr,_1fr] gap-8 h-fit">
-          <div className="flex flex-col gap-8">
-            <Details />
-            <Description />
-          </div>
+      <div className="grid grid-cols-[2fr,_3fr] gap-8">
+        <div className="flex flex-col gap-8">
+          <Details />
+          <Description />
+        </div>
 
+        <div className="grid grid-cols-[1fr,_1fr] gap-8 h-fit">
           <div className="flex flex-col gap-8">
             <Prices />
             <UnitsCard objectEntryId={objectEntry.id} />
           </div>
-        </div>
 
-        <div className="h-fit grid gap-8">
-          {objectEntry.objectGroup.type === ObjectTypes.House && (
-            <>
-              <MinOrderDays />
-              <DiscountByDaysCount />
-              <PromoCodes />
-            </>
-          )}
+          <div className="h-fit grid gap-8">
+            {objectEntry.objectGroup.type === ObjectTypes.House && (
+              <>
+                <MinOrderDays />
+                <DiscountByDaysCount />
+                <PromoCodes />
+              </>
+            )}
 
-          <Included />
-          <ExtraServices />
+            <Included />
+            <ExtraServices />
+          </div>
         </div>
       </div>
     </>
