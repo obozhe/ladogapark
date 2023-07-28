@@ -43,9 +43,9 @@ model ObjectGroup {
 }
 
 model ObjectEntry {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId  String       @db.ObjectId
-  objectGroup    ObjectGroup  @relation(fields: [objectGroupId], references: [id])
+  id             String              @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId  String              @db.ObjectId
+  objectGroup    ObjectGroup         @relation(fields: [objectGroupId], references: [id])
   title          String
   images         String[]
   description    String
@@ -62,8 +62,10 @@ model ObjectEntry {
   sorting        Int
   isActive       Boolean
   units          ObjectUnit[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  holidayPrices  EntryHolidayPrice[]
+  futurePrices   EntryFuturePrice[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 }
 
 model ObjectUnit {
@@ -84,6 +86,25 @@ model UnitTemporaryClosure {
   objectUnit   ObjectUnit @relation(fields: [objectUnitId], references: [id])
   start        DateTime
   end          DateTime
+}
+
+model EntryHolidayPrice {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  price         Float
+  start         DateTime
+  end           DateTime
+}
+
+model EntryFuturePrice {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  priceWeekdays Float
+  priceWeekends Float
+  start         DateTime
+  end           DateTime
 }
 
 model Booking {
@@ -320,14 +341,6 @@ model Client {
 //   status           Int      @default(0) @db.UnsignedTinyInt
 //   type             Boolean
 //   user_id          Int      @default(0) @db.UnsignedInt
-// }
-
-// model prices_future {
-//   id             Int      @id @default(autoincrement()) @db.UnsignedInt
-//   type_id        Int      @db.UnsignedInt
-//   price_weekdays Float    @db.Float
-//   price_weekends Float    @db.Float
-//   date           DateTime @db.Date
 // }
 
 // model prices_hollidays {

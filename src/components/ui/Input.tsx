@@ -22,7 +22,9 @@ const Input = React.forwardRef(
       <fieldset>
         {label && (
           <label htmlFor={label + '-field'}>
-            <span className={twMerge('font-semibold text-sm', error ? 'text-error' : '')}>{label}</span>
+            <span className={twMerge('font-semibold text-sm whitespace-nowrap', error ? 'text-error' : '')}>
+              {label}
+            </span>
           </label>
         )}
 

@@ -1,7 +1,7 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { Plus, Settings, Trash, Trash2, X } from 'lucide-react';
+import { Plus, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { UnitTemporaryClosure } from '@prisma/client';
@@ -15,7 +15,6 @@ import { ObjectUnitWithClosedDates } from 'server/objects/units/types';
 import BlockLoader from 'ui/BlockLoader';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
-import DateSelects from 'ui/DateSelects';
 import Menu from 'ui/Menu';
 import Tooltip from 'ui/Tooltip';
 

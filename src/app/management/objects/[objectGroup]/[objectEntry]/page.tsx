@@ -6,6 +6,7 @@ import { redirect, useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import Field from 'components/ManagementPage/Field';
 import IsActiveField from 'components/ManagementPage/IsActiveField';
+import PricesCard from 'components/ManagementPage/Objects/Entry/PricesCard';
 import UnitsCard from 'components/ManagementPage/Objects/Entry/UnitsCard';
 import axios from 'core/axios';
 import { fieldsMapping } from 'core/fieldsMapping';
@@ -56,34 +57,6 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
             __html: sanitize(objectEntry.content),
           }}
         />
-      </div>
-    </Card>
-  );
-
-  const Prices = () => (
-    <Card title="Стоимость">
-      <div className="flex flex-col gap-1">
-        <Field label="Предоплата" value={objectEntry.prepay ? objectEntry.prepay + '%' : 'Нет'} rightAlignment />
-        <Field
-          label="Доп. место"
-          value={objectEntry.extraSeats ? formatToRuble(objectEntry.priceExtraSeat) : 'Нет'}
-          rightAlignment
-        />
-        <div className="mt-2 font-semibold flex items-center justify-between border-t pt-1">
-          Текущие цены
-          <Button isIconButton>
-            <Plus />
-          </Button>
-        </div>
-        <Field label="Будни" value={formatToRuble(objectEntry.priceWeekdays)} rightAlignment />
-        <Field label="Выходные" value={formatToRuble(objectEntry.priceWeekends)} rightAlignment />
-
-        <div className="mt-2 font-semibold flex items-center justify-between border-t pt-1">
-          Праздничные цены
-          <Button isIconButton>
-            <Plus />
-          </Button>
-        </div>
       </div>
     </Card>
   );
@@ -157,7 +130,7 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
 
         <div className="grid grid-cols-[1fr,_1fr] gap-8 h-fit">
           <div className="flex flex-col gap-8">
-            <Prices />
+            <PricesCard objectEntry={objectEntry} />
             <UnitsCard objectEntryId={objectEntry.id} />
           </div>
 
