@@ -53,7 +53,7 @@ const Dialog = ({
             >
               <div>
                 <BlockLoader isLoading={isLoading || false}>
-                  <HeadlessDialog.Panel className="w-fit transform overflow-hidden rounded bg-white text-left align-middle shadow-xl transition-all">
+                  <HeadlessDialog.Panel className="w-fit transform rounded bg-white text-left align-middle shadow-xl transition-all">
                     {title && (
                       <HeadlessDialog.Title as="h3" className="text-xl font-semibold leading-6 p-4 border-b">
                         {title}

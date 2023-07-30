@@ -12,18 +12,16 @@ type State = {
   dialog: {
     isOpen: boolean;
     name: DialogNames | null;
-    props: {
-      [key: string]: any;
-    };
+    props: Record<string, any>;
   };
 };
 
 type TStateContext = {
   isOpen: boolean;
-  open: (name: DialogNames, dialogProps?: Record<string, unknown>) => void;
+  open: (name: DialogNames, dialogProps?: Record<string, any>) => void;
   close: () => void;
   name: DialogNames | null;
-  props: { [key: string]: any };
+  props: Record<string, any>;
 } | null;
 
 export const stateContext = createContext<TStateContext | null>(null);

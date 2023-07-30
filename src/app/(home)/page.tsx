@@ -1,6 +1,4 @@
 import { getWeather } from 'api/weather';
-import Houses from 'components/HomePage/Houses';
-import YandexMap from 'components/HomePage/YandexMap';
 import BusIcon from 'icons/bus.svg';
 import EmailIcon from 'icons/email.svg';
 import GoodsIcon from 'icons/goods.svg';
@@ -9,9 +7,12 @@ import MassageIcon from 'icons/massage.svg';
 import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { twMerge } from 'tailwind-merge';
+import Houses from 'components/HomePage/Houses';
+import YandexMap from 'components/HomePage/YandexMap';
+import { getObjectEntries } from 'server/objects/ObjectCollection';
 import Button from 'ui/Button';
+import { DatePickerRange } from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
 import House1Image from '../../../public/images/house-1.png';
 import House2Image from '../../../public/images/house-2.png';
@@ -30,8 +31,7 @@ const Search = async () => {
       </div>
       <div className="flex flex-col text-center gap-5">
         <div className="flex gap-3">
-          <div className="h-[50px] bg-white w-[220px]" />
-          <div className="h-[50px] bg-white w-[220px]" />
+          {/* <DatePickerRange start="Дата заезда" end="Дата выезда" /> */}
           <Button size="xxl" color="primary">
             Показать объекты
           </Button>

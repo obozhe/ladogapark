@@ -4,11 +4,14 @@ import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
 import { Listbox, Transition } from '@headlessui/react';
 
-type Value = string | number;
+type Option = { label: string; value: string | number };
 
-type Option = { label: string; value: Value };
+export type CustomOptionProps = {
+  option: Option;
+  label?: string;
+};
 
-type Props = {
+type Props<Value> = {
   label?: string;
   value: Value;
   onChange: (value: Value) => void;
@@ -16,10 +19,22 @@ type Props = {
   fullWidth?: boolean;
   showAbove?: boolean;
   size?: Size;
+  className?: string;
+  CustomOption?: ({ option, label }: CustomOptionProps) => React.JSX.Element;
 };
 
-const Select = ({ label, options, value, fullWidth, showAbove, onChange, size = 'lg' }: Props) => {
-  const [selectedOptionValue, setSelectedOptionValue] = useState(value);
+const Select = <Value extends string | number>({
+  label,
+  options,
+  value,
+  fullWidth,
+  showAbove,
+  onChange,
+  className,
+  CustomOption,
+  size = 'lg',
+}: Props<Value>) => {
+  const [selectedOptionValue, setSelectedOptionValue] = useState<Value>(value);
 
   const handleChange = (newOptionValue: Value) => {
     setSelectedOptionValue(newOptionValue);
@@ -38,7 +53,10 @@ const Select = ({ label, options, value, fullWidth, showAbove, onChange, size = 
         <div className="relative w-full">
           <Listbox.Button
             style={{ height: sizes[size] }}
-            className="relative w-full bg-bg-main border-3 border-primary cursor-default rounded pl-3 pr-10 text-left focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+            className={twMerge(
+              'relative w-full bg-bg-main border-3 border-primary cursor-default rounded pl-3 pr-10 text-left focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary',
+              className
+            )}
           >
             <span className="block truncate">{options.find((o) => o.value === selectedOptionValue)?.label}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -60,30 +78,29 @@ const Select = ({ label, options, value, fullWidth, showAbove, onChange, size = 
                 showAbove ? 'mb-1 bottom-full' : 'mt-1 top-full'
               )}
             >
-              {options.map((option, index) => (
-                <Listbox.Option
-                  key={`${label}_${option.value}_${index}`}
-                  className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-secondary text-white' : 'text-primary'
-                    }`
-                  }
-                  value={option.value}
-                >
-                  {({ selected }) => (
-                    <>
-                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                        {option.label}
-                      </span>
-                      {selected ? (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Check className="h-5 w-5" aria-hidden="true" />
+              {options.map((option, index) =>
+                CustomOption ? (
+                  <CustomOption key={`${label}_${option.value}_${index}`} option={option} />
+                ) : (
+                  <Listbox.Option
+                    key={`${label}_${option.value}_${index}`}
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pr-4 ${
+                        active ? 'bg-secondary text-white' : 'text-primary'
+                      }`
+                    }
+                    value={option.value}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                          {option.label}
                         </span>
-                      ) : null}
-                    </>
-                  )}
-                </Listbox.Option>
-              ))}
+                      </>
+                    )}
+                  </Listbox.Option>
+                )
+              )}
             </Listbox.Options>
           </Transition>
         </div>

@@ -58,7 +58,7 @@ const DateSelects = ({ value, onChange, showTimeSelection = false, className = '
             label={label}
             value={data[name]}
             onChange={(optionValue) => updateField(name, optionValue as number)}
-            options={getSelectOptions(date, name)}
+            options={getSelectOptions({ date, type: name })}
             fullWidth
           />
         ))}

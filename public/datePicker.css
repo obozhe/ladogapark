@@ -1,0 +1,19 @@
+.MuiOutlinedInput-root {
+  @apply bg-white;
+}
+
+.MuiInputLabel-root {
+  @apply text-tertiary font-semibold font-raleway
+}
+
+.MuiDateRangePickerDay-day {
+  @apply font-inter font-semibold rounded-none;
+}
+
+.MuiDateRangePickerDay-day.MuiPickersDay-today {
+  @apply border-none bg-secondary;
+}
+
+.MuiTouchRipple-root {
+  display: none;
+}

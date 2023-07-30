@@ -1,12 +1,9 @@
-import Header from 'components/Header/Header';
-import type { Metadata, NextPage } from 'next';
+import DialogManager from 'features/DialogManager';
+import type { Metadata } from 'next';
 import { Inter, Raleway } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
-import { ReactElement, ReactNode } from 'react';
-import { AppProps } from 'next/app';
-import '../../public/globals.css';
 import StateContextProvider from 'containers/StateContext';
-import DialogManager from 'features/DialogManager';
+import '../../public/globals.css';
 
 const raleway = Raleway({ subsets: ['latin'], variable: '--raleway' });
 const inter = Inter({ subsets: ['latin'], variable: '--inter' });

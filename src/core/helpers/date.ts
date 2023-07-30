@@ -1,6 +1,15 @@
 import dayjs, { Dayjs, ManipulateType } from 'dayjs';
+import 'dayjs/locale/ru';
 import { DateFormats } from 'core/enums/DateFormats';
 import { getArrayFromRange } from './array';
+
+type GetSelectOptions = {
+  date: Dayjs;
+  type: 'day' | 'month' | 'year';
+  locale?: string;
+  yearStart?: number;
+  yearEnd?: number;
+};
 
 export const MONTHS_IN_YEAR = 12;
 
@@ -52,7 +61,7 @@ export const getMonthsArray = () => {
   return getArrayFromRange(MONTHS_IN_YEAR);
 };
 
-export const getSelectOptions = (date: Dayjs, type: 'day' | 'month' | 'year') => {
+export const getSelectOptions = ({ date, type, locale = 'en', yearStart = 10, yearEnd = 10 }: GetSelectOptions) => {
   const getDayOptions = () =>
     getArrayFromRange(date.daysInMonth(), 1).map((dayNumber) => ({
       label: String(dayNumber),
@@ -61,7 +70,7 @@ export const getSelectOptions = (date: Dayjs, type: 'day' | 'month' | 'year') =>
 
   const getMonthOptions = () =>
     getMonthsArray().map((monthNumber: number) => {
-      const month = dayjs(`${date.year()}-${monthNumber}`);
+      const month = dayjs(`${date.year()}-${monthNumber}`).locale(locale);
       const formattedMonth = month.format('MMMM');
 
       return {
@@ -71,7 +80,7 @@ export const getSelectOptions = (date: Dayjs, type: 'day' | 'month' | 'year') =>
     });
 
   const getYearOptions = () =>
-    getArrayFromRange(date.year() + 10, date.year() - 10).map((year) => ({
+    getArrayFromRange(date.year() + yearEnd, date.year() - yearStart).map((year) => ({
       label: String(year),
       value: year,
     }));
