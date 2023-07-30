@@ -32,7 +32,7 @@ const Select = <Value extends string | number>({
   onChange,
   className,
   CustomOption,
-  size = 'lg',
+  size = 'sm',
 }: Props<Value>) => {
   const [selectedOptionValue, setSelectedOptionValue] = useState<Value>(value);
 
@@ -54,7 +54,7 @@ const Select = <Value extends string | number>({
           <Listbox.Button
             style={{ height: sizes[size] }}
             className={twMerge(
-              'relative w-full bg-bg-main border-3 border-primary cursor-default rounded pl-3 pr-10 text-left focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary',
+              'relative w-full bg-bg-main border-2 border-primary cursor-default rounded pl-3 pr-10 text-left focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary',
               className
             )}
           >
@@ -85,7 +85,7 @@ const Select = <Value extends string | number>({
                   <Listbox.Option
                     key={`${label}_${option.value}_${index}`}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pr-4 ${
+                      `relative cursor-default select-none py-2 px-4 ${
                         active ? 'bg-secondary text-white' : 'text-primary'
                       }`
                     }

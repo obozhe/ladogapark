@@ -15,7 +15,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
 
 const Input = React.forwardRef(
   (
-    { label, error, helper, endAdornment, disableHelper, _size = 'lg', className = '', ...rest }: Props,
+    { label, error, helper, endAdornment, disableHelper, _size = 'sm', className = '', ...rest }: Props,
     ref: ForwardedRef<HTMLInputElement | null>
   ) => {
     return (
@@ -35,7 +35,7 @@ const Input = React.forwardRef(
             ref={ref}
             style={{ height: sizes[_size] }}
             className={twMerge(
-              'rounded p-2 w-full border-3 bg-bg-main',
+              'rounded p-2 w-full border-2 bg-bg-main',
               'focus:outline-none focus:border-secondary',
               'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 invalid:border-error invalid:text-error',
               endAdornment ? 'pr-12' : '',
