@@ -4,10 +4,6 @@ import type { Metadata } from 'next';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import NavTabs from 'ui/NavTabs';
 
-export const metadata: Metadata = {
-  title: 'CRM Ладога парк',
-};
-
 const tabs = [
   {
     label: 'Объекты',

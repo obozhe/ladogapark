@@ -3,6 +3,7 @@
 import dayjs from 'dayjs';
 import { Plus, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import useSWR from 'swr';
 import { UnitTemporaryClosure } from '@prisma/client';
 import { DialogNames } from 'containers/StateContext';
@@ -39,6 +40,7 @@ export default function UnitsCard({ objectEntryId }: Props) {
   const {
     data: units = [],
     isLoading,
+    isValidating,
     mutate,
   } = useSWR(`/management/objects/units?objectEntryId=${objectEntryId}`, getUnits);
 
@@ -89,24 +91,26 @@ export default function UnitsCard({ objectEntryId }: Props) {
     open(DialogNames.TemporaryCloseUnit, { onClose: onDialogClose, unitId, unitNumber });
   };
 
-  const onDialogClose = (id?: string) => {
-    if (id) {
-      mutate();
+  const onDialogClose = (data?: ObjectUnitWithClosedDates[]) => {
+    if (data) {
+      mutate(data, { revalidate: false });
     }
   };
 
   return (
-    <BlockLoader isLoading={isLoading || isUpdating}>
-      <Card
-        title="Юниты"
-        titleComponent={
-          <Button isIconButton color="primary" size="xs" onClick={openAddNewUnitDialog}>
-            <Plus />
-          </Button>
-        }
-      >
-        <div className="flex flex-col gap-1 min-w-[350px]">
-          {units.map((unit, unitIndex) => {
+    <Card
+      title="Юниты"
+      titleComponent={
+        <Button isIconButton color="primary" size="xs" onClick={openAddNewUnitDialog}>
+          <Plus />
+        </Button>
+      }
+    >
+      <div className="flex flex-col gap-1 min-w-[350px]">
+        {isLoading || isUpdating || isValidating ? (
+          <Skeleton count={3} height={40} />
+        ) : (
+          units.map((unit) => {
             const temporaryClosed = temporaryClosedCrossing(unit.temporaryClosures);
             return (
               <div key={unit.number} className="bg-gray-100 rounded">
@@ -169,9 +173,9 @@ export default function UnitsCard({ objectEntryId }: Props) {
                 ) : null}
               </div>
             );
-          })}
-        </div>
-      </Card>
-    </BlockLoader>
+          })
+        )}
+      </div>
+    </Card>
   );
 }

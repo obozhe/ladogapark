@@ -1,7 +1,9 @@
+import { ReactNode } from 'react';
+
 type Props = {
   title: string;
   titleComponent?: JSX.Element;
-  children: JSX.Element | JSX.Element[];
+  children: ReactNode;
 };
 
 export default function Card({ children, title, titleComponent }: Props) {

@@ -38,9 +38,10 @@ export const deleteObjectUnit = async (id: string) => {
 export const createTemporaryClosure = (id: string, start: string, end: string) => {
   return prisma.unitTemporaryClosure.create({
     data: { start: dayjs(start).toDate(), end: dayjs(end).toDate(), objectUnitId: id },
+    include: { objectUnit: true },
   });
 };
 
 export const deleteTemporaryClosure = (id: string) => {
-  return prisma.unitTemporaryClosure.delete({ where: { id } });
+  return prisma.unitTemporaryClosure.delete({ where: { id }, include: { objectUnit: true } });
 };

@@ -1,6 +1,7 @@
 import DialogManager from 'features/DialogManager';
 import type { Metadata } from 'next';
 import { Inter, Raleway } from 'next/font/google';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { twMerge } from 'tailwind-merge';
 import StateContextProvider from 'containers/StateContext';
 import '../../public/globals.css';

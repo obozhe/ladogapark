@@ -65,7 +65,7 @@ export const AddOrEditUnitNumberDialog = () => {
         request = axios.post(`/management/objects/units/${unitId}`, { number: getValues().unitNumber });
       }
 
-      request?.then(() => onClose(getValues().unitNumber));
+      request?.then((updatedUnits) => onClose(updatedUnits));
       close();
     }
   };

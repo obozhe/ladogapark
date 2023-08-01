@@ -31,3 +31,11 @@ export const createEntryHolidayPrice = (data: CreateHolidayPriceDTO) => {
     data: { ...data, start: dayjs(data.start).toDate(), end: dayjs(data.end).toDate() },
   });
 };
+
+export const getEntryFuturePrices = (objectEntryId: string) => {
+  return prisma.entryFuturePrice.findMany({ where: { objectEntryId } });
+};
+
+export const getEntryHolidayPrices = (objectEntryId: string) => {
+  return prisma.entryHolidayPrice.findMany({ where: { objectEntryId } });
+};

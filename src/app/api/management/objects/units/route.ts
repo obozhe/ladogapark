@@ -1,5 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { CreateObjectUnitDTO } from './../../../../../server/objects/units/types';
-import { NextResponse, NextRequest } from 'next/server';
 import { createObjectUnit, getObjectUnitsByObjectEntryId } from 'server/objects/units/UnitsCollection';
 
 export async function GET(req: NextRequest) {
@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as CreateObjectUnitDTO;
+  const createdUnit = await createObjectUnit(body);
 
-  return NextResponse.json(await createObjectUnit(body));
+  return NextResponse.json(await getObjectUnitsByObjectEntryId(createdUnit.objectEntryId));
 }

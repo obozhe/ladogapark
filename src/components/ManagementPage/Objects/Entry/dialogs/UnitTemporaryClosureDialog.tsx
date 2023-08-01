@@ -3,14 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs, { Dayjs } from 'dayjs';
 import { Controller, useForm } from 'react-hook-form';
-import useSWR from 'swr';
 import { z } from 'zod';
 import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
 import DateSelects from 'ui/DateSelects';
 import Dialog from 'ui/Dialog';
-
-const getAllUnitsNumbers = (url: string) => axios.get<string[]>(url);
 
 export const UnitTemporaryClosureDialog = () => {
   const {
@@ -47,7 +44,7 @@ export const UnitTemporaryClosureDialog = () => {
     if (isValid) {
       axios
         .post('/management/objects/units/temporary-closure', { ...getValues(), unitId })
-        .then((res) => onClose(res.id));
+        .then((data) => onClose(data));
 
       close();
     }

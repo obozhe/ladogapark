@@ -5,10 +5,14 @@ import dayjs from 'dayjs';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import Skeleton from 'react-loading-skeleton';
+import useSWR from 'swr';
 import { z } from 'zod';
-import { ObjectEntry } from '@prisma/client';
+import { EntryFuturePrice, EntryHolidayPrice, ObjectEntry } from '@prisma/client';
 import Field from 'components/ManagementPage/Field';
 import axios from 'core/axios';
+import { DateFormats } from 'core/enums/DateFormats';
+import { formatDate } from 'core/helpers/date';
 import formatToRuble from 'core/helpers/number';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
@@ -49,6 +53,11 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     },
   });
 
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    `/management/objects/prices/future?objectEntryId=${objectEntry.id}`,
+    (url: string) => axios.get<EntryFuturePrice[]>(url)
+  );
+
   const toggleCreationForm = () => {
     setIsAddFuturePriceShown(!isAddFuturePriceShown);
     reset();
@@ -56,7 +65,9 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
 
   const onCreateFuturePrice = () => {
     if (isValid) {
-      axios.post('/management/objects/prices/future', { ...schema.parse(getValues()), objectEntryId: objectEntry.id });
+      axios
+        .post('/management/objects/prices/future', { ...schema.parse(getValues()), objectEntryId: objectEntry.id })
+        .then((data) => mutate(data, { revalidate: false }));
       setIsAddFuturePriceShown(false);
     }
   };
@@ -65,15 +76,29 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     <>
       <div className="mt-2 border-t pt-1 grid grid-cols-[2fr,_1fr,_1fr,_36px] items-center gap-2">
         <div></div>
-        <div className="text-gray-500">Будни</div>
-        <div className="text-gray-500">Выходные</div>
+        <div className="text-gray-500 text-sm">Будни</div>
+        <div className="text-gray-500 text-sm">Выходные</div>
         <Button className="justify-self-end" isIconButton onClick={toggleCreationForm}>
           <Plus />
         </Button>
         <div>Текущие цены</div>
-        <div>{formatToRuble(objectEntry.priceWeekdays)}</div>
-        <div className="col-span-2">{formatToRuble(objectEntry.priceWeekends)}</div>
+        <div className="text-success">{formatToRuble(objectEntry.priceWeekdays)}</div>
+        <div className="col-span-2 text-success">{formatToRuble(objectEntry.priceWeekends)}</div>
+        {isLoading || isValidating ? (
+          <div className="col-span-4">
+            <Skeleton />
+          </div>
+        ) : (
+          data?.map(({ start, priceWeekday, priceWeekend }) => (
+            <>
+              <div>C {formatDate(start, DateFormats.Date)}</div>
+              <div className="text-success">{formatToRuble(priceWeekday)}</div>
+              <div className="col-span-2 text-success">{formatToRuble(priceWeekend)}</div>
+            </>
+          ))
+        )}
       </div>
+
       <AccordionTransition show={isAddFuturePriceShown}>
         <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
           <div className="mb-2">Создать будущую цену</div>
@@ -145,6 +170,11 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     },
   });
 
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    `/management/objects/prices/holiday?objectEntryId=${objectEntry.id}`,
+    (url: string) => axios.get<EntryHolidayPrice[]>(url)
+  );
+
   const toggleCreationForm = () => {
     setIsAddHolidayPriceShown(!isAddHolidayPriceShown);
     reset();
@@ -152,18 +182,41 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
 
   const onCreateFuturePrice = () => {
     if (isValid) {
-      axios.post('/management/objects/prices/holiday', { ...schema.parse(getValues()), objectEntryId: objectEntry.id });
+      axios
+        .post('/management/objects/prices/holiday', { ...schema.parse(getValues()), objectEntryId: objectEntry.id })
+        .then((data) => mutate(data, { revalidate: false }));
       setIsAddHolidayPriceShown(false);
     }
   };
 
   return (
     <>
-      <div className="mt-2 font-semibold flex items-center justify-between border-t pt-1">
-        Праздничные цены
-        <Button isIconButton onClick={toggleCreationForm}>
-          <Plus />
-        </Button>
+      <div className="mt-2 border-t pt-1">
+        <div className="flex items-center justify-between">
+          <span>Праздничные цены</span>
+          <Button isIconButton onClick={toggleCreationForm}>
+            <Plus />
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-1">
+          <div className="text-gray-500 text-sm">Начало</div>
+          <div className="text-gray-500 text-sm">Конец</div>
+          <div className="text-gray-500 text-sm">Цена</div>
+          {isLoading || isValidating ? (
+            <div className="col-span-4">
+              <Skeleton />
+            </div>
+          ) : (
+            data?.map(({ start, end, price }) => (
+              <>
+                <div>{formatDate(start, DateFormats.Date)}</div>
+                <div>{formatDate(end, DateFormats.Date)}</div>
+                <div className="text-success">{formatToRuble(price)}</div>
+              </>
+            ))
+          )}
+        </div>
       </div>
       <AccordionTransition show={isAddHolidayPriceShown}>
         <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
@@ -216,10 +269,20 @@ export default function PricesCard({ objectEntry }: Props) {
   return (
     <Card title="Стоимость">
       <div className="flex flex-col gap-1">
-        <Field label="Предоплата" value={objectEntry.prepay ? objectEntry.prepay + '%' : 'Нет'} rightAlignment />
+        <Field
+          label="Предоплата"
+          value={objectEntry.prepay ? <span className="text-success">{objectEntry.prepay}%</span> : 'Нет'}
+          rightAlignment
+        />
         <Field
           label="Доп. место"
-          value={objectEntry.extraSeats ? formatToRuble(objectEntry.priceExtraSeat) : 'Нет'}
+          value={
+            objectEntry.extraSeats ? (
+              <span className="text-success">{formatToRuble(objectEntry.priceExtraSeat)}</span>
+            ) : (
+              'Нет'
+            )
+          }
           rightAlignment
         />
         <CurrentPricesSection objectEntry={objectEntry} />
