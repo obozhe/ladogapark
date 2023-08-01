@@ -1,11 +1,13 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { TextFieldProps } from '@mui/material';
+import { DateRangePicker as DateRangePickerLib } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker as DatePickerMUI } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker as DatePickerLib } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import '../../../public/datePicker.css';
+import { Input } from './Input';
 
 type DatePickerRangeProps = {
   start: string;
@@ -24,38 +26,38 @@ type DatePickerProps = {
 
 // TODO: hide error and styling
 
-// const CustomInput = ({
-//   label,
-//   value,
-//   onChange,
-//   onBlur,
-//   onClick,
-//   onFocus,
-//   onKeyDown,
-//   onMouseUp,
-//   onPaste,
-//   id,
-//   //@ts-ignore
-//   InputProps: { ref },
-// }: TextFieldProps) => {
-//   return (
-//     <Input
-//       onClick={onClick}
-//       placeholder={label as string}
-//       value={value as string}
-//       onChange={onChange}
-//       onFocus={onFocus}
-//       onKeyDown={onKeyDown}
-//       ref={ref}
-//       onMouseUp={onMouseUp}
-//       onPaste={onPaste}
-//       onBlur={onBlur}
-//       autoComplete="off"
-//       _size="xxl"
-//       id={id}
-//     />
-//   );
-// };
+const CustomInput = ({
+  label,
+  value,
+  onChange,
+  onBlur,
+  onClick,
+  onFocus,
+  onKeyDown,
+  onMouseUp,
+  onPaste,
+  id,
+  //@ts-ignore
+  InputProps: { ref },
+}: TextFieldProps) => {
+  return (
+    <Input
+      onClick={onClick}
+      placeholder={label as string}
+      value={value as string}
+      onChange={onChange}
+      onFocus={onFocus}
+      onKeyDown={onKeyDown}
+      ref={ref}
+      onMouseUp={onMouseUp}
+      onPaste={onPaste}
+      onBlur={onBlur}
+      autoComplete="off"
+      _size="xxl"
+      id={id}
+    />
+  );
+};
 
 const removeLicenseNotification = () => {
   setTimeout(() => {
@@ -67,22 +69,22 @@ const removeLicenseNotification = () => {
   }, 0);
 };
 
-const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
+const DatePickerRangeMUI = ({ start, end }: DatePickerRangeProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <DateRangePicker
+      <DateRangePickerLib
         localeText={{ start, end }}
-        slotProps={{ fieldSeparator: { children: '' }, textField: { margin: 'none' } }}
+        slotProps={{ fieldSeparator: { children: '' } }}
         onOpen={removeLicenseNotification}
       />
     </LocalizationProvider>
   );
 };
 
-const DatePicker = ({ label, value, onChange, disablePast = true, minDate = dayjs(), error }: DatePickerProps) => {
+const DatePickerMUI = ({ label, value, onChange, disablePast = true, minDate = dayjs(), error }: DatePickerProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <DatePickerMUI<dayjs.Dayjs>
+      <DatePickerLib<dayjs.Dayjs>
         value={value}
         minDate={minDate}
         disablePast={disablePast}
@@ -96,4 +98,31 @@ const DatePicker = ({ label, value, onChange, disablePast = true, minDate = dayj
   );
 };
 
-export { DatePicker, DatePickerRange };
+const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerProps) => {
+  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+    <DatePickerLib<dayjs.Dayjs>
+      value={value}
+      minDate={minDate}
+      className="w-full"
+      slots={{ textField: CustomInput }}
+      label={label}
+      onChange={onChange}
+      onOpen={removeLicenseNotification}
+    />
+  </LocalizationProvider>;
+};
+
+const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+      <DateRangePickerLib
+        localeText={{ start, end }}
+        slots={{ textField: CustomInput }}
+        slotProps={{ fieldSeparator: { children: '' } }}
+        onOpen={removeLicenseNotification}
+      />
+    </LocalizationProvider>
+  );
+};
+
+export { DatePicker, DatePickerMUI, DatePickerRangeMUI, DatePickerRange };

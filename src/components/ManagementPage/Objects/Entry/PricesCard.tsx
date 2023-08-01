@@ -13,7 +13,7 @@ import formatToRuble from 'core/helpers/number';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
-import { DatePicker } from 'ui/DatePicker';
+import { DatePickerMUI } from 'ui/DatePicker';
 import { ControlledInputMUI } from 'ui/Input';
 
 type SectionProps = {
@@ -78,7 +78,7 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
         <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
           <div className="mb-2">Создать будущую цену</div>
           <div className="mb-2">
-            <DatePicker
+            <DatePickerMUI
               error={errors.start?.message}
               minDate={dayjs().add(1, 'day')}
               label="Начало периода"
@@ -172,7 +172,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
             <ControlledInputMUI control={control} name="price" label="Цена" type="number" />
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <DatePicker
+            <DatePickerMUI
               error={errors.start?.message}
               label="Начало"
               onChange={(value) =>
@@ -184,7 +184,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
               }
               value={getValues().start}
             />
-            <DatePicker
+            <DatePickerMUI
               minDate={getValues().start}
               error={errors.end?.message}
               label="Конец"
