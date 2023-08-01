@@ -11,3 +11,12 @@ const objectEntryWithGroup = Prisma.validator<Prisma.ObjectEntryArgs>()({
   include: { objectGroup: true },
 });
 export type ObjectEntryWithGroup = Prisma.ObjectEntryGetPayload<typeof objectEntryWithGroup>;
+
+export type CreateFuturePriceDTO = {
+  objectEntryId: string;
+  priceWeekend: number;
+  priceWeekday: number;
+  start: string;
+};
+
+export type CreateHolidayPriceDTO = { objectEntryId: string; price: number; start: string; end: string };

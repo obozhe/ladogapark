@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import { getSelectOptions } from 'core/helpers/date';
-import Input from './Input';
+import { Input } from './Input';
 import Select from './Select';
 
 type Props = {

@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
 import Dialog from 'ui/Dialog';
-import Input from 'ui/Input';
+import { Input } from 'ui/Input';
 
 const getAllUnitsNumbers = (url: string) => axios.get<string[]>(url);
 

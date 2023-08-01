@@ -17,7 +17,7 @@ import { twMerge } from 'tailwind-merge';
 import { useDidMountEffect } from 'hooks/useDidMountEffect';
 import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import Button from 'ui/Button';
-import Input from 'ui/Input';
+import { Input } from 'ui/Input';
 import Loader from 'ui/Loader';
 import Select from 'ui/Select';
 import Tooltip from 'ui/Tooltip';

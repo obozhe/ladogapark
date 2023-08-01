@@ -40,7 +40,6 @@ export default function UnitsCard({ objectEntryId }: Props) {
     data: units = [],
     isLoading,
     mutate,
-    isValidating,
   } = useSWR(`/management/objects/units?objectEntryId=${objectEntryId}`, getUnits);
 
   const deleteTemporaryClosure = async (id: string) => {

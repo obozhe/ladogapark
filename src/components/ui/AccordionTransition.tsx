@@ -1,19 +1,19 @@
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { Transition } from '@headlessui/react';
 
-type Props = { show: boolean; children: JSX.Element };
+type Props = { show: boolean; children: ReactNode; maxHeight?: number };
 
-export default function AccordionTransition({ show, children }: Props) {
+export default function AccordionTransition({ show, children, maxHeight = 300 }: Props) {
+  const maxHeightClass = `max-h-[${maxHeight}px]`;
   return (
     <Transition
       as={Fragment}
-      appear
       show={show}
       enter="ease-out duration-300"
       enterFrom="max-h-0"
-      enterTo="max-h-[100px]"
-      leave="ease-in duration-200"
-      leaveFrom="max-h-[100px]"
+      enterTo={maxHeightClass}
+      leave="ease-in duration-300"
+      leaveFrom={maxHeightClass}
       leaveTo="max-h-0"
     >
       <div className="overflow-hidden">{children}</div>

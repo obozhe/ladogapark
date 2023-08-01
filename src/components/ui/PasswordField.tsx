@@ -1,9 +1,8 @@
 import { Eye, EyeOff } from 'lucide-react';
 import React from 'react';
 import { ForwardedRef, InputHTMLAttributes, useState } from 'react';
-
 import Button from './Button';
-import Input from './Input';
+import { Input } from './Input';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;

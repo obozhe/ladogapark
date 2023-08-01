@@ -1,4 +1,6 @@
+import dayjs from 'dayjs';
 import prisma from 'core/prisma';
+import { CreateFuturePriceDTO, CreateHolidayPriceDTO } from './types';
 
 export const getObjectGroupById = (id: string) => {
   return prisma.objectGroup.findUnique({ where: { id } });
@@ -17,5 +19,15 @@ export const getObjectGroupsWithObjects = () => {
     include: {
       objectEntries: true,
     },
+  });
+};
+
+export const createEntryFuturePrice = (data: CreateFuturePriceDTO) => {
+  return prisma.entryFuturePrice.create({ data: { ...data, start: dayjs(data.start).toDate() } });
+};
+
+export const createEntryHolidayPrice = (data: CreateHolidayPriceDTO) => {
+  return prisma.entryHolidayPrice.create({
+    data: { ...data, start: dayjs(data.start).toDate(), end: dayjs(data.end).toDate() },
   });
 };

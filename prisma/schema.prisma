@@ -101,10 +101,9 @@ model EntryFuturePrice {
   id            String      @id @default(auto()) @map("_id") @db.ObjectId
   objectEntryId String      @db.ObjectId
   objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  priceWeekdays Float
-  priceWeekends Float
+  priceWeekday  Float
+  priceWeekend  Float
   start         DateTime
-  end           DateTime
 }
 
 model Booking {
