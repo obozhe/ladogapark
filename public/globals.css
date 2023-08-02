@@ -24,7 +24,7 @@
   }
 
   h3 {
-    @apply font-semibold text-lg font-inter;
+    @apply font-semibold font-inter;
   }
 }
 

@@ -30,7 +30,7 @@ const theme = createTheme({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
-      <div className="h-full grid grid-cols-[260px,_1fr]">
+      <div className="h-full grid grid-cols-[260px,_1fr] text-sm">
         <div className="bg-black relative">
           <div className="fixed w-[260px] p-4">
             <NavTabs tabs={tabs} vertical />

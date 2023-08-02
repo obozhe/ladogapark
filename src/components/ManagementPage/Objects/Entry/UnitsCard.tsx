@@ -106,7 +106,7 @@ export default function UnitsCard({ objectEntryId }: Props) {
         </Button>
       }
     >
-      <div className="flex flex-col gap-1 min-w-[350px]">
+      <div className="flex flex-col gap-1">
         {isLoading || isUpdating || isValidating ? (
           <Skeleton count={3} height={40} />
         ) : (
