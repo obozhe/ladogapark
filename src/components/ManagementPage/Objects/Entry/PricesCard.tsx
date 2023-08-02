@@ -90,8 +90,7 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     <>
       <div className="mt-2 border-t pt-1">
         <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2 items-center">
-          <div></div>
-          <div className="text-gray-500 text-sm">Будни</div>
+          <div className="text-gray-500 text-sm col-start-2">Будни</div>
           <div className="text-gray-500 text-sm">Выходные</div>
           <Button className="justify-self-end" isIconButton onClick={toggleCreationForm}>
             <Plus />
