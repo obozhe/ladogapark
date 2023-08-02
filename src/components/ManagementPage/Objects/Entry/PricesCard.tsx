@@ -98,7 +98,7 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2">
+        <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2 mb-2">
           <div>Текущие цены</div>
           <div className="text-success">{formatToRuble(objectEntry.priceWeekdays)}</div>
           <div className="col-span-2 text-success">{formatToRuble(objectEntry.priceWeekends)}</div>
