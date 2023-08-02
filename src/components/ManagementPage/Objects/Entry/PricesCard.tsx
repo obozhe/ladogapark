@@ -82,6 +82,8 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
   const deleteFuturePrice = async (id: string) => {
     setIsUpdating(true);
     const data = await axios.delete('/management/objects/prices/future', { data: { id } });
+    mutate(data, { revalidate: false });
+    setIsUpdating(false);
   };
 
   return (
