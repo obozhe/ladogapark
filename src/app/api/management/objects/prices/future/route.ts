@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEntryFuturePrices } from './../../../../../../server/objects/ObjectCollection';
-import { createEntryFuturePrice } from 'server/objects/ObjectCollection';
+import { createEntryFuturePrice, deleteEntryFuturePrice, getEntryFuturePrices } from 'server/objects/ObjectCollection';
 import { CreateFuturePriceDTO } from 'server/objects/types';
 
 export async function POST(req: NextRequest) {
@@ -17,4 +16,14 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json(await getEntryFuturePrices(objectEntryId));
+}
+
+export async function DELETE(req: NextRequest) {
+  const { id } = (await req.json()) as { id: string };
+  if (!id) {
+    throw new Error('Not valid id');
+  }
+
+  const deletedEntryFuturePrice = await deleteEntryFuturePrice(id);
+  return NextResponse.json(await getEntryFuturePrices(deletedEntryFuturePrice.objectEntryId));
 }

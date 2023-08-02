@@ -39,3 +39,11 @@ export const getEntryFuturePrices = (objectEntryId: string) => {
 export const getEntryHolidayPrices = (objectEntryId: string) => {
   return prisma.entryHolidayPrice.findMany({ where: { objectEntryId } });
 };
+
+export const deleteEntryFuturePrice = (id: string) => {
+  return prisma.entryFuturePrice.delete({ where: { id } });
+};
+
+export const deleteEntryHolidayPrice = (id: string) => {
+  return prisma.entryHolidayPrice.delete({ where: { id } });
+};

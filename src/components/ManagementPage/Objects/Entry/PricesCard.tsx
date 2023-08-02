@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Skeleton from 'react-loading-skeleton';
@@ -26,6 +26,7 @@ type SectionProps = {
 
 const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddFuturePriceShown, setIsAddFuturePriceShown] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const schema = z.object({
     start: z
@@ -63,38 +64,64 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     reset();
   };
 
-  const onCreateFuturePrice = () => {
+  const onCreateFuturePrice = async () => {
     if (isValid) {
-      axios
-        .post('/management/objects/prices/future', { ...schema.parse(getValues()), objectEntryId: objectEntry.id })
-        .then((data) => mutate(data, { revalidate: false }));
+      setIsUpdating(true);
       setIsAddFuturePriceShown(false);
+
+      const data = await axios.post('/management/objects/prices/future', {
+        ...schema.parse(getValues()),
+        objectEntryId: objectEntry.id,
+      });
+
+      mutate(data, { revalidate: false });
+      setIsUpdating(false);
     }
+  };
+
+  const deleteFuturePrice = async (id: string) => {
+    setIsUpdating(true);
+    const data = await axios.delete('/management/objects/prices/future', { data: { id } });
   };
 
   return (
     <>
-      <div className="mt-2 border-t pt-1 grid grid-cols-[2fr,_1fr,_1fr,_36px] items-center gap-2">
-        <div></div>
-        <div className="text-gray-500 text-sm">Будни</div>
-        <div className="text-gray-500 text-sm">Выходные</div>
-        <Button className="justify-self-end" isIconButton onClick={toggleCreationForm}>
-          <Plus />
-        </Button>
-        <div>Текущие цены</div>
-        <div className="text-success">{formatToRuble(objectEntry.priceWeekdays)}</div>
-        <div className="col-span-2 text-success">{formatToRuble(objectEntry.priceWeekends)}</div>
-        {isLoading || isValidating ? (
+      <div className="mt-2 border-t pt-1">
+        <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2 items-center">
+          <div></div>
+          <div className="text-gray-500 text-sm">Будни</div>
+          <div className="text-gray-500 text-sm">Выходные</div>
+          <Button className="justify-self-end" isIconButton onClick={toggleCreationForm}>
+            <Plus />
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2">
+          <div>Текущие цены</div>
+          <div className="text-success">{formatToRuble(objectEntry.priceWeekdays)}</div>
+          <div className="col-span-2 text-success">{formatToRuble(objectEntry.priceWeekends)}</div>
+        </div>
+
+        {isLoading || isValidating || isUpdating ? (
           <div className="col-span-4">
             <Skeleton />
           </div>
         ) : (
-          data?.map(({ start, priceWeekday, priceWeekend }) => (
-            <>
+          data?.map(({ start, priceWeekday, priceWeekend, id }) => (
+            <div key={id} className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2 group">
               <div>C {formatDate(start, DateFormats.Date)}</div>
               <div className="text-success">{formatToRuble(priceWeekday)}</div>
-              <div className="col-span-2 text-success">{formatToRuble(priceWeekend)}</div>
-            </>
+              <div className="text-success">{formatToRuble(priceWeekend)}</div>
+              <Button
+                className="justify-self-end opacity-0 transition group-hover:opacity-100"
+                isIconButton
+                size="xxs"
+                color="error"
+                onClick={() => deleteFuturePrice(id)}
+              >
+                <Trash2 />
+              </Button>
+            </div>
           ))
         )}
       </div>
@@ -135,17 +162,20 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
 
 const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddHolidayPriceShown, setIsAddHolidayPriceShown] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const today = dayjs().startOf('day');
 
   const schema = z
     .object({
       start: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(dayjs()), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today, 'ms'), 'Ввведите дату в будущем'),
       end: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(dayjs()), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today, 'ms'), 'Ввведите дату в будущем'),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
     .refine((data) => data.start && data.end && data.start.isBefore(data.end), {
@@ -164,8 +194,8 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      start: dayjs(),
-      end: dayjs(),
+      start: today,
+      end: today,
       price: '0',
     },
   });
@@ -180,18 +210,31 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     reset();
   };
 
-  const onCreateFuturePrice = () => {
+  const onCreateFuturePrice = async () => {
     if (isValid) {
-      axios
-        .post('/management/objects/prices/holiday', { ...schema.parse(getValues()), objectEntryId: objectEntry.id })
-        .then((data) => mutate(data, { revalidate: false }));
+      setIsUpdating(true);
       setIsAddHolidayPriceShown(false);
+
+      const data = await axios.post('/management/objects/prices/holiday', {
+        ...schema.parse(getValues()),
+        objectEntryId: objectEntry.id,
+      });
+
+      mutate(data, { revalidate: false });
+      setIsUpdating(false);
     }
+  };
+
+  const deleteHolidayPrice = async (id: string) => {
+    setIsUpdating(true);
+    const data = await axios.delete('/management/objects/prices/holiday', { data: { id } });
+    mutate(data, { revalidate: false });
+    setIsUpdating(false);
   };
 
   return (
     <>
-      <div className="mt-2 border-t pt-1">
+      <div className="mt-2 border-t pt-1 flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <span>Праздничные цены</span>
           <Button isIconButton onClick={toggleCreationForm}>
@@ -199,24 +242,32 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1">
           <div className="text-gray-500 text-sm">Начало</div>
           <div className="text-gray-500 text-sm">Конец</div>
-          <div className="text-gray-500 text-sm">Цена</div>
-          {isLoading || isValidating ? (
-            <div className="col-span-4">
-              <Skeleton />
-            </div>
-          ) : (
-            data?.map(({ start, end, price }) => (
-              <>
-                <div>{formatDate(start, DateFormats.Date)}</div>
-                <div>{formatDate(end, DateFormats.Date)}</div>
-                <div className="text-success">{formatToRuble(price)}</div>
-              </>
-            ))
-          )}
+          <div className="text-gray-500 text-sm col-span-2">Цена</div>
         </div>
+
+        {isLoading || isValidating || isUpdating ? (
+          <Skeleton />
+        ) : (
+          data?.map(({ start, end, price, id }) => (
+            <div key={id} className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1 group">
+              <div>{formatDate(start, DateFormats.Date)}</div>
+              <div>{formatDate(end, DateFormats.Date)}</div>
+              <div className="text-success">{formatToRuble(price)}</div>
+              <Button
+                isIconButton
+                size="xxs"
+                color="error"
+                className="opacity-0 transition group-hover:opacity-100"
+                onClick={() => deleteHolidayPrice(id)}
+              >
+                <Trash2 />
+              </Button>
+            </div>
+          ))
+        )}
       </div>
       <AccordionTransition show={isAddHolidayPriceShown}>
         <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
