@@ -21,7 +21,8 @@ type DatePickerProps = {
   disablePast?: boolean;
   value?: dayjs.Dayjs | null;
   minDate?: dayjs.Dayjs;
-  error?: string;
+  error?: boolean;
+  helperText?: string;
 };
 
 // TODO: hide error and styling
@@ -81,7 +82,15 @@ const DatePickerRangeMUI = ({ start, end }: DatePickerRangeProps) => {
   );
 };
 
-const DatePickerMUI = ({ label, value, onChange, disablePast = true, minDate = dayjs(), error }: DatePickerProps) => {
+const DatePickerMUI = ({
+  label,
+  value,
+  onChange,
+  disablePast = true,
+  minDate = dayjs(),
+  error,
+  helperText,
+}: DatePickerProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
       <DatePickerLib<dayjs.Dayjs>
@@ -89,7 +98,7 @@ const DatePickerMUI = ({ label, value, onChange, disablePast = true, minDate = d
         minDate={minDate}
         disablePast={disablePast}
         className="w-full"
-        slotProps={{ textField: { variant: 'outlined', size: 'small', error: !!error, helperText: error } }}
+        slotProps={{ textField: { variant: 'outlined', size: 'small', error, helperText } }}
         label={label}
         onChange={onChange}
         onOpen={removeLicenseNotification}

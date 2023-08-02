@@ -14,6 +14,7 @@ import axios from 'core/axios';
 import { DateFormats } from 'core/enums/DateFormats';
 import { formatDate } from 'core/helpers/date';
 import formatToRuble from 'core/helpers/number';
+import { FormHelperText } from '@mui/material';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
@@ -28,11 +29,17 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddFuturePriceShown, setIsAddFuturePriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const { data, isLoading, isValidating, mutate } = useSWR(
+    `/management/objects/prices/future?objectEntryId=${objectEntry.id}`,
+    (url: string) => axios.get<EntryFuturePrice[]>(url)
+  );
+
   const schema = z.object({
     start: z
       .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
       .nullable()
-      .refine((date) => date && date.isAfter(dayjs(), 'day'), 'Ввведите дату в будущем'),
+      .refine((date) => date && date.isAfter(dayjs(), 'day'), 'Ввведите дату в будущем')
+      .refine((date) => !data?.some(({ start }) => dayjs(start).isSame(date, 'day')), 'Эта дата уже существует'),
     priceWeekday: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ввведите число > 0'),
     priceWeekend: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ввведите число > 0'),
   });
@@ -53,11 +60,6 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
       priceWeekend: '0',
     },
   });
-
-  const { data, isLoading, isValidating, mutate } = useSWR(
-    `/management/objects/prices/future?objectEntryId=${objectEntry.id}`,
-    (url: string) => axios.get<EntryFuturePrice[]>(url)
-  );
 
   const toggleCreationForm = () => {
     setIsAddFuturePriceShown(!isAddFuturePriceShown);
@@ -164,25 +166,35 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
 const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddHolidayPriceShown, setIsAddHolidayPriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-
-  const today = dayjs().startOf('day');
+  const today = dayjs();
 
   const schema = z
     .object({
       start: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(today, 'ms'), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today.startOf('day')), 'Ввведите дату в будущем'),
       end: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(today, 'ms'), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today.startOf('day')), 'Ввведите дату в будущем'),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
-    .refine((data) => data.start && data.end && data.start.isBefore(data.end), {
-      message: 'начало > конец',
-      path: ['end'],
-    });
+    .refine(({ start, end }) => start && end && (start.isBefore(end) || start.isSame(end, 'day')), {
+      message: 'Начало > Конец',
+      path: ['global'],
+    })
+    .refine(
+      (formData) =>
+        (formData.start &&
+          formData.end &&
+          data?.every(({ start }) => formData.start?.isBefore(start, 'day') && formData.end?.isBefore(start, 'day'))) ||
+        data?.every(({ end }) => formData.start?.isAfter(end, 'day') && formData.end?.isAfter(end, 'day')),
+      {
+        message: 'Периоды не могут пересекаться',
+        path: ['periodError'],
+      }
+    );
 
   const {
     reset,
@@ -195,9 +207,10 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      start: today,
-      end: today,
+      start: dayjs(),
+      end: dayjs(),
       price: '0',
+      periodError: '',
     },
   });
 
@@ -278,7 +291,8 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <DatePickerMUI
-              error={errors.start?.message}
+              error={!!errors.start || !!errors.periodError}
+              helperText={errors.start?.message}
               label="Начало"
               onChange={(value) =>
                 setValue('start', value as dayjs.Dayjs, {
@@ -291,7 +305,8 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
             />
             <DatePickerMUI
               minDate={getValues().start}
-              error={errors.end?.message}
+              error={!!errors.end || !!errors.periodError}
+              helperText={errors.end?.message}
               label="Конец"
               onChange={(value) =>
                 setValue('end', value as dayjs.Dayjs, {
@@ -303,6 +318,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
               value={getValues().end}
             />
           </div>
+          <FormHelperText error>{errors.periodError?.message}</FormHelperText>
           <div className="flex flex-row gap-2 w-full justify-end">
             <Button onClick={() => setIsAddHolidayPriceShown(false)}>Отмена</Button>
             <Button color="primary" type="submit">
