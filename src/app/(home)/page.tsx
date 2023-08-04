@@ -23,9 +23,9 @@ const Search = async () => {
   const weather = await getWeather();
 
   return (
-    <section className="relative flex flex-col justify-center items-center gap-14 pt-[153px] pb-[253px] ">
-      <div className="bg-home-image absolute top-0 w-full h-full -z-10 brightness-[35%]" />
-      <div className="text-white text-6xl text-center font-semibold">
+    <section className="relative flex flex-col justify-center items-center gap-14 pt-[153px] pb-[253px] px-2">
+      <div className="bg-home-image absolute top-0 w-full h-full -z-10 brightness-[35%] bg-center bg-cover" />
+      <div className="text-white text-3xl text-left md:text-6xl md:text-center font-semibold">
         <p>Аренда домов на берегу</p>
         <p>Ладожского озера</p>
       </div>
@@ -70,7 +70,7 @@ const Services = () => {
   return (
     <section className="flex flex-col gap-4">
       <h2>Услуги</h2>
-      <div className="grid grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
         {services.map((service) => {
           return (
             <div key={service.title} className="p-5 shadow font-semibold flex flex-col">
@@ -123,7 +123,7 @@ const Faq = () => {
   return (
     <section>
       <h2 className="mb-10">FAQ</h2>
-      <div className="pl-[35%]">
+      <div className="md:pl-[35%]">
         {questions.map((question) => {
           const title = <span className="font-semibold text-2xl">{question.title}</span>;
           const description = question.description;
@@ -167,17 +167,17 @@ const Photos = () => {
 
 const Contacts = () => {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col md:gap-4">
       <h2>Контакты</h2>
-      <div className="flex justify-between font-semibold text-xl">
+      <div className="flex justify-between flex-col gap-3 md:flex-row font-semibold text-xl">
         <div className="flex flex-col gap-10">
-          <div className="flex gap-10 items-center">
+          <div className="flex gap-5 md:gap-10 items-center">
             <span>
               <EmailIcon />
             </span>
             <span>booking@ladogapark.ru</span>
           </div>
-          <div className="flex gap-10 items-center">
+          <div className="flex gap-5 md:gap-10 items-center">
             <span>
               <PhoneIcon />
             </span>
@@ -186,7 +186,7 @@ const Contacts = () => {
               <span>+7 (931) 213-00-48</span>
             </div>
           </div>
-          <div className="flex gap-10 items-center">
+          <div className="flex gap-5 md:gap-10 items-center">
             <span>
               <LocationIcon />
             </span>
@@ -206,7 +206,7 @@ export default async function Home() {
   return (
     <main>
       <Search />
-      <div className="flex flex-col gap-36 pt-[150px] layout-container">
+      <div className="flex flex-col gap-36 pt-[150px] layout-container px-2">
         <Houses objectEntries={objectEntries} />
         <Services />
         <Faq />

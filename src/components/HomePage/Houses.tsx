@@ -1,11 +1,11 @@
 'use client';
 
-import { ObjectEntry } from '@prisma/client';
 import HumanIcon from 'icons/human.svg';
 import Link from 'next/link';
 import { useState } from 'react';
-import { ObjectTypes } from 'server/objects/types';
 import { twMerge } from 'tailwind-merge';
+import { ObjectEntry } from '@prisma/client';
+import { ObjectTypes } from 'server/objects/types';
 
 type Props = {
   objectEntries: ObjectEntry[];
@@ -25,7 +25,7 @@ const Houses = ({ objectEntries }: Props) => {
   return (
     <section className="flex flex-col gap-8">
       <h2>Каталог домов</h2>
-      <div className="flex justify-between">
+      <div className="flex justify-between flex-col md:flex-row gap-10">
         <div className="flex gap-5">
           {rentOptions.map((option) => {
             return (
@@ -33,7 +33,7 @@ const Houses = ({ objectEntries }: Props) => {
                 key={option.type}
                 onClick={() => sentActiveOption(option)}
                 className={twMerge(
-                  'border-3 rounded-md border-black py-1 px-9 font-semibold text-lg cursor-pointer',
+                  'border-3 rounded-md border-black py-1 px-2 font-semibold text-lg cursor-pointer',
                   activeOption === option && 'bg-primary text-white border-primary'
                 )}
               >
@@ -42,7 +42,7 @@ const Houses = ({ objectEntries }: Props) => {
             );
           })}
         </div>
-        <div className="flex flex-col font-semibold text-xs font-inter text-black gap-1">
+        <div className="flex flex-col font-semibold text-xs font-inter text-black gap-1 -order-1 md:order-1">
           <div className="flex gap-2 items-center">
             <div className="bg-secondary w-4 h-4" />
             <span>Пятница - Воскресенье</span>
@@ -53,7 +53,7 @@ const Houses = ({ objectEntries }: Props) => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-9 row-auto">
+      <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-9">
         {objectEntries.map((entry) => {
           return (
             <Link
@@ -62,7 +62,7 @@ const Houses = ({ objectEntries }: Props) => {
               key={entry.id}
             >
               <div className="absolute top-0 h-full w-full brightness-[60%] -z-10 bg-house-image bg-auto bg-left-top" />
-              <div className="flex justify-between p-4">
+              <div className="flex justify-between p-2 md:p-4">
                 <div className="flex items-center">
                   <span>
                     <HumanIcon />
@@ -74,7 +74,7 @@ const Houses = ({ objectEntries }: Props) => {
                   <span className="bg-secondary rounded-md p-1 text-xs">{entry.priceWeekends} ₽</span>
                 </div>
               </div>
-              <span className="p-4 font-semibold text-4xl">{entry.title}</span>
+              <span className="p-2 md:p-4 font-semibold text-4xl">{entry.title}</span>
             </Link>
           );
         })}
