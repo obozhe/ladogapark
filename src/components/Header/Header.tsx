@@ -1,3 +1,5 @@
+'use client';
+
 import BurgerIcon from 'icons/burger.svg';
 import InstagramIcon from 'icons/instagram.svg';
 import LogoMobileIcon from 'icons/logo-mobile.svg';
@@ -6,20 +8,29 @@ import TelegramIcon from 'icons/telegram.svg';
 import VkIcon from 'icons/vk.svg';
 import WhatsAppIcon from 'icons/whatsapp.svg';
 import Link from 'next/link';
+import DropDown from 'ui/Dropdown';
+
+const navLinks = [
+  { link: '/booking', title: 'Бронирование' },
+  { link: '/map', title: 'Карта парка' },
+  { link: '/services', title: 'Услуги' },
+  { link: '/photos', title: 'Фотогалерея' },
+  { link: '/reviews', title: 'Отзывы' },
+  { link: '/contacts', title: 'Контакты' },
+];
 
 const Header = () => {
   return (
-    <header className="flex py-8 justify-between layout-container absolute lg:static w-full p-3">
+    <header className="flex py-8 justify-between layout-container absolute z-10 lg:static w-full p-3">
       <div className="flex gap-24">
         <LogoMobileIcon className="lg:hidden" />
         <LogoIcon className="hidden lg:block" />
         <nav className="lg:self-end lg:font-bold lg:flex lg:gap-11 hidden">
-          <Link href="/booking">Бронирование</Link>
-          <Link href="/map">Карта парка</Link>
-          <Link href="/services">Услуги</Link>
-          <Link href="/photos">Фотогалерея</Link>
-          <Link href="/reviews">Отзывы</Link>
-          <Link href="/contacts">Контакты</Link>
+          {navLinks.map((navLink) => (
+            <Link href={navLink.link} key={navLink.link}>
+              {navLink.title}
+            </Link>
+          ))}
         </nav>
       </div>
       <div className="lg:flex lg:flex-col lg:font-semibold lg:justify-between lg:font-inter hidden">
@@ -32,7 +43,16 @@ const Header = () => {
         <span>+7 (929) 111-01-51</span>
         <span>+7 (929) 111-01-51</span>
       </div>
-      <BurgerIcon className="lg:hidden" />
+
+      <DropDown
+        className="lg:hidden"
+        menuButton={<BurgerIcon />}
+        items={navLinks.map((navLink) => (
+          <Link href={navLink.link} key={navLink.link} className="font-bold">
+            {navLink.title}
+          </Link>
+        ))}
+      />
     </header>
   );
 };
