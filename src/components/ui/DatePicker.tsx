@@ -26,8 +26,6 @@ type DatePickerProps = {
   helperText?: string;
 };
 
-// TODO: hide error and check on host is it renders immediately
-
 const CustomInput = ({
   label,
   value,

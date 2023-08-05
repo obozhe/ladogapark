@@ -10,7 +10,7 @@ import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
 import FormHelperText from '@mui/material/FormHelperText';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { DatePickerMUI, StaticDateRangePickerMUI } from 'mui/DatePickerMUI';
+import { StaticDateRangePickerMUI } from 'mui/DatePickerMUI';
 import Dialog from 'ui/Dialog';
 
 export const UnitTemporaryClosureDialog = () => {
@@ -40,7 +40,7 @@ export const UnitTemporaryClosureDialog = () => {
           'Ввведите валидную дату "Конца" в будущем'
         ),
     })
-    .refine((data) => data.start?.isBefore(data.end) || !data.start?.isSame(data.end, 'day'), {
+    .refine((data) => data.start?.isBefore(data.end) && !data.start?.isSame(data.end, 'day'), {
       message: 'Дата "начала" должна быть до даты "конца"',
       path: ['periodError'],
     })
@@ -65,9 +65,7 @@ export const UnitTemporaryClosureDialog = () => {
   const {
     getValues,
     handleSubmit,
-    control,
     setValue,
-
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(schema),
@@ -118,6 +116,7 @@ export const UnitTemporaryClosureDialog = () => {
           label="Период закрытия"
           onChange={setFormValue}
           value={[getValues().start, getValues().end]}
+          disableDates={closures}
         />
         <FormHelperText error>{errors.start?.message}</FormHelperText>
         <FormHelperText error>{errors.end?.message}</FormHelperText>

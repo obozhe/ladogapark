@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
-import { useDidMountEffect } from 'hooks/useDidMountEffect';
+import { useLayoutEffect } from 'react';
 import { MultiInputDateRangeField } from '@mui/x-date-pickers-pro/MultiInputDateRangeField';
 import { StaticDateRangePicker } from '@mui/x-date-pickers-pro/StaticDateRangePicker';
 import { DateRange } from '@mui/x-date-pickers-pro/internals/models';
@@ -9,13 +8,13 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const removeLicenseNotification = () => {
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const container = document.querySelector('.MuiDateRangeCalendar-root');
 
     if (container?.firstChild?.textContent !== 'MUI X Missing license key') return;
 
     container.removeChild(container?.firstChild);
-  }, 0);
+  });
 };
 
 type DatePickerProps = {
@@ -37,6 +36,7 @@ type DateRangeProps = {
   error?: boolean;
   helperText?: string;
   calendars?: 1 | 2 | 3;
+  disableDates: { start: string; end: string; position: 'start' | 'end' }[];
 };
 
 export const StaticDateRangePickerMUI = ({
@@ -45,10 +45,11 @@ export const StaticDateRangePickerMUI = ({
   onChange,
   minDate = dayjs(),
   calendars = 2,
+  disableDates,
 }: DateRangeProps) => {
-  useDidMountEffect(() => {
+  useLayoutEffect(() => {
     removeLicenseNotification();
-  });
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
@@ -70,6 +71,9 @@ export const StaticDateRangePickerMUI = ({
         calendars={calendars}
         minDate={minDate}
         localeText={{ toolbarTitle: label, start: 'Начало', end: 'Конец' }}
+        shouldDisableDate={(date) =>
+          disableDates.some((dateToDisable) => date.isAfter(dateToDisable.start) && date.isBefore(dateToDisable.end))
+        }
         sx={{
           '& .MuiDialogActions-root': { display: 'none' },
         }}
