@@ -56,7 +56,7 @@ const CustomInput = ({
       onPaste={onPaste}
       onBlur={onBlur}
       autoComplete="off"
-      endAdornment={id === ':r0:-start' ? <CalendarIcon /> : undefined}
+      endAdornment={id?.includes('-start') ? <CalendarIcon /> : undefined}
       _size="xxl"
       id={id}
     />
@@ -91,9 +91,6 @@ export const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
       <DateRangePickerLib
         localeText={{ start, end }}
         slots={{ textField: CustomInput }}
-        sx={{
-          flexDirection: 'column',
-        }}
         slotProps={{
           fieldSeparator: { children: '' },
           field: { className: 'grid grid-col-1 md:flex [&>*:last-child]:ml-0' },

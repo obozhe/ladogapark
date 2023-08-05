@@ -3,7 +3,7 @@
 }
 
 .MuiInputLabel-root {
-  @apply text-tertiary font-semibold font-raleway
+  @apply text-tertiary font-semibold font-raleway;
 }
 
 .MuiDateRangePickerDay-day {
@@ -16,8 +16,4 @@
 
 .MuiTouchRipple-root {
   display: none;
-}
-
-.MuiStack {
-  @apply sm:flex-col
 }
