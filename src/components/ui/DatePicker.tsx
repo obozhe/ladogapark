@@ -1,6 +1,7 @@
 'use client';
 
 import dayjs from 'dayjs';
+import CalendarIcon from 'icons/calendar.svg';
 import { TextFieldProps } from '@mui/material';
 import { DateRangePicker as DateRangePickerLib } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,7 +13,7 @@ import { Input } from './Input';
 type DatePickerRangeProps = {
   start: string;
   end: string;
-  onChange: () => void;
+  onChange?: () => void;
 };
 
 type DatePickerProps = {
@@ -25,7 +26,7 @@ type DatePickerProps = {
   helperText?: string;
 };
 
-// TODO: hide error and styling
+// TODO: hide error and check on host is it renders immediately
 
 const CustomInput = ({
   label,
@@ -43,6 +44,7 @@ const CustomInput = ({
 }: TextFieldProps) => {
   return (
     <Input
+      className="border-none"
       onClick={onClick}
       placeholder={label as string}
       value={value as string}
@@ -54,6 +56,7 @@ const CustomInput = ({
       onPaste={onPaste}
       onBlur={onBlur}
       autoComplete="off"
+      endAdornment={id === ':r0:-start' ? <CalendarIcon /> : undefined}
       _size="xxl"
       id={id}
     />
@@ -112,8 +115,6 @@ const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerPro
     <DatePickerLib<dayjs.Dayjs>
       value={value}
       minDate={minDate}
-      className="w-full"
-      slots={{ textField: CustomInput }}
       label={label}
       onChange={onChange}
       onOpen={removeLicenseNotification}
@@ -127,7 +128,13 @@ const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
       <DateRangePickerLib
         localeText={{ start, end }}
         slots={{ textField: CustomInput }}
-        slotProps={{ fieldSeparator: { children: '' } }}
+        sx={{
+          flexDirection: 'column',
+        }}
+        slotProps={{
+          fieldSeparator: { children: '' },
+          field: { className: 'grid grid-col-1 md:flex [&>*:last-child]:ml-0' },
+        }}
         onOpen={removeLicenseNotification}
       />
     </LocalizationProvider>

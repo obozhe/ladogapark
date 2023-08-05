@@ -17,3 +17,7 @@
 .MuiTouchRipple-root {
   display: none;
 }
+
+.MuiStack {
+  @apply sm:flex-col
+}

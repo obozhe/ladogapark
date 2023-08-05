@@ -30,9 +30,10 @@ const Search = async () => {
         <p>Ладожского озера</p>
       </div>
       <div className="flex flex-col text-center gap-5">
-        <div className="flex gap-3">
-          {/* <DatePickerRange start="Дата заезда" end="Дата выезда" /> */}
-          <Button size="xxl" color="primary">
+        <div className="flex md:gap-3 flex-col md:flex-row">
+          {/* TODO: filter by search query (server actions?) */}
+          <DatePickerRange start="Дата заезда" end="Дата выезда" />
+          <Button size="xxl" color="primary" className="w-full md:w-fit">
             Показать объекты
           </Button>
         </div>
