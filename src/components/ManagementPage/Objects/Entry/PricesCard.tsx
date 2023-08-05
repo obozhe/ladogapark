@@ -3,8 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import { Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import Skeleton from 'react-loading-skeleton';
 import useSWR from 'swr';
 import { z } from 'zod';
@@ -15,11 +15,11 @@ import { DateFormats } from 'core/enums/DateFormats';
 import { formatDate } from 'core/helpers/date';
 import formatToRuble from 'core/helpers/number';
 import { FormHelperText } from '@mui/material';
+import { DatePickerMUI } from 'mui/DatePickerMUI';
+import { ControlledInputMUI } from 'mui/InputMUI';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
-import { DatePickerMUI } from 'ui/DatePicker';
-import { ControlledInputMUI } from 'ui/Input';
 
 type SectionProps = {
   objectEntry: ObjectEntry;
@@ -133,18 +133,18 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
         <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
           <div className="mb-2">Создать будущую цену</div>
           <div className="mb-2">
-            <DatePickerMUI
-              error={errors.start?.message}
-              minDate={dayjs().add(1, 'day')}
-              label="Начало периода"
-              onChange={(value) =>
-                setValue('start', value as dayjs.Dayjs, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                })
-              }
-              value={getValues().start}
+            <Controller
+              control={control}
+              name="start"
+              render={({ field: { onChange, value } }) => (
+                <DatePickerMUI
+                  error={!!errors.start}
+                  helperText={errors.start?.message}
+                  label="Начало периода"
+                  onChange={onChange}
+                  value={value}
+                />
+              )}
             />
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -166,18 +166,18 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
 const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddHolidayPriceShown, setIsAddHolidayPriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const today = dayjs();
+  const today = useRef(dayjs());
 
   const schema = z
     .object({
       start: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(today.startOf('day')), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
       end: z
         .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
         .nullable()
-        .refine((date) => date && date.isAfter(today.startOf('day')), 'Ввведите дату в будущем'),
+        .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
     .refine(({ start, end }) => start && end && (start.isBefore(end) || start.isSame(end, 'day')), {
@@ -191,7 +191,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           data?.every(({ start }) => formData.start?.isBefore(start, 'day') && formData.end?.isBefore(start, 'day'))) ||
         data?.every(({ end }) => formData.start?.isAfter(end, 'day') && formData.end?.isAfter(end, 'day')),
       {
-        message: 'Периоды не могут пересекаться',
+        message: 'Периоды не должны пересекаться',
         path: ['periodError'],
       }
     );
@@ -207,8 +207,8 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      start: dayjs(),
-      end: dayjs(),
+      start: today.current,
+      end: today.current,
       price: '0',
       periodError: '',
     },
@@ -290,32 +290,32 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
             <ControlledInputMUI control={control} name="price" label="Цена" type="number" />
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <DatePickerMUI
-              error={!!errors.start || !!errors.periodError}
-              helperText={errors.start?.message}
-              label="Начало"
-              onChange={(value) =>
-                setValue('start', value as dayjs.Dayjs, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                })
-              }
-              value={getValues().start}
+            <Controller
+              control={control}
+              name="start"
+              render={({ field: { onChange, value } }) => (
+                <DatePickerMUI
+                  error={!!errors.start || !!errors.periodError}
+                  helperText={errors.start?.message}
+                  label="Начало"
+                  onChange={onChange}
+                  value={value}
+                />
+              )}
             />
-            <DatePickerMUI
-              minDate={getValues().start}
-              error={!!errors.end || !!errors.periodError}
-              helperText={errors.end?.message}
-              label="Конец"
-              onChange={(value) =>
-                setValue('end', value as dayjs.Dayjs, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                })
-              }
-              value={getValues().end}
+
+            <Controller
+              control={control}
+              name="end"
+              render={({ field: { onChange, value } }) => (
+                <DatePickerMUI
+                  error={!!errors.end || !!errors.periodError}
+                  helperText={errors.end?.message}
+                  label="Конец"
+                  onChange={onChange}
+                  value={value}
+                />
+              )}
             />
           </div>
           <FormHelperText error>{errors.periodError?.message}</FormHelperText>

@@ -87,8 +87,8 @@ export default function UnitsCard({ objectEntryId }: Props) {
     open(DialogNames.EditUnitNumber, { onClose: onDialogClose, unitId, unitNumber });
   };
 
-  const openTemporaryCloseUnitDialog = (unitId: string, unitNumber: string) => {
-    open(DialogNames.TemporaryCloseUnit, { onClose: onDialogClose, unitId, unitNumber });
+  const openTemporaryCloseUnitDialog = (unitId: string, unitNumber: string, closures: UnitTemporaryClosure[]) => {
+    open(DialogNames.TemporaryCloseUnit, { onClose: onDialogClose, unitId, unitNumber, closures });
   };
 
   const onDialogClose = (data?: ObjectUnitWithClosedDates[]) => {
@@ -140,7 +140,7 @@ export default function UnitsCard({ objectEntryId }: Props) {
                       },
                       {
                         label: ' Временно закрыть',
-                        onClick: () => openTemporaryCloseUnitDialog(unit.id, unit.number),
+                        onClick: () => openTemporaryCloseUnitDialog(unit.id, unit.number, unit.temporaryClosures),
                       },
                       {
                         label: 'Изменить номер',

@@ -70,44 +70,7 @@ const removeLicenseNotification = () => {
   }, 0);
 };
 
-const DatePickerRangeMUI = ({ start, end }: DatePickerRangeProps) => {
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <DateRangePickerLib
-        localeText={{ start, end }}
-        slotProps={{ fieldSeparator: { children: '' } }}
-        onOpen={removeLicenseNotification}
-      />
-    </LocalizationProvider>
-  );
-};
-
-const DatePickerMUI = ({
-  label,
-  value,
-  onChange,
-  disablePast = true,
-  minDate = dayjs(),
-  error,
-  helperText,
-}: DatePickerProps) => {
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <DatePickerLib<dayjs.Dayjs>
-        value={value}
-        minDate={minDate}
-        disablePast={disablePast}
-        className="w-full"
-        slotProps={{ textField: { variant: 'outlined', size: 'small', error, helperText } }}
-        label={label}
-        onChange={onChange}
-        onOpen={removeLicenseNotification}
-      />
-    </LocalizationProvider>
-  );
-};
-
-const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerProps) => {
+export const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerProps) => {
   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
     <DatePickerLib<dayjs.Dayjs>
       value={value}
@@ -121,7 +84,7 @@ const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerPro
   </LocalizationProvider>;
 };
 
-const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
+export const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
       <DateRangePickerLib
@@ -133,5 +96,3 @@ const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
     </LocalizationProvider>
   );
 };
-
-export { DatePicker, DatePickerMUI, DatePickerRangeMUI, DatePickerRange };

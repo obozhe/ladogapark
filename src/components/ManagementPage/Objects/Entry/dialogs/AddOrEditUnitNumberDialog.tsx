@@ -7,8 +7,8 @@ import useSWR from 'swr';
 import { z } from 'zod';
 import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
+import { ControlledInputMUI } from 'mui/InputMUI';
 import Dialog from 'ui/Dialog';
-import { Input } from 'ui/Input';
 
 const getAllUnitsNumbers = (url: string) => axios.get<string[]>(url);
 
@@ -39,6 +39,7 @@ export const AddOrEditUnitNumberDialog = () => {
     register,
     getValues,
     handleSubmit,
+    control,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(unitNumberSchema),
@@ -81,7 +82,13 @@ export const AddOrEditUnitNumberDialog = () => {
       isLoading={isLoadingNumbers}
     >
       <form className="w-72" onSubmit={handleSubmit(onSubmit)}>
-        <Input type="number" label="Номер" error={errors.unitNumber?.message as string} {...register('unitNumber')} />
+        <ControlledInputMUI
+          control={control}
+          name="unitNumber"
+          type="number"
+          label="Номер"
+          error={errors.unitNumber?.message as string}
+        />
       </form>
     </Dialog>
   );

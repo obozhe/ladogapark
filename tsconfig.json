@@ -23,6 +23,7 @@
     "paths": {
       "icons/*": ["../public/icons/*"],
       "ui/*": ["components/ui/*"],
+      "mui/*": ["components/mui/*"],
       "components/*": ["components/*"]
     }
   },
