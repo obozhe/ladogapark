@@ -40,10 +40,14 @@ export const UnitTemporaryClosureDialog = () => {
           'Ввведите валидную дату "Конца" в будущем'
         ),
     })
-    .refine((data) => data.start?.isBefore(data.end) && !data.start?.isSame(data.end, 'day'), {
-      message: 'Дата "начала" должна быть до даты "конца"',
-      path: ['periodError'],
-    })
+    .refine(
+      (data) =>
+        (data.start?.isBefore(data.end) && !data.start?.isSame(data.end, 'day')) || data.start?.isSame(data.end, 'day'),
+      {
+        message: 'Дата "начала" должна быть до даты "конца"',
+        path: ['periodError'],
+      }
+    )
     .refine(
       (formData) => {
         const isBefore = (date: Dayjs) => formData.start?.isBefore(date, 'day') && formData.end?.isBefore(date, 'day');
