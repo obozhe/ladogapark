@@ -125,6 +125,8 @@ export default function UnitsCard({ objectEntryId }: Props) {
       <div className="flex flex-col gap-1">
         {isLoading || isUpdating || isValidating ? (
           <Skeleton count={3} height={40} />
+        ) : !units.length ? (
+          <p className="text-gray-500 text-xs">Юнитов цен</p>
         ) : (
           units.map((unit) => {
             const temporaryClosed = temporaryClosedCrossing(unit.temporaryClosures);

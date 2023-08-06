@@ -104,8 +104,8 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     <>
       <div className="mt-2 border-t pt-1">
         <div className="grid grid-cols-[2fr,_1fr,_1fr,_36px] gap-2 items-center">
-          <div className="text-gray-500 text-sm col-start-2">Будни</div>
-          <div className="text-gray-500 text-sm">Выходные</div>
+          <div className="text-gray-500 text-xs col-start-2">Будни</div>
+          <div className="text-gray-500 text-xs">Выходные</div>
           <Button className="justify-self-end" isIconButton onClick={toggleCreationForm}>
             <Plus />
           </Button>
@@ -292,31 +292,34 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1">
-          <div className="text-gray-500 text-sm">Начало</div>
-          <div className="text-gray-500 text-sm">Конец</div>
-          <div className="text-gray-500 text-sm col-span-2">Цена</div>
-        </div>
-
         {isLoading || isValidating || isUpdating ? (
-          <Skeleton />
+          <Skeleton count={2} />
+        ) : !data?.length ? (
+          <p className="text-gray-500 text-xs">Праздничных цен нет</p>
         ) : (
-          data?.map(({ start, end, price, id }) => (
-            <div key={id} className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1 group">
-              <div>{formatDate(start, DateFormats.Date)}</div>
-              <div>{formatDate(end, DateFormats.Date)}</div>
-              <div className="text-success">{formatToRuble(price)}</div>
-              <Button
-                isIconButton
-                size="xxs"
-                color="error"
-                className="opacity-0 transition group-hover:opacity-100"
-                onClick={() => deleteHolidayPrice(id)}
-              >
-                <Trash2 />
-              </Button>
+          <>
+            <div className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1">
+              <div className="text-gray-500 text-xs">Начало</div>
+              <div className="text-gray-500 text-xs">Конец</div>
+              <div className="text-gray-500 text-xs col-span-2">Цена</div>
             </div>
-          ))
+            {data?.map(({ start, end, price, id }) => (
+              <div key={id} className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1 group">
+                <div>{formatDate(start, DateFormats.Date)}</div>
+                <div>{formatDate(end, DateFormats.Date)}</div>
+                <div className="text-success">{formatToRuble(price)}</div>
+                <Button
+                  isIconButton
+                  size="xxs"
+                  color="error"
+                  className="opacity-0 transition group-hover:opacity-100"
+                  onClick={() => deleteHolidayPrice(id)}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
+            ))}
+          </>
         )}
       </div>
       <AccordionTransition show={isAddHolidayPriceShown}>
