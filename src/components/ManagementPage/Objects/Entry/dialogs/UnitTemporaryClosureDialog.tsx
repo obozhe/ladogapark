@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs, { Dayjs } from 'dayjs';
 import { useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { UnitTemporaryClosure } from '@prisma/client';
 import { useStateContext } from 'hooks/useStateContext';
@@ -22,62 +22,63 @@ export const UnitTemporaryClosureDialog = () => {
     props: { onClose, unitId, unitNumber, closures },
   } = useStateContext();
 
-  // TODO: fix refine errors not showing
   const schema = z
     .object({
-      start: z
-        .instanceof(dayjs as unknown as typeof Dayjs)
-        .nullable()
-        .refine(
-          (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
-          'Ввведите валидную дату "Начала" в будущем'
-        ),
-      end: z
-        .instanceof(dayjs as unknown as typeof Dayjs)
-        .nullable()
-        .refine(
-          (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
-          'Ввведите валидную дату "Конца" в будущем'
-        ),
+      date: z.object({
+        start: z
+          .instanceof(dayjs as unknown as typeof Dayjs)
+          .nullable()
+          .refine(
+            (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
+            'Ввведите валидную дату "Начала" в будущем'
+          ),
+        end: z
+          .instanceof(dayjs as unknown as typeof Dayjs)
+          .nullable()
+          .refine(
+            (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
+            'Ввведите валидную дату "Конца" в будущем'
+          ),
+      }),
     })
     .refine(
-      (data) =>
-        (data.start?.isBefore(data.end) && !data.start?.isSame(data.end, 'day')) || data.start?.isSame(data.end, 'day'),
+      ({ date: { start, end } }) => {
+        return start?.isBefore(end) || start?.isSame(end, 'day');
+      },
       {
         message: 'Дата "начала" должна быть до даты "конца"',
-        path: ['periodError'],
+        path: ['date.start'],
       }
     )
     .refine(
-      (formData) => {
-        const isBefore = (date: Dayjs) => formData.start?.isBefore(date, 'day') && formData.end?.isBefore(date, 'day');
-        const isAfter = (date: Dayjs) => formData.start?.isAfter(date, 'day') && formData.end?.isAfter(date, 'day');
+      ({ date: { start, end } }) => {
+        const isBefore = (date: Dayjs) => start?.isBefore(date, 'day') && end?.isBefore(date, 'day');
+        const isAfter = (date: Dayjs) => start?.isAfter(date, 'day') && end?.isAfter(date, 'day');
 
         return (
-          (formData.start &&
-            formData.end &&
-            closures?.every(({ start }: UnitTemporaryClosure) => isBefore(dayjs(start)))) ||
+          (start && end && closures?.every(({ start }: UnitTemporaryClosure) => isBefore(dayjs(start)))) ||
           closures?.every(({ end }: UnitTemporaryClosure) => isAfter(dayjs(end)))
         );
       },
       {
         message: 'Периоды не могут пересекаться',
-        path: ['periodError'],
+        path: ['date'],
       }
     );
 
   const {
     getValues,
     handleSubmit,
-    setValue,
+    control,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      start: today.current,
-      end: today.current,
-      periodError: '',
+      date: {
+        start: today.current,
+        end: today.current,
+      },
     },
   });
 
@@ -91,21 +92,6 @@ export const UnitTemporaryClosureDialog = () => {
     }
   };
 
-  console.log(errors);
-  const setFormValue = ([start, end]: DateRange<Dayjs>) => {
-    console.log(start, end);
-    setValue('start', start as Dayjs, {
-      shouldDirty: true,
-      shouldValidate: true,
-      shouldTouch: true,
-    });
-    setValue('end', end as Dayjs, {
-      shouldDirty: true,
-      shouldValidate: true,
-      shouldTouch: true,
-    });
-  };
-
   return (
     <Dialog
       title={`Временно закрыть юнит "${unitNumber}"`}
@@ -116,15 +102,21 @@ export const UnitTemporaryClosureDialog = () => {
       disabled={!isValid}
     >
       <form className=" flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <StaticDateRangePickerMUI
-          label="Период закрытия"
-          onChange={setFormValue}
-          value={[getValues().start, getValues().end]}
-          disableDates={closures}
+        <Controller
+          name="date"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <StaticDateRangePickerMUI
+              label="Период закрытия"
+              onChange={([start, end]: DateRange<Dayjs>) => onChange({ start, end })}
+              value={[value.start, value.end]}
+              disableDates={closures}
+            />
+          )}
         />
-        <FormHelperText error>{errors.start?.message}</FormHelperText>
-        <FormHelperText error>{errors.end?.message}</FormHelperText>
-        <FormHelperText error>{errors.periodError?.message}</FormHelperText>
+        <FormHelperText error>{errors.date?.message}</FormHelperText>
+        <FormHelperText error>{errors.date?.start?.message}</FormHelperText>
+        <FormHelperText error>{errors.date?.end?.message}</FormHelperText>
       </form>
     </Dialog>
   );
