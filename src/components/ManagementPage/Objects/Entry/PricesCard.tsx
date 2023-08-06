@@ -9,7 +9,9 @@ import Skeleton from 'react-loading-skeleton';
 import useSWR from 'swr';
 import { z } from 'zod';
 import { EntryFuturePrice, EntryHolidayPrice, ObjectEntry } from '@prisma/client';
+import { DialogNames } from 'containers/StateContext';
 import Field from 'components/ManagementPage/Field';
+import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
 import { DateFormats } from 'core/enums/DateFormats';
 import { formatDate } from 'core/helpers/date';
@@ -29,6 +31,8 @@ type SectionProps = {
 const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddFuturePriceShown, setIsAddFuturePriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const { open } = useStateContext();
 
   const { data, isLoading, isValidating, mutate } = useSWR(
     `/management/objects/prices/future?objectEntryId=${objectEntry.id}`,
@@ -81,11 +85,19 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     }
   };
 
-  const deleteFuturePrice = async (id: string) => {
-    setIsUpdating(true);
-    const data = await axios.delete('/management/objects/prices/future', { data: { id } });
-    mutate(data, { revalidate: false });
-    setIsUpdating(false);
+  const deleteFuturePrice = (id: string) => {
+    const onSubmit = async () => {
+      setIsUpdating(true);
+      const data = await axios.delete('/management/objects/prices/future', { data: { id } });
+      mutate(data, { revalidate: false });
+      setIsUpdating(false);
+    };
+
+    open(DialogNames.ConfirmationDialog, {
+      onSubmit,
+      submitLabel: 'Удалить',
+      message: `Вы точно хотите удалить будущую цену?`,
+    });
   };
 
   return (
@@ -143,6 +155,7 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
                   label="Начало периода"
                   onChange={onChange}
                   value={value}
+                  minDate={dayjs().add(1, 'day')}
                 />
               )}
             />
@@ -168,17 +181,19 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const today = useRef(dayjs().startOf('day'));
 
+  const { open } = useStateContext();
+
   const schema = z
     .object({
       holidaysPeriod: z.object({
         start: z
-          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца"' })
           .nullable()
-          .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
+          .refine((date) => date && date.isSameOrAfter(today.current), 'Введеная дата "Начала" в прошлом'),
         end: z
-          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца"' })
           .nullable()
-          .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
+          .refine((date) => date && date.isSameOrAfter(today.current), 'Введеная дата "Конца" в прошлом'),
       }),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
@@ -253,10 +268,18 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   };
 
   const deleteHolidayPrice = async (id: string) => {
-    setIsUpdating(true);
-    const data = await axios.delete('/management/objects/prices/holiday', { data: { id } });
-    mutate(data, { revalidate: false });
-    setIsUpdating(false);
+    const onSubmit = async () => {
+      setIsUpdating(true);
+      const data = await axios.delete('/management/objects/prices/holiday', { data: { id } });
+      mutate(data, { revalidate: false });
+      setIsUpdating(false);
+    };
+
+    open(DialogNames.ConfirmationDialog, {
+      onSubmit,
+      submitLabel: 'Удалить',
+      message: `Вы точно хотите удалить праздничную цену?`,
+    });
   };
 
   return (
@@ -315,6 +338,8 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
             )}
           />
           <FormHelperText error>{errors.holidaysPeriod?.message}</FormHelperText>
+          <FormHelperText error>{errors.holidaysPeriod?.start?.message}</FormHelperText>
+          <FormHelperText error>{errors.holidaysPeriod?.end?.message}</FormHelperText>
           <div className="flex flex-row gap-2 w-full justify-end">
             <Button onClick={() => setIsAddHolidayPriceShown(false)}>Отмена</Button>
             <Button color="primary" type="submit" disabled={!isValid}>

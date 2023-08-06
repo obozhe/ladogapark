@@ -44,12 +44,20 @@ export default function UnitsCard({ objectEntryId }: Props) {
     mutate,
   } = useSWR(`/management/objects/units?objectEntryId=${objectEntryId}`, getUnits);
 
-  const deleteTemporaryClosure = async (id: string) => {
-    setIsUpdating(true);
-    await axios.delete('/management/objects/units/temporary-closure', { data: { id } });
-    setIsUpdating(false);
+  const deleteTemporaryClosure = (id: string) => {
+    const onSubmit = async () => {
+      setIsUpdating(true);
+      await axios.delete('/management/objects/units/temporary-closure', { data: { id } });
+      setIsUpdating(false);
 
-    mutate();
+      mutate();
+    };
+
+    open(DialogNames.ConfirmationDialog, {
+      onSubmit,
+      submitLabel: 'Удалить',
+      message: `Вы точно хотите удалить временное закрытие?`,
+    });
   };
 
   const toggleIsActiveUnit = async (unitId: string, isActive: boolean, temporaryClosed?: UnitTemporaryClosure) => {
@@ -70,13 +78,21 @@ export default function UnitsCard({ objectEntryId }: Props) {
     mutate([...units]);
   };
 
-  const deleteUnit = async (unitId: string) => {
-    setIsUpdating(true);
-    await axios.delete(`/management/objects/units/${unitId}`);
-    setIsUpdating(false);
+  const deleteUnit = (unitId: string, unitNumber: string) => {
+    const onSubmit = async () => {
+      setIsUpdating(true);
+      await axios.delete(`/management/objects/units/${unitId}`);
+      setIsUpdating(false);
 
-    const unitsFiltered = units.filter((unit) => unit.id !== unitId);
-    mutate(unitsFiltered);
+      const unitsFiltered = units.filter((unit) => unit.id !== unitId);
+      mutate(unitsFiltered);
+    };
+
+    open(DialogNames.ConfirmationDialog, {
+      onSubmit,
+      submitLabel: 'Удалить',
+      message: `Вы точно хотите удалить юнит "${unitNumber}"?`,
+    });
   };
 
   const openAddNewUnitDialog = () => {
@@ -148,7 +164,7 @@ export default function UnitsCard({ objectEntryId }: Props) {
                       },
                       {
                         label: 'Удалить',
-                        onClick: () => deleteUnit(unit.id),
+                        onClick: () => deleteUnit(unit.id, unit.number),
                       },
                     ]}
                   />

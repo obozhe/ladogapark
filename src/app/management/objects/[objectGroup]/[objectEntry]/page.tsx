@@ -6,6 +6,7 @@ import { redirect, useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import Field from 'components/ManagementPage/Field';
 import IsActiveField from 'components/ManagementPage/IsActiveField';
+import MinBookingCard from 'components/ManagementPage/Objects/Entry/MinBookingCard';
 import PricesCard from 'components/ManagementPage/Objects/Entry/PricesCard';
 import UnitsCard from 'components/ManagementPage/Objects/Entry/UnitsCard';
 import axios from 'core/axios';
@@ -58,19 +59,6 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
           }}
         />
       </div>
-    </Card>
-  );
-
-  const MinOrderDays = () => (
-    <Card
-      title="Ограничения бронирований"
-      titleComponent={
-        <Button isIconButton color="primary" size="xs">
-          <Plus />
-        </Button>
-      }
-    >
-      <></>
     </Card>
   );
 
@@ -137,7 +125,7 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
           <div className="h-fit grid gap-8">
             {objectEntry.objectGroup.type === ObjectTypes.House && (
               <>
-                <MinOrderDays />
+                <MinBookingCard objectEntry={objectEntry} />
                 <DiscountByDaysCount />
                 <PromoCodes />
               </>
