@@ -14,7 +14,7 @@ export const createObjectUnit = ({ objectEntryId, number }: CreateObjectUnitDTO)
 export const getObjectUnitsByObjectEntryId = (id: string) => {
   return prisma.objectUnit.findMany({
     where: { objectEntryId: id },
-    include: { temporaryClosures: true },
+    include: { temporaryClosures: { orderBy: { start: 'asc' } } },
     orderBy: [{ number: 'asc' }],
   });
 };

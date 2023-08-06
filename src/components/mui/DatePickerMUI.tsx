@@ -30,7 +30,7 @@ type DatePickerProps = {
 };
 
 type DateRangeProps = {
-  label: string;
+  label?: string;
   onChange: (value: DateRange<dayjs.Dayjs>) => void;
   disablePast?: boolean;
   value?: DateRange<dayjs.Dayjs> | DateRange<null>;

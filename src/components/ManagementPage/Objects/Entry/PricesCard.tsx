@@ -195,7 +195,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           .nullable()
           .refine((date) => date && date.isSameOrAfter(today.current), 'Введеная дата "Конца" в прошлом'),
       }),
-      price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
+      price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Введите число > 0'),
     })
     .refine(({ holidaysPeriod: { start, end } }) => start && end && start.isSameOrBefore(end), {
       message: 'Начало > Конец',
@@ -304,7 +304,7 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
               <div className="text-gray-500 text-xs col-span-2">Цена</div>
             </div>
             {data?.map(({ start, end, price, id }) => (
-              <div key={id} className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1 group">
+              <div key={id} className="grid grid-cols-[1fr,_1fr,_1fr,_24px] gap-1 group items-center">
                 <div>{formatDate(start, DateFormats.Date)}</div>
                 <div>{formatDate(end, DateFormats.Date)}</div>
                 <div className="text-success">{formatToRuble(price)}</div>
@@ -333,7 +333,6 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
             control={control}
             render={({ field: { onChange, value } }) => (
               <DateRangeMUI
-                label="Период закрытия"
                 onChange={([start, end]: DateRange<dayjs.Dayjs>) => onChange({ start, end })}
                 value={[value.start, value.end]}
                 disableDates={data}

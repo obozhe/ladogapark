@@ -33,11 +33,11 @@ export const createEntryHolidayPrice = (data: CreateHolidayPriceDTO) => {
 };
 
 export const getEntryFuturePrices = (objectEntryId: string) => {
-  return prisma.entryFuturePrice.findMany({ where: { objectEntryId } });
+  return prisma.entryFuturePrice.findMany({ where: { objectEntryId }, orderBy: [{ start: 'asc' }] });
 };
 
 export const getEntryHolidayPrices = (objectEntryId: string) => {
-  return prisma.entryHolidayPrice.findMany({ where: { objectEntryId } });
+  return prisma.entryHolidayPrice.findMany({ where: { objectEntryId }, orderBy: [{ start: 'asc' }] });
 };
 
 export const deleteEntryFuturePrice = (id: string) => {

@@ -122,7 +122,7 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
             <UnitsCard objectEntryId={objectEntry.id} />
           </div>
 
-          <div className="h-fit grid gap-8">
+          <div className="h-fit grid gap-8 min-w-[320px]">
             {objectEntry.objectGroup.type === ObjectTypes.House && (
               <>
                 <MinBookingCard objectEntry={objectEntry} />

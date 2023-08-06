@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CreateObjectUnitDTO } from './../../../../../server/objects/units/types';
+import { CreateObjectUnitDTO } from '../../../../../server/objects/units/types';
 import { createObjectUnit, getObjectUnitsByObjectEntryId } from 'server/objects/units/UnitsCollection';
 
 export async function GET(req: NextRequest) {

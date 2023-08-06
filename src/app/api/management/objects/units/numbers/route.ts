@@ -1,6 +1,6 @@
-import { getObjectUnitsNumbers } from 'server/objects/units/UnitsCollection';
-import { NextResponse } from 'next/server';
 import _ from 'lodash';
+import { NextResponse } from 'next/server';
+import { getObjectUnitsNumbers } from 'server/objects/units/UnitsCollection';
 
 export async function GET() {
   const numbers = await getObjectUnitsNumbers();
