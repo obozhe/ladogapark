@@ -15,7 +15,8 @@ import { DateFormats } from 'core/enums/DateFormats';
 import { formatDate } from 'core/helpers/date';
 import formatToRuble from 'core/helpers/number';
 import { FormHelperText } from '@mui/material';
-import { DatePickerMUI } from 'mui/DatePickerMUI';
+import { DateRange } from '@mui/x-date-pickers-pro';
+import { DatePickerMUI, DateRangeMUI } from 'mui/DatePickerMUI';
 import { ControlledInputMUI } from 'mui/InputMUI';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
@@ -153,7 +154,7 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
           </div>
           <div className="flex flex-row gap-2 w-full justify-end">
             <Button onClick={() => setIsAddFuturePriceShown(false)}>Отмена</Button>
-            <Button color="primary" type="submit">
+            <Button color="primary" type="submit" disabled={!isValid}>
               Создать
             </Button>
           </div>
@@ -166,33 +167,37 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
 const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
   const [isAddHolidayPriceShown, setIsAddHolidayPriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const today = useRef(dayjs());
+  const today = useRef(dayjs().startOf('day'));
 
   const schema = z
     .object({
-      start: z
-        .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
-        .nullable()
-        .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
-      end: z
-        .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
-        .nullable()
-        .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
+      holidaysPeriod: z.object({
+        start: z
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
+          .nullable()
+          .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
+        end: z
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
+          .nullable()
+          .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
+      }),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
-    .refine(({ start, end }) => start && end && (start.isBefore(end) || start.isSame(end, 'day')), {
+    .refine(({ holidaysPeriod: { start, end } }) => start && end && (start.isBefore(end) || start.isSame(end, 'day')), {
       message: 'Начало > Конец',
-      path: ['global'],
+      path: ['holidaysPeriod.start'],
     })
     .refine(
-      (formData) =>
-        (formData.start &&
-          formData.end &&
-          data?.every(({ start }) => formData.start?.isBefore(start, 'day') && formData.end?.isBefore(start, 'day'))) ||
-        data?.every(({ end }) => formData.start?.isAfter(end, 'day') && formData.end?.isAfter(end, 'day')),
+      ({ holidaysPeriod }) =>
+        (holidaysPeriod.start &&
+          holidaysPeriod.end &&
+          data?.every(
+            ({ start }) => holidaysPeriod.start?.isBefore(start, 'day') && holidaysPeriod.end?.isBefore(start, 'day')
+          )) ||
+        data?.every(({ end }) => holidaysPeriod.start?.isAfter(end, 'day') && holidaysPeriod.end?.isAfter(end, 'day')),
       {
         message: 'Периоды не должны пересекаться',
-        path: ['periodError'],
+        path: ['holidaysPeriod'],
       }
     );
 
@@ -207,10 +212,11 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      start: today.current,
-      end: today.current,
+      holidaysPeriod: {
+        start: today.current,
+        end: today.current,
+      },
       price: '0',
-      periodError: '',
     },
   });
 
@@ -229,8 +235,11 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
       setIsUpdating(true);
       setIsAddHolidayPriceShown(false);
 
+      const formData = schema.parse(getValues());
       const data = await axios.post('/management/objects/prices/holiday', {
-        ...schema.parse(getValues()),
+        price: formData.price,
+        start: formData.holidaysPeriod.start,
+        end: formData.holidaysPeriod.end,
         objectEntryId: objectEntry.id,
       });
 
@@ -289,39 +298,22 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
           <div className="mb-2">
             <ControlledInputMUI control={control} name="price" label="Цена" type="number" />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Controller
-              control={control}
-              name="start"
-              render={({ field: { onChange, value } }) => (
-                <DatePickerMUI
-                  error={!!errors.start || !!errors.periodError}
-                  helperText={errors.start?.message}
-                  label="Начало"
-                  onChange={onChange}
-                  value={value}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="end"
-              render={({ field: { onChange, value } }) => (
-                <DatePickerMUI
-                  error={!!errors.end || !!errors.periodError}
-                  helperText={errors.end?.message}
-                  label="Конец"
-                  onChange={onChange}
-                  value={value}
-                />
-              )}
-            />
-          </div>
-          <FormHelperText error>{errors.periodError?.message}</FormHelperText>
+          <Controller
+            name="holidaysPeriod"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <DateRangeMUI
+                label="Период закрытия"
+                onChange={([start, end]: DateRange<dayjs.Dayjs>) => onChange({ start, end })}
+                value={[value.start, value.end]}
+                disableDates={data}
+              />
+            )}
+          />
+          <FormHelperText error>{errors.holidaysPeriod?.message}</FormHelperText>
           <div className="flex flex-row gap-2 w-full justify-end">
             <Button onClick={() => setIsAddHolidayPriceShown(false)}>Отмена</Button>
-            <Button color="primary" type="submit">
+            <Button color="primary" type="submit" disabled={!isValid}>
               Создать
             </Button>
           </div>

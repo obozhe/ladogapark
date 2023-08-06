@@ -24,7 +24,7 @@ export const UnitTemporaryClosureDialog = () => {
 
   const schema = z
     .object({
-      date: z.object({
+      closurePeriod: z.object({
         start: z
           .instanceof(dayjs as unknown as typeof Dayjs)
           .nullable()
@@ -42,16 +42,16 @@ export const UnitTemporaryClosureDialog = () => {
       }),
     })
     .refine(
-      ({ date: { start, end } }) => {
+      ({ closurePeriod: { start, end } }) => {
         return start?.isBefore(end) || start?.isSame(end, 'day');
       },
       {
         message: 'Дата "начала" должна быть до даты "конца"',
-        path: ['date.start'],
+        path: ['closurePeriod.start'],
       }
     )
     .refine(
-      ({ date: { start, end } }) => {
+      ({ closurePeriod: { start, end } }) => {
         const isBefore = (date: Dayjs) => start?.isBefore(date, 'day') && end?.isBefore(date, 'day');
         const isAfter = (date: Dayjs) => start?.isAfter(date, 'day') && end?.isAfter(date, 'day');
 
@@ -62,7 +62,7 @@ export const UnitTemporaryClosureDialog = () => {
       },
       {
         message: 'Периоды не могут пересекаться',
-        path: ['date'],
+        path: ['closurePeriod'],
       }
     );
 
@@ -75,7 +75,7 @@ export const UnitTemporaryClosureDialog = () => {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      date: {
+      closurePeriod: {
         start: today.current,
         end: today.current,
       },
@@ -84,8 +84,10 @@ export const UnitTemporaryClosureDialog = () => {
 
   const onSubmit = () => {
     if (isValid) {
+      const formData = schema.parse(getValues());
+
       axios
-        .post('/management/objects/units/temporary-closure', { ...getValues(), unitId })
+        .post('/management/objects/units/temporary-closure', { ...formData.closurePeriod, unitId })
         .then((data) => onClose(data));
 
       close();
@@ -103,7 +105,7 @@ export const UnitTemporaryClosureDialog = () => {
     >
       <form className=" flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         <Controller
-          name="date"
+          name="closurePeriod"
           control={control}
           render={({ field: { onChange, value } }) => (
             <StaticDateRangePickerMUI
@@ -114,9 +116,9 @@ export const UnitTemporaryClosureDialog = () => {
             />
           )}
         />
-        <FormHelperText error>{errors.date?.message}</FormHelperText>
-        <FormHelperText error>{errors.date?.start?.message}</FormHelperText>
-        <FormHelperText error>{errors.date?.end?.message}</FormHelperText>
+        <FormHelperText error>{errors.closurePeriod?.message}</FormHelperText>
+        <FormHelperText error>{errors.closurePeriod?.start?.message}</FormHelperText>
+        <FormHelperText error>{errors.closurePeriod?.end?.message}</FormHelperText>
       </form>
     </Dialog>
   );
