@@ -49,7 +49,6 @@ const CurrentPricesSection = ({ objectEntry }: SectionProps) => {
     getValues,
     handleSubmit,
     control,
-    setValue,
     reset,
     formState: { errors, isValid },
   } = useForm({
@@ -173,28 +172,34 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     .object({
       holidaysPeriod: z.object({
         start: z
-          .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
           .nullable()
           .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
         end: z
-          .instanceof(dayjs as unknown as typeof dayjs.Dayjs)
+          .instanceof(dayjs as unknown as typeof dayjs.Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
           .nullable()
           .refine((date) => date && date.isAfter(today.current.startOf('day')), 'Ввведите дату в будущем'),
       }),
       price: z.coerce.number({ required_error: 'Объязательное поле' }).positive('Ожидается число > 0'),
     })
-    .refine(({ holidaysPeriod: { start, end } }) => start && end && (start.isBefore(end) || start.isSame(end, 'day')), {
+    .refine(({ holidaysPeriod: { start, end } }) => start && end && start.isSameOrBefore(end), {
       message: 'Начало > Конец',
       path: ['holidaysPeriod.start'],
     })
     .refine(
       ({ holidaysPeriod }) =>
-        (holidaysPeriod.start &&
-          holidaysPeriod.end &&
-          data?.every(
-            ({ start }) => holidaysPeriod.start?.isBefore(start, 'day') && holidaysPeriod.end?.isBefore(start, 'day')
-          )) ||
-        data?.every(({ end }) => holidaysPeriod.start?.isAfter(end, 'day') && holidaysPeriod.end?.isAfter(end, 'day')),
+        holidaysPeriod.start &&
+        holidaysPeriod.end &&
+        !data?.some(
+          ({ start, end }: EntryHolidayPrice) =>
+            holidaysPeriod.start?.isBetween(start, end, 'day', '[]') ||
+            holidaysPeriod.end?.isBetween(start, end, 'day', '[]')
+        ) &&
+        !data?.some(
+          ({ start, end }: EntryHolidayPrice) =>
+            dayjs(start).isBetween(holidaysPeriod.start, holidaysPeriod.end, 'day', '[]') ||
+            dayjs(end).isBetween(holidaysPeriod.start, holidaysPeriod.end, 'day', '[]')
+        ),
       {
         message: 'Периоды не должны пересекаться',
         path: ['holidaysPeriod'],
@@ -206,7 +211,6 @@ const HolidayPricesSection = ({ objectEntry }: SectionProps) => {
     getValues,
     handleSubmit,
     control,
-    setValue,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(schema),

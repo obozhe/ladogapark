@@ -76,7 +76,11 @@ export const StaticDateRangePickerMUI = ({
         minDate={minDate}
         localeText={{ toolbarTitle: label, start: 'Начало', end: 'Конец' }}
         shouldDisableDate={(date) =>
-          !!disableDates?.some((dateToDisable) => date.isAfter(dateToDisable.start) && date.isBefore(dateToDisable.end))
+          !!disableDates?.some(
+            (dateToDisable) =>
+              (date.isAfter(dateToDisable.start) || date.isSame(dateToDisable.start)) &&
+              (date.isBefore(dateToDisable.end) || date.isSame(dateToDisable.end))
+          )
         }
         sx={{
           '& .MuiDialogActions-root': { display: 'none' },
@@ -134,7 +138,11 @@ export const DateRangeMUI = ({
       minDate={minDate}
       disablePast={disablePast}
       shouldDisableDate={(date) =>
-        !!disableDates?.some((dateToDisable) => date.isAfter(dateToDisable.start) && date.isBefore(dateToDisable.end))
+        !!disableDates?.some(
+          (dateToDisable) =>
+            (date.isAfter(dateToDisable.start) || date.isSame(dateToDisable.start)) &&
+            (date.isBefore(dateToDisable.end) || date.isSame(dateToDisable.end))
+        )
       }
     />
   </LocalizationProvider>

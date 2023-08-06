@@ -1,7 +1,14 @@
 import dayjs, { Dayjs, ManipulateType } from 'dayjs';
 import 'dayjs/locale/ru';
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { DateFormats } from 'core/enums/DateFormats';
 import { getArrayFromRange } from './array';
+
+dayjs.extend(isBetween);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 type GetSelectOptions = {
   date: Dayjs;

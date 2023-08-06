@@ -26,15 +26,10 @@ export const UnitTemporaryClosureDialog = () => {
     .object({
       closurePeriod: z.object({
         start: z
-          .instanceof(dayjs as unknown as typeof Dayjs)
-          .nullable()
-          .refine(
-            (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
-            'Ввведите валидную дату "Начала" в будущем'
-          ),
+          .instanceof(dayjs as unknown as typeof Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
+          .refine((date) => date && date.isSameOrAfter(today.current), 'Ввведите валидную дату "Начала" в будущем'),
         end: z
-          .instanceof(dayjs as unknown as typeof Dayjs)
-          .nullable()
+          .instanceof(dayjs as unknown as typeof Dayjs, { message: 'Ввведите валидную дату "Конца" в будущем' })
           .refine(
             (date) => date && (date.isAfter(today.current) || date.isSame(today.current)),
             'Ввведите валидную дату "Конца" в будущем'
@@ -43,7 +38,7 @@ export const UnitTemporaryClosureDialog = () => {
     })
     .refine(
       ({ closurePeriod: { start, end } }) => {
-        return start?.isBefore(end) || start?.isSame(end, 'day');
+        return start?.isSameOrBefore(end);
       },
       {
         message: 'Дата "начала" должна быть до даты "конца"',
@@ -51,13 +46,20 @@ export const UnitTemporaryClosureDialog = () => {
       }
     )
     .refine(
-      ({ closurePeriod: { start, end } }) => {
-        const isBefore = (date: Dayjs) => start?.isBefore(date, 'day') && end?.isBefore(date, 'day');
-        const isAfter = (date: Dayjs) => start?.isAfter(date, 'day') && end?.isAfter(date, 'day');
-
+      ({ closurePeriod }) => {
         return (
-          (start && end && closures?.every(({ start }: UnitTemporaryClosure) => isBefore(dayjs(start)))) ||
-          closures?.every(({ end }: UnitTemporaryClosure) => isAfter(dayjs(end)))
+          closurePeriod.start &&
+          closurePeriod.end &&
+          !closures?.some(
+            ({ start, end }: UnitTemporaryClosure) =>
+              closurePeriod.start?.isBetween(start, end, 'day', '[]') ||
+              closurePeriod.end?.isBetween(start, end, 'day', '[]')
+          ) &&
+          !closures?.some(
+            ({ start, end }: UnitTemporaryClosure) =>
+              dayjs(start).isBetween(closurePeriod.start, closurePeriod.end, 'day', '[]') ||
+              dayjs(end).isBetween(closurePeriod.start, closurePeriod.end, 'day', '[]')
+          )
         );
       },
       {
