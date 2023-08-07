@@ -2,16 +2,16 @@
 
 import { sanitize } from 'isomorphic-dompurify';
 import { Plus } from 'lucide-react';
-import { redirect, useRouter, useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import useSWR from 'swr';
 import Field from 'components/ManagementPage/Field';
 import IsActiveField from 'components/ManagementPage/IsActiveField';
-import MinBookingCard from 'components/ManagementPage/Objects/Entry/MinBookingCard';
+import BookingLimitationsCard from 'components/ManagementPage/Objects/Entry/BookingLimitationsCard';
+import DiscountsByDaysCountCard from 'components/ManagementPage/Objects/Entry/DiscountsByDaysCountCard';
 import PricesCard from 'components/ManagementPage/Objects/Entry/PricesCard';
 import UnitsCard from 'components/ManagementPage/Objects/Entry/UnitsCard';
 import axios from 'core/axios';
 import { fieldsMapping } from 'core/fieldsMapping';
-import formatToRuble from 'core/helpers/number';
 import { ObjectEntryWithGroup, ObjectTypes } from 'server/objects/types';
 import Breadcrumbs from 'ui/Breadcrumbs';
 import Button from 'ui/Button';
@@ -62,19 +62,6 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
     </Card>
   );
 
-  const DiscountByDaysCount = () => (
-    <Card
-      title="Скидка при бронировании на число дней"
-      titleComponent={
-        <Button isIconButton color="primary" size="xs">
-          <Plus />
-        </Button>
-      }
-    >
-      <></>
-    </Card>
-  );
-
   const PromoCodes = () => (
     <Card
       title="Промокоды"
@@ -122,11 +109,11 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
             <UnitsCard objectEntryId={objectEntry.id} />
           </div>
 
-          <div className="h-fit grid gap-8 min-w-[320px]">
+          <div className="h-fit grid gap-8 min-w-[360px]">
             {objectEntry.objectGroup.type === ObjectTypes.House && (
               <>
-                <MinBookingCard objectEntry={objectEntry} />
-                <DiscountByDaysCount />
+                <BookingLimitationsCard objectEntryId={objectEntry.id} />
+                <DiscountsByDaysCountCard objectEntryId={objectEntry.id} />
                 <PromoCodes />
               </>
             )}

@@ -22,9 +22,9 @@ import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
 
-type Props = { objectEntry: ObjectEntry };
+type Props = { objectEntryId: string };
 
-export default function MinBookingCard({ objectEntry }: Props) {
+export default function BookingLimitationsCard({ objectEntryId }: Props) {
   const [isAddLimitationShown, setIsAddLimitationPriceShown] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -33,7 +33,7 @@ export default function MinBookingCard({ objectEntry }: Props) {
   const { open } = useStateContext();
 
   const { data, isLoading, isValidating, mutate } = useSWR(
-    `/management/objects/booking-limitations?objectEntryId=${objectEntry.id}`,
+    `/management/objects/booking-limitations?objectEntryId=${objectEntryId}`,
     (url: string) => axios.get<EntryBookingLimitation[]>(url)
   );
 
@@ -111,7 +111,7 @@ export default function MinBookingCard({ objectEntry }: Props) {
         minDays: formData.minDays,
         start: formData.limitationPeriod.start,
         end: formData.limitationPeriod.end,
-        objectEntryId: objectEntry.id,
+        objectEntryId,
       });
 
       mutate(data, { revalidate: false });

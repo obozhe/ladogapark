@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  createEntryFuturePrice,
-  deleteEntryHolidayPrice,
-  getEntryHolidayPrices,
-} from 'server/objects/ObjectCollection';
-import { createEntryHolidayPrice } from 'server/objects/ObjectCollection';
+import { createHolidayPrice, deleteHolidayPrice, getHolidayPrices } from 'server/objects/ObjectCollection';
 import { CreateHolidayPriceDTO } from 'server/objects/types';
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as CreateHolidayPriceDTO;
-  const newHolidayPrice = await createEntryHolidayPrice(body);
+  const newHolidayPrice = await createHolidayPrice(body);
 
-  return NextResponse.json(await getEntryHolidayPrices(newHolidayPrice.objectEntryId));
+  return NextResponse.json(await getHolidayPrices(newHolidayPrice.objectEntryId));
 }
 
 export async function GET(req: NextRequest) {
@@ -20,7 +15,7 @@ export async function GET(req: NextRequest) {
     throw new Error('Not valid objectEntryId');
   }
 
-  return NextResponse.json(await getEntryHolidayPrices(objectEntryId));
+  return NextResponse.json(await getHolidayPrices(objectEntryId));
 }
 
 export async function DELETE(req: NextRequest) {
@@ -29,6 +24,6 @@ export async function DELETE(req: NextRequest) {
     throw new Error('Not valid id');
   }
 
-  const deletedEntryFuturePrice = await deleteEntryHolidayPrice(id);
-  return NextResponse.json(await getEntryHolidayPrices(deletedEntryFuturePrice.objectEntryId));
+  const deletedEntryFuturePrice = await deleteHolidayPrice(id);
+  return NextResponse.json(await getHolidayPrices(deletedEntryFuturePrice.objectEntryId));
 }

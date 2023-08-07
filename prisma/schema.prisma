@@ -43,29 +43,30 @@ model ObjectGroup {
 }
 
 model ObjectEntry {
-  id                      String                   @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId           String                   @db.ObjectId
-  objectGroup             ObjectGroup              @relation(fields: [objectGroupId], references: [id])
-  title                   String
-  images                  String[]
-  description             String
-  content                 String
-  seats                   Int
-  extraSeats              Int
-  priceWeekdays           Float
-  priceWeekends           Float
-  priceRenewal            Float
-  priceExtraSeat          Float
-  prepay                  Int
-  parking                 Int
-  sorting                 Int
-  isActive                Boolean
-  units                   ObjectUnit[]
-  holidayPrices           EntryHolidayPrice[]
-  futurePrices            EntryFuturePrice[]
-  entryBookingLimitations EntryBookingLimitation[]
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
+  id                 String                   @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId      String                   @db.ObjectId
+  objectGroup        ObjectGroup              @relation(fields: [objectGroupId], references: [id])
+  title              String
+  images             String[]
+  description        String
+  content            String
+  seats              Int
+  extraSeats         Int
+  priceWeekdays      Float
+  priceWeekends      Float
+  priceRenewal       Float
+  priceExtraSeat     Float
+  prepay             Int
+  parking            Int
+  sorting            Int
+  isActive           Boolean
+  units              ObjectUnit[]
+  holidayPrices      EntryHolidayPrice[]
+  futurePrices       EntryFuturePrice[]
+  bookingLimitations EntryBookingLimitation[]
+  discountsByDays    EntryDiscountByDays[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 }
 
 model ObjectUnit {
@@ -113,6 +114,16 @@ model EntryFuturePrice {
   priceWeekday  Float
   priceWeekend  Float
   start         DateTime
+}
+
+model EntryDiscountByDays {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  daysCount     Int
+  discount      Float
+  start         DateTime
+  end           DateTime
 }
 
 model Booking {

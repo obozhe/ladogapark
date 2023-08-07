@@ -20,3 +20,13 @@ export type CreateFuturePriceDTO = {
 };
 
 export type CreateHolidayPriceDTO = { objectEntryId: string; price: number; start: string; end: string };
+
+export type CreateBookingLimitationDTO = { objectEntryId: string; minDays: number; start: string; end: string };
+
+export type CreateDiscountByDaysDTO = {
+  objectEntryId: string;
+  daysCount: number;
+  discount: number;
+  start: string;
+  end: string;
+};

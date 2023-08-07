@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createEntryFuturePrice, deleteEntryFuturePrice, getEntryFuturePrices } from 'server/objects/ObjectCollection';
 import {
   createBookingLimitation,
   deleteBookingLimitation,
   getBookingLimitationsByEntryId,
-} from 'server/objects/booking-limitations/BookingLimitationCollection';
-import { CreateBookingLimitationDTO } from 'server/objects/booking-limitations/types';
-import { CreateFuturePriceDTO } from 'server/objects/types';
+} from 'server/objects/ObjectCollection';
+import { CreateBookingLimitationDTO } from 'server/objects/types';
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as CreateBookingLimitationDTO;
