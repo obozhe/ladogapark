@@ -10,7 +10,7 @@ import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
 import FormHelperText from '@mui/material/FormHelperText';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { StaticDateRangePickerMUI } from 'mui/DatePickerMUI';
+import { StaticDateRangePickerMUI } from 'mui/DatePicker';
 import Dialog from 'ui/Dialog';
 
 export const UnitTemporaryClosureDialog = () => {

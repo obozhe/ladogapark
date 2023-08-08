@@ -16,8 +16,8 @@ import { DateFormats } from 'core/enums/DateFormats';
 import { formatDate } from 'core/helpers/date';
 import { FormHelperText } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { DateRangeMUI } from 'mui/DatePickerMUI';
-import { ControlledInputMUI } from 'mui/InputMUI';
+import { DateRangeMUI } from 'mui/DatePicker';
+import { ControlledInputMUI } from 'mui/Input';
 import AccordionTransition from 'ui/AccordionTransition';
 import Button from 'ui/Button';
 import Card from 'ui/Card';
@@ -101,7 +101,7 @@ export default function BookingLimitationsCard({ objectEntryId }: Props) {
     reset();
   };
 
-  const onCreateFuturePrice = async () => {
+  const onCreateLimitation = async () => {
     if (isValid) {
       setIsUpdating(true);
       setIsAddLimitationPriceShown(false);
@@ -174,7 +174,7 @@ export default function BookingLimitationsCard({ objectEntryId }: Props) {
           </>
         )}
         <AccordionTransition show={isAddLimitationShown}>
-          <form onSubmit={handleSubmit(onCreateFuturePrice)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
+          <form onSubmit={handleSubmit(onCreateLimitation)} className="bg-gray-100 rounded p-4 flex flex-col gap-2">
             <div className="mb-2">Создать ограничение бронирования</div>
             <div className="mb-2">
               <ControlledInputMUI control={control} name="minDays" label="Минимум дней" type="number" />

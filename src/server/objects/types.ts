@@ -30,3 +30,11 @@ export type CreateDiscountByDaysDTO = {
   start: string;
   end: string;
 };
+
+export type CreatePromoCodeByBookingDTO = {
+  objectEntryId: string;
+  minDays: number;
+  discount: number;
+  validityDays: number;
+  discountedEntriesIds: string[];
+};

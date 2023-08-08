@@ -1,20 +1,20 @@
 import { Control, Controller } from 'react-hook-form';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 
-type PropsMUI = Omit<TextFieldProps, 'error'> & {
+type Props = Omit<TextFieldProps, 'error'> & {
   error?: string;
 };
 
-export const InputMUI = ({ error, ...rest }: PropsMUI) => (
+export const InputMUI = ({ error, ...rest }: Props) => (
   <TextField variant="outlined" size="small" fullWidth error={!!error} {...rest} helperText={error || null} />
 );
 
-type ControlledPropsMUI = Omit<PropsMUI, 'name'> & {
+type ControlledProps = Omit<Props, 'name'> & {
   name: string;
   control: Control<any>;
 };
 
-export const ControlledInputMUI = ({ control, name, ...rest }: ControlledPropsMUI) => (
+export const ControlledInputMUI = ({ control, name, ...rest }: ControlledProps) => (
   <Controller
     name={name}
     control={control}

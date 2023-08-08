@@ -9,6 +9,7 @@ import IsActiveField from 'components/ManagementPage/IsActiveField';
 import BookingLimitationsCard from 'components/ManagementPage/Objects/Entry/BookingLimitationsCard';
 import DiscountsByDaysCountCard from 'components/ManagementPage/Objects/Entry/DiscountsByDaysCountCard';
 import PricesCard from 'components/ManagementPage/Objects/Entry/PricesCard';
+import PromoCodesCard from 'components/ManagementPage/Objects/Entry/PromoCodesCard';
 import UnitsCard from 'components/ManagementPage/Objects/Entry/UnitsCard';
 import axios from 'core/axios';
 import { fieldsMapping } from 'core/fieldsMapping';
@@ -62,19 +63,6 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
     </Card>
   );
 
-  const PromoCodes = () => (
-    <Card
-      title="Промокоды"
-      titleComponent={
-        <Button isIconButton color="primary" size="xs">
-          <Plus />
-        </Button>
-      }
-    >
-      <></>
-    </Card>
-  );
-
   const Included = () => (
     <Card title="Включено в стоимость">
       <></>
@@ -114,7 +102,7 @@ export default function ObjectEntryPage({ params }: { params: { objectEntry: str
               <>
                 <BookingLimitationsCard objectEntryId={objectEntry.id} />
                 <DiscountsByDaysCountCard objectEntryId={objectEntry.id} />
-                <PromoCodes />
+                <PromoCodesCard objectEntryId={objectEntry.id} />
               </>
             )}
 

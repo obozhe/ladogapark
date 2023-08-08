@@ -5,6 +5,7 @@ import {
   CreateDiscountByDaysDTO,
   CreateFuturePriceDTO,
   CreateHolidayPriceDTO,
+  CreatePromoCodeByBookingDTO,
 } from './types';
 
 export const getObjectGroupById = (id: string) => {
@@ -17,6 +18,10 @@ export const getObjectEntryById = (id: string) => {
 
 export const getObjectEntries = () => {
   return prisma.objectEntry.findMany({ include: { objectGroup: true } });
+};
+
+export const getObjectEntriesNames = () => {
+  return prisma.objectEntry.findMany({ select: { title: true, id: true }, orderBy: { title: 'asc' } });
 };
 
 export const getObjectGroupsWithObjects = () => {
@@ -89,4 +94,19 @@ export const createDiscountsByDays = (data: CreateDiscountByDaysDTO) => {
 
 export const deleteDiscountsByDays = (id: string) => {
   return prisma.entryDiscountByDays.delete({ where: { id } });
+};
+
+/*---PROMOCODE_BY_BOOKING---*/
+export const getPromoCodesByBookingByEntryId = (id: string) => {
+  return prisma.entryPromoCodeByBooking.findMany({
+    where: { objectEntryId: id },
+  });
+};
+
+export const createPromoCodesByBooking = (data: CreatePromoCodeByBookingDTO) => {
+  return prisma.entryPromoCodeByBooking.create({ data });
+};
+
+export const deleteDPromoCodesByBooking = (id: string) => {
+  return prisma.entryPromoCodeByBooking.delete({ where: { id } });
 };

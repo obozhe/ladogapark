@@ -43,30 +43,31 @@ model ObjectGroup {
 }
 
 model ObjectEntry {
-  id                 String                   @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId      String                   @db.ObjectId
-  objectGroup        ObjectGroup              @relation(fields: [objectGroupId], references: [id])
-  title              String
-  images             String[]
-  description        String
-  content            String
-  seats              Int
-  extraSeats         Int
-  priceWeekdays      Float
-  priceWeekends      Float
-  priceRenewal       Float
-  priceExtraSeat     Float
-  prepay             Int
-  parking            Int
-  sorting            Int
-  isActive           Boolean
-  units              ObjectUnit[]
-  holidayPrices      EntryHolidayPrice[]
-  futurePrices       EntryFuturePrice[]
-  bookingLimitations EntryBookingLimitation[]
-  discountsByDays    EntryDiscountByDays[]
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
+  id                  String                    @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId       String                    @db.ObjectId
+  objectGroup         ObjectGroup               @relation(fields: [objectGroupId], references: [id])
+  title               String
+  images              String[]
+  description         String
+  content             String
+  seats               Int
+  extraSeats          Int
+  priceWeekdays       Float
+  priceWeekends       Float
+  priceRenewal        Float
+  priceExtraSeat      Float
+  prepay              Int
+  parking             Int
+  sorting             Int
+  isActive            Boolean
+  units               ObjectUnit[]
+  holidayPrices       EntryHolidayPrice[]
+  futurePrices        EntryFuturePrice[]
+  bookingLimitations  EntryBookingLimitation[]
+  discountsByDays     EntryDiscountByDays[]
+  promoCodesByBooking EntryPromoCodeByBooking[]
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
 }
 
 model ObjectUnit {
@@ -124,6 +125,16 @@ model EntryDiscountByDays {
   discount      Float
   start         DateTime
   end           DateTime
+}
+
+model EntryPromoCodeByBooking {
+  id                   String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId        String      @db.ObjectId
+  objectEntry          ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  minDays              Int
+  discount             Float
+  validityDays         Int
+  discountedEntriesIds String[]    @db.ObjectId
 }
 
 model Booking {
@@ -296,15 +307,6 @@ model Client {
 //   min        Int      @db.UnsignedInt
 //   date_start DateTime @db.Date
 //   date_end   DateTime @db.Date
-// }
-
-// model objects_promocodes {
-//   id              Int    @id @default(autoincrement()) @db.UnsignedInt
-//   booking_type_id Int    @default(0) @db.UnsignedInt
-//   min_days        Int    @default(0) @db.UnsignedInt
-//   sale            Float  @default(0) @db.Float
-//   limit_days      Int    @default(0) @db.UnsignedInt
-//   types_ids       String @db.Text
 // }
 
 // model objects_services {

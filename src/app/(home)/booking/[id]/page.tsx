@@ -1,10 +1,10 @@
-import { ObjectEntry } from '@prisma/client';
-import Bill from 'components/BookingPage/Bill';
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
+import { ObjectEntry } from '@prisma/client';
+import Bill from 'components/BookingPage/Bill';
 import { getObjectEntryById } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../uploads/objects/test-house.png';
-import { redirect } from 'next/navigation';
 
 type Props = {
   params: { id: string };

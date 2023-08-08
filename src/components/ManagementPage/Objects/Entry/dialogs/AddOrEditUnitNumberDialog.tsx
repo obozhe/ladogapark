@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import { z } from 'zod';
 import { useStateContext } from 'hooks/useStateContext';
 import axios from 'core/axios';
-import { ControlledInputMUI } from 'mui/InputMUI';
+import { ControlledInputMUI } from 'mui/Input';
 import Dialog from 'ui/Dialog';
 
 const getAllUnitsNumbers = (url: string) => axios.get<string[]>(url);

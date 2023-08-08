@@ -16,7 +16,7 @@ const tabs = [
 ];
 
 const theme = createTheme({
-  typography: { fontFamily: 'Raleway, sans-serif' },
+  typography: { fontFamily: 'Raleway, sans-serif', fontSize: 12 },
   // palette: {
   //   primary: {
   //     main: '#221F20',
