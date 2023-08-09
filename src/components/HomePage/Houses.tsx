@@ -20,7 +20,7 @@ const Houses = ({ objectEntries }: Props) => {
   const [activeOption, sentActiveOption] = useState(rentOptions[0]);
   // const filteredObjectGroups = objectEntries.filter((entry) => entry.type === activeOption.type);
 
-  console.log(objectEntries);
+  // console.log(objectEntries);
 
   return (
     <section className="flex flex-col gap-8">

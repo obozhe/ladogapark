@@ -3,6 +3,7 @@
 import dayjs from 'dayjs';
 import CalendarIcon from 'icons/calendar.svg';
 import { TextFieldProps } from '@mui/material';
+import { DateRange } from '@mui/x-date-pickers-pro';
 import { DateRangePicker as DateRangePickerLib } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker as DatePickerLib } from '@mui/x-date-pickers/DatePicker';
@@ -13,7 +14,7 @@ import { Input } from './Input';
 type DatePickerRangeProps = {
   start: string;
   end: string;
-  onChange?: () => void;
+  onChange: (dateRange: DateRange<dayjs.Dayjs>) => void;
 };
 
 type DatePickerProps = {
@@ -83,12 +84,13 @@ export const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePi
   </LocalizationProvider>;
 };
 
-export const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
+export const DatePickerRange = ({ start, end, onChange }: DatePickerRangeProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
       <DateRangePickerLib
         localeText={{ start, end }}
         slots={{ textField: CustomInput }}
+        onChange={onChange}
         slotProps={{
           fieldSeparator: { children: '' },
           field: { className: 'grid grid-col-1 md:flex [&>*:last-child]:ml-0' },

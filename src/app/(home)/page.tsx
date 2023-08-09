@@ -8,16 +8,23 @@ import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
+import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
 import YandexMap from 'components/HomePage/YandexMap';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import Button from 'ui/Button';
-import { DatePickerRange } from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
 import House1Image from '../../../public/images/house-1.png';
 import House2Image from '../../../public/images/house-2.png';
 import House3Image from '../../../public/images/house-3.png';
 import House4Image from '../../../public/images/house-4.png';
+
+type Props = {
+  searchParams: {
+    from: string;
+    to: string;
+  };
+};
 
 const Search = async () => {
   const weather = await getWeather();
@@ -32,10 +39,7 @@ const Search = async () => {
       <div className="flex flex-col text-center gap-5">
         <div className="flex md:gap-3 flex-col md:flex-row">
           {/* TODO: filter by search query (server actions?) */}
-          <DatePickerRange start="Дата заезда" end="Дата выезда" />
-          <Button size="xxl" color="primary" className="w-full md:w-fit">
-            Показать объекты
-          </Button>
+          <HousesFilter />
         </div>
         {weather && (
           <span className="text-white font-semibold text-xl">
@@ -201,8 +205,9 @@ const Contacts = () => {
   );
 };
 
-export default async function Home() {
+export default async function Home({ searchParams }: Props) {
   const objectEntries = await getObjectEntries();
+  console.log(searchParams);
 
   return (
     <main>
