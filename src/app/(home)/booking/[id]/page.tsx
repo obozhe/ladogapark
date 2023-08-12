@@ -40,7 +40,7 @@ const BookingId = async ({ params }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-[2fr_1fr] gap-12">
+    <div className="grid grid-cols-[2fr_1fr] gap-12 mt-12">
       <Info objectEntry={objectEntry} />
       <Bill objectEntry={objectEntry} />
     </div>

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={twMerge(raleway.variable, inter.variable, 'font-raleway')}>
+      <body className={twMerge(raleway.variable, inter.variable, 'font-raleway bg-[#F7FAFC]')}>
         <StateContextProvider>
           {children}
           <DialogManager />

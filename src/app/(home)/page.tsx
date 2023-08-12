@@ -37,8 +37,7 @@ const Search = async () => {
         <p>Ладожского озера</p>
       </div>
       <div className="flex flex-col text-center gap-5">
-        <div className="flex md:gap-3 flex-col md:flex-row">
-          {/* TODO: filter by search query (server actions?) */}
+        <div className="grid md:grid-cols-[1fr_1fr_max-content] grid-rows-3 gap-3">
           <HousesFilter />
         </div>
         {weather && (

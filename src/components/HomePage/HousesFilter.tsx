@@ -3,33 +3,43 @@
 import dayjs from 'dayjs';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { DateRange } from '@mui/x-date-pickers-pro';
 import Button from 'ui/Button';
-import { DatePickerRange } from 'ui/DatePicker';
 import Loader from 'ui/Loader';
+import NewDatePicker from 'ui/NewDatePicker';
+import NumberInput from 'ui/NumberInput';
 
 const HousesFilter = () => {
   const [isTransition, startTransition] = useTransition();
-  const [dateRange, setDateRange] = useState<DateRange<dayjs.Dayjs>>([null, null]);
+  const [date, setDate] = useState<dayjs.Dayjs>();
+  const [nightsAmount, setNightAmount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleButton = () => {
-    if (!dateRange[0] || !dateRange[1]) return;
+  const handleClick = () => {
+    console.log(date, nightsAmount);
+    if (!date || !nightsAmount) return;
 
     const newSearchParams = new URLSearchParams();
-    newSearchParams.set('from', dateRange[0].format());
-    newSearchParams.set('to', dateRange[1].format());
+    newSearchParams.set('from', date.format());
+    newSearchParams.set('to', date.add(nightsAmount, 'day').format());
 
     startTransition(() => {
       router.push(`${pathname}?${newSearchParams.toString()}`);
     });
   };
 
+  console.log(nightsAmount);
+
   return (
     <>
-      <DatePickerRange start="Дата заезда" end="Дата выезда" onChange={(value) => setDateRange(value)} />
-      <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleButton}>
+      <NewDatePicker
+        placeholderText="Дата заезда"
+        onChange={(value) => setDate(value)}
+        iconTheme="black"
+        minDate={new Date()}
+      />
+      <NumberInput placeholder="Кол-во ночей" iconTheme="black" onChange={setNightAmount} />
+      <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleClick}>
         {isTransition ? <Loader /> : 'Показать объекты'}
       </Button>
     </>

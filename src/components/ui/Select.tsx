@@ -21,6 +21,7 @@ type Props<Value> = {
   size?: Size;
   className?: string;
   CustomOption?: ({ option, label }: CustomOptionProps) => React.JSX.Element;
+  showIcon?: boolean;
 };
 
 const Select = <Value extends string | number>({
@@ -33,6 +34,7 @@ const Select = <Value extends string | number>({
   className,
   CustomOption,
   size = 'sm',
+  showIcon = true,
 }: Props<Value>) => {
   const [selectedOptionValue, setSelectedOptionValue] = useState<Value>(value);
 
@@ -59,9 +61,11 @@ const Select = <Value extends string | number>({
             )}
           >
             <span className="block truncate">{options.find((o) => o.value === selectedOptionValue)?.label}</span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronsUpDown className="h-5 w-5 text-primary" aria-hidden="true" />
-            </span>
+            {showIcon && (
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronsUpDown className="h-5 w-5 text-primary" aria-hidden="true" />
+              </span>
+            )}
           </Listbox.Button>
           <Transition
             as={Fragment}
@@ -74,7 +78,7 @@ const Select = <Value extends string | number>({
           >
             <Listbox.Options
               className={twMerge(
-                'absolute z-10 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
+                'absolute z-10 max-h-60 w-fit overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
                 showAbove ? 'mb-1 bottom-full' : 'mt-1 top-full'
               )}
             >
