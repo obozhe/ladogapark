@@ -1,7 +1,7 @@
 import ru from 'date-fns/locale/ru';
 import dayjs, { Dayjs } from 'dayjs';
 import CalendarIcon from 'icons/calendar.svg';
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps, ReactDatePickerProps, registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { twMerge } from 'tailwind-merge';
