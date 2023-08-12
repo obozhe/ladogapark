@@ -1,10 +1,8 @@
 'use client';
 
 import React, { ForwardedRef, InputHTMLAttributes, ReactNode } from 'react';
-import { Control, Controller } from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;

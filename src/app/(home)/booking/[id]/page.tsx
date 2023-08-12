@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { ObjectEntry } from '@prisma/client';
 import Bill from 'components/BookingPage/Bill';
 import { getObjectEntryById } from 'server/objects/ObjectCollection';
-import HouseTest from '../../../../../uploads/objects/test-house.png';
+import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
   params: { id: string };

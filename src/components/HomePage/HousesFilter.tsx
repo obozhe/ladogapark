@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import Button from 'ui/Button';
-import Loader from 'ui/Loader';
 import NewDatePicker from 'ui/NewDatePicker';
 import NumberInput from 'ui/NumberInput';
 
@@ -40,7 +39,7 @@ const HousesFilter = () => {
       />
       <NumberInput placeholder="Кол-во ночей" iconTheme="black" onChange={setNightAmount} />
       <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleClick}>
-        {isTransition ? <Loader /> : 'Показать объекты'}
+        {isTransition ? 'loading...' : 'Показать объекты'}
       </Button>
     </>
   );

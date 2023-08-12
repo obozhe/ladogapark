@@ -4,15 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "prisma generate && next dev",
-    "build": "prisma generate && prisma db push && prisma db seed && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "check-types": "tsc --noemit",
     "lint": "npm run check-types && next lint",
     "prepare": "husky install",
     "pre-commit": "next lint"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "lint-staged": {
     "src/**/*.{tsx,ts,js}": [
@@ -22,43 +19,27 @@
     ]
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^1.7.15",
-    "@hookform/resolvers": "^3.1.1",
-    "@mui/material": "^5.14.2",
-    "@mui/x-date-pickers": "^6.10.2",
-    "@mui/x-date-pickers-pro": "^6.10.2",
     "@pbe/react-yandex-maps": "^1.2.4",
     "@prisma/client": "^5.0.0",
     "@svgr/webpack": "^8.0.1",
-    "@tanstack/react-table": "^8.9.3",
-    "@tippyjs/react": "^4.2.6",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
-    "bcrypt": "^5.1.0",
     "dayjs": "^1.11.9",
     "isomorphic-dompurify": "^1.8.0",
-    "lodash": "^4.17.21",
     "lucide-react": "^0.262.0",
     "next": "^13.4.9",
     "postcss": "8.4.25",
     "react": "18.2.0",
     "react-datepicker": "^4.16.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.45.2",
-    "react-loading-skeleton": "^3.3.1",
-    "react-tooltip": "^5.18.1",
     "sharp": "^0.32.3",
     "swr": "^2.2.0",
     "tailwind-merge": "^1.13.2",
-    "tailwindcss": "3.3.2",
-    "zod": "^3.21.4"
+    "tailwindcss": "3.3.2"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "@types/bcrypt": "^5.0.0",
-    "@types/lodash": "^4.14.195",
     "@types/node": "^20.4.2",
     "@types/react": "18.2.14",
     "@types/react-datepicker": "^4.15.0",
