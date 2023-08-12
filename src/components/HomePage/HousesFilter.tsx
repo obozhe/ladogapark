@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import Button from 'ui/Button';
-import NewDatePicker from 'ui/NewDatePicker';
+import DatePicker from 'ui/DatePicker';
 import NumberInput from 'ui/NumberInput';
 
 const HousesFilter = () => {
@@ -31,12 +31,7 @@ const HousesFilter = () => {
 
   return (
     <>
-      <NewDatePicker
-        placeholderText="Дата заезда"
-        onChange={(value) => setDate(value)}
-        iconTheme="black"
-        minDate={new Date()}
-      />
+      <DatePicker placeholderText="Дата заезда" onChange={(value) => setDate(value)} minDate={new Date()} />
       <NumberInput placeholder="Кол-во ночей" iconTheme="black" onChange={setNightAmount} />
       <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleClick}>
         {isTransition ? 'loading...' : 'Показать объекты'}

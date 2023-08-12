@@ -13,7 +13,7 @@ type Props = {
   max?: number;
 };
 
-const NumberInput = ({ placeholder, iconTheme = 'white', min, max, onChange }: Props) => {
+const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
   const [value, setValue] = useState(0);
 
   const decrease = () => {
@@ -50,25 +50,19 @@ const NumberInput = ({ placeholder, iconTheme = 'white', min, max, onChange }: P
         min={0}
         max={100}
       />
-      <div className={twMerge('absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-[2px] h-full')}>
-        <span
-          className={twMerge(
-            'h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer',
-            iconTheme === 'black' ? 'bg-transparent stroke-black' : '[&_path]:stroke-white bg-black'
-          )}
+      <div className="absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-[2px] h-full">
+        <button
+          className="h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer bg-transparent stroke-black"
           onClick={decrease}
         >
           <MinusIcon />
-        </span>
-        <span
-          className={twMerge(
-            'rounded-r-[10px] h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer',
-            iconTheme === 'black' ? 'bg-transparent stroke-black' : '[&_path]:stroke-white bg-black'
-          )}
+        </button>
+        <button
+          className="rounded-r-[10px] h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer bg-transparent stroke-black"
           onClick={increase}
         >
           <PlusIcon />
-        </span>
+        </button>
       </div>
     </div>
   );

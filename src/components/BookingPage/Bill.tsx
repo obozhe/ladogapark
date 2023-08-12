@@ -5,8 +5,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ObjectEntry } from '@prisma/client';
 import formatToRuble from 'core/helpers/number';
 import Button from 'ui/Button';
+import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
-import NewDatePicker from 'ui/NewDatePicker';
 import NumberInput from 'ui/NumberInput';
 
 type InfoProps = {
@@ -46,13 +46,13 @@ const AdditionalGoods = ({ name, price, onChange }: AdditionalGoodsProps) => {
       <span className="text-tertiary">{name}</span>
       <span className="justify-self-end text-tertiary">{formatToRuble(price)}</span>
       <div className="justify-self-end">
-        <span className="p-2 text-tertiary cursor-pointer" onClick={decrease}>
+        <button className="px-2 text-tertiary cursor-pointer" onClick={decrease}>
           -
-        </span>
-        <span className="p-2">{amount}</span>
-        <span className="p-2 cursor-pointer" onClick={increase}>
+        </button>
+        <span className="px-2">{amount}</span>
+        <button className="px-2 cursor-pointer" onClick={increase}>
           +
-        </span>
+        </button>
       </div>
     </div>
   );
@@ -105,7 +105,7 @@ const Bill = ({ objectEntry }: InfoProps) => {
       </div>
       <div className="flex flex-col py-5 gap-5">
         <div className="flex gap-4">
-          <NewDatePicker placeholderText="Дата заезда" onChange={setDate} minDate={new Date()} />
+          <DatePicker placeholderText="Дата заезда" onChange={setDate} minDate={new Date()} />
           <NumberInput placeholder="Кол-во ночей" onChange={setNightsAmount} />
         </div>
         <div className="flex flex-col">

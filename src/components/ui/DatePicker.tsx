@@ -1,17 +1,20 @@
 import ru from 'date-fns/locale/ru';
 import dayjs, { Dayjs } from 'dayjs';
 import CalendarIcon from 'icons/calendar.svg';
-import { useState } from 'react';
-import DatePicker, { ReactDatePickerCustomHeaderProps, ReactDatePickerProps, registerLocale } from 'react-datepicker';
+import { useEffect, useState } from 'react';
+import DatePickerLib, {
+  ReactDatePickerCustomHeaderProps,
+  ReactDatePickerProps,
+  registerLocale,
+} from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { twMerge } from 'tailwind-merge';
+import useOutsideClick from 'hooks/useOutsideClick';
 import { getCurrentYear, getSelectOptions } from 'core/helpers/date';
 import '../../../public/datePicker.css';
 import Select from './Select';
 
 type Props = {
   onChange: (value: Dayjs) => void;
-  iconTheme?: 'black' | 'white';
 } & Omit<ReactDatePickerProps, 'onChange'>;
 
 registerLocale('ru', ru);
@@ -42,33 +45,34 @@ const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHe
   );
 };
 
-const NewDatePicker = ({ onChange, selected, iconTheme = 'white', ...rest }: Props) => {
+const DatePicker = ({ onChange, selected, ...rest }: Props) => {
   const [date, setDate] = useState<Date | null>(null);
+  const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [date, setOpen]);
 
   return (
-    <div className="relative h-full w-full font-semibold">
-      <DatePicker
+    <div className="relative h-full w-full font-semibold" ref={ref} onClick={() => setOpen(true)}>
+      <DatePickerLib
         locale="ru"
-        dateFormat="dd-MM-yyyy"
+        dateFormat="dd.MM.yyyy"
         onChange={(value) => {
           onChange(dayjs(value));
           setDate(value);
         }}
+        open={open}
         className="h-full w-full overflow-hidden rounded-[10px] pl-3 pr-[29px] min-h-[50px]"
         selected={date}
         renderCustomHeader={CustomHeader}
         {...rest}
       />
-      <div
-        className={twMerge(
-          'absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] rounded-r-[10px]',
-          iconTheme === 'black' ? 'bg-transparent' : 'bg-black'
-        )}
-      >
-        <CalendarIcon className={twMerge(iconTheme === 'black' ? 'fill-black' : 'fill-white')} />
+      <div className="absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] rounded-r-[10px] bg-transparent cursor-pointer">
+        <CalendarIcon className="fill-black" />
       </div>
     </div>
   );
 };
 
-export default NewDatePicker;
+export default DatePicker;
