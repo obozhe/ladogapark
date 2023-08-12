@@ -108,7 +108,7 @@ const Bill = ({ objectEntry }: InfoProps) => {
           <NewDatePicker placeholderText="Дата заезда" onChange={setDate} minDate={new Date()} />
           <NumberInput placeholder="Кол-во ночей" onChange={setNightsAmount} />
         </div>
-        <div>
+        <div className="flex flex-col">
           <span className="text-lg mb-4">Включено в стоимость:</span>
           <span className="text-base">Два парковочных места</span>
           <span className="text-base">Мангал</span>
