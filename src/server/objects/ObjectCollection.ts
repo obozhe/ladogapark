@@ -7,3 +7,7 @@ export const getObjectEntryById = (id: string) => {
 export const getObjectEntries = () => {
   return prisma.objectEntry.findMany({ include: { objectGroup: true } });
 };
+
+export const getObjectGroups = () => {
+  return prisma.objectGroup.findMany();
+};

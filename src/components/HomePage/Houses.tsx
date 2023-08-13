@@ -6,31 +6,29 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { ObjectEntry } from '@prisma/client';
 import { ObjectTypes } from 'server/objects/types';
+import Tabs from 'ui/Tabs';
 
 type Props = {
   objectEntries: ObjectEntry[];
 };
-const rentOptions: Record<'label' | 'type', string | ObjectTypes>[] = [
-  { label: 'На сутки', type: ObjectTypes.House },
-  { label: 'На день', type: ObjectTypes.Daily },
-  { label: 'Бани', type: ObjectTypes.Bath },
+const rentOptions: Record<'label' | 'value', string | ObjectTypes>[] = [
+  { label: 'На сутки', value: ObjectTypes.House },
+  { label: 'На день', value: ObjectTypes.Daily },
+  { label: 'Бани', value: ObjectTypes.Bath },
 ];
 
 const Houses = ({ objectEntries }: Props) => {
   const [activeOption, sentActiveOption] = useState(rentOptions[0]);
-  // const filteredObjectGroups = objectEntries.filter((entry) => entry.type === activeOption.type);
-
-  // console.log(objectEntries);
 
   return (
     <section className="flex flex-col gap-8">
       <h2>Каталог домов</h2>
       <div className="flex justify-between flex-col md:flex-row gap-10">
-        <div className="flex gap-5">
-          {rentOptions.map((option) => {
+        <Tabs tabs={rentOptions} />
+        {/* {rentOptions.map((option) => {
             return (
               <span
-                key={option.type}
+                key={option.value}
                 onClick={() => sentActiveOption(option)}
                 className={twMerge(
                   'border-3 rounded-md border-black py-1 px-2 font-semibold text-lg cursor-pointer',
@@ -40,8 +38,7 @@ const Houses = ({ objectEntries }: Props) => {
                 {option.label}
               </span>
             );
-          })}
-        </div>
+          })} */}
         <div className="flex flex-col font-semibold text-xs font-inter text-black gap-1 -order-1 md:order-1">
           <div className="flex gap-2 items-center">
             <div className="bg-secondary w-4 h-4" />

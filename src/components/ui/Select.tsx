@@ -79,7 +79,8 @@ const Select = <Value extends string | number>({
             <Listbox.Options
               className={twMerge(
                 'absolute z-10 max-h-60 w-fit overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
-                showAbove ? 'mb-1 bottom-full' : 'mt-1 top-full'
+                showAbove ? 'mb-1 bottom-full' : 'mt-1 top-full',
+                fullWidth && 'w-full'
               )}
             >
               {options.map((option, index) =>
