@@ -23,8 +23,12 @@ const Header = () => {
   return (
     <header className="flex py-8 justify-between layout-container absolute z-10 lg:static w-full p-3">
       <div className="flex gap-24">
-        <LogoMobileIcon className="lg:hidden" />
-        <LogoIcon className="hidden lg:block" />
+        <Link href="/" className="lg:hidden">
+          <LogoMobileIcon />
+        </Link>
+        <Link href="/" className="hidden lg:block">
+          <LogoIcon />
+        </Link>
         <nav className="lg:self-end lg:font-bold lg:flex lg:gap-11 hidden">
           {navLinks.map((navLink) => (
             <Link href={navLink.link} key={navLink.link}>

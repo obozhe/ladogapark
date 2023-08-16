@@ -1,9 +1,6 @@
-import DialogManager from 'features/DialogManager';
 import type { Metadata } from 'next';
 import { Inter, Raleway } from 'next/font/google';
-import 'react-loading-skeleton/dist/skeleton.css';
 import { twMerge } from 'tailwind-merge';
-import StateContextProvider from 'containers/StateContext';
 import '../../public/globals.css';
 
 const raleway = Raleway({ subsets: ['latin'], variable: '--raleway' });
@@ -17,12 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={twMerge(raleway.variable, inter.variable, 'font-raleway')}>
-        <StateContextProvider>
-          {children}
-          <DialogManager />
-        </StateContextProvider>
-      </body>
+      <body className={twMerge(raleway.variable, inter.variable, 'font-raleway bg-[#F7FAFC]')}>{children}</body>
     </html>
   );
 }

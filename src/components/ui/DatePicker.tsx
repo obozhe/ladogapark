@@ -1,100 +1,78 @@
-'use client';
-
-import dayjs from 'dayjs';
+import ru from 'date-fns/locale/ru';
+import dayjs, { Dayjs } from 'dayjs';
 import CalendarIcon from 'icons/calendar.svg';
-import { TextFieldProps } from '@mui/material';
-import { DateRangePicker as DateRangePickerLib } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker as DatePickerLib } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { useEffect, useState } from 'react';
+import DatePickerLib, {
+  ReactDatePickerCustomHeaderProps,
+  ReactDatePickerProps,
+  registerLocale,
+} from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import useOutsideClick from 'hooks/useOutsideClick';
+import { getCurrentYear, getSelectOptions } from 'core/helpers/date';
 import '../../../public/datePicker.css';
-import { Input } from './Input';
+import Select from './Select';
 
-type DatePickerRangeProps = {
-  start: string;
-  end: string;
-  onChange?: () => void;
-};
+type Props = {
+  onChange: (value: Dayjs) => void;
+} & Omit<ReactDatePickerProps, 'onChange'>;
 
-type DatePickerProps = {
-  label: string;
-  onChange: (date: dayjs.Dayjs | null) => void;
-  disablePast?: boolean;
-  value?: dayjs.Dayjs | null;
-  minDate?: dayjs.Dayjs;
-  error?: boolean;
-  helperText?: string;
-};
+registerLocale('ru', ru);
 
-const CustomInput = ({
-  label,
-  value,
-  onChange,
-  onBlur,
-  onClick,
-  onFocus,
-  onKeyDown,
-  onMouseUp,
-  onPaste,
-  id,
-  //@ts-ignore
-  InputProps: { ref },
-}: TextFieldProps) => {
+const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHeaderProps) => {
+  const monthsOptions = getSelectOptions({ locale: 'ru', type: 'month', date: dayjs() });
+  const currentMonth = dayjs(date).get('M') + 1;
+  const yearOptions = getSelectOptions({ type: 'year', yearStart: 0, yearEnd: 10, date: dayjs() });
+  const currentYear = getCurrentYear();
+
   return (
-    <Input
-      className="border-none"
-      onClick={onClick}
-      placeholder={label as string}
-      value={value as string}
-      onChange={onChange}
-      onFocus={onFocus}
-      onKeyDown={onKeyDown}
-      ref={ref}
-      onMouseUp={onMouseUp}
-      onPaste={onPaste}
-      onBlur={onBlur}
-      autoComplete="off"
-      endAdornment={id?.includes('-start') ? <CalendarIcon /> : undefined}
-      _size="xxl"
-      id={id}
-    />
-  );
-};
-
-const removeLicenseNotification = () => {
-  setTimeout(() => {
-    const container = document.querySelector('.MuiDateRangeCalendar-root');
-
-    if (container?.firstChild?.textContent !== 'MUI X Missing license key') return;
-
-    container.removeChild(container?.firstChild);
-  }, 0);
-};
-
-export const DatePicker = ({ value, minDate = dayjs(), label, onChange }: DatePickerProps) => {
-  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-    <DatePickerLib<dayjs.Dayjs>
-      value={value}
-      minDate={minDate}
-      label={label}
-      onChange={onChange}
-      onOpen={removeLicenseNotification}
-    />
-  </LocalizationProvider>;
-};
-
-export const DatePickerRange = ({ start, end }: DatePickerRangeProps) => {
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <DateRangePickerLib
-        localeText={{ start, end }}
-        slots={{ textField: CustomInput }}
-        slotProps={{
-          fieldSeparator: { children: '' },
-          field: { className: 'grid grid-col-1 md:flex [&>*:last-child]:ml-0' },
-        }}
-        onOpen={removeLicenseNotification}
+    <div className="flex gap-2 justify-center">
+      <Select
+        options={monthsOptions}
+        value={currentMonth}
+        showIcon={false}
+        className="border-0 text-primary p-0 capitalize font-medium text-base hover:text-secondary"
+        onChange={(value) => changeMonth(value - 1)}
       />
-    </LocalizationProvider>
+      <Select
+        options={yearOptions}
+        value={currentYear}
+        showIcon={false}
+        className="border-0 text-primary p-0 font-medium text-base hover:text-secondary"
+        onChange={changeYear}
+      />
+    </div>
   );
 };
+
+const DatePicker = ({ onChange, selected, ...rest }: Props) => {
+  const [date, setDate] = useState<Date | null>(null);
+  const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [date, setOpen]);
+
+  return (
+    <div className="relative h-full w-full font-semibold" ref={ref} onClick={() => setOpen(true)}>
+      <DatePickerLib
+        locale="ru"
+        dateFormat="dd.MM.yyyy"
+        onChange={(value) => {
+          onChange(dayjs(value));
+          setDate(value);
+        }}
+        open={open}
+        className="h-full w-full overflow-hidden rounded-[10px] pl-3 pr-[29px] min-h-[50px]"
+        selected={date}
+        renderCustomHeader={CustomHeader}
+        {...rest}
+      />
+      <div className="absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] rounded-r-[10px] bg-transparent cursor-pointer">
+        <CalendarIcon className="fill-black" />
+      </div>
+    </div>
+  );
+};
+
+export default DatePicker;
