@@ -43,9 +43,9 @@ model ObjectGroup {
 }
 
 model ObjectEntry {
-  id                  String                    @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId       String                    @db.ObjectId
-  objectGroup         ObjectGroup               @relation(fields: [objectGroupId], references: [id])
+  id                  String                       @id @default(auto()) @map("_id") @db.ObjectId
+  objectGroupId       String                       @db.ObjectId
+  objectGroup         ObjectGroup                  @relation(fields: [objectGroupId], references: [id])
   title               String
   images              String[]
   description         String
@@ -66,8 +66,10 @@ model ObjectEntry {
   bookingLimitations  EntryBookingLimitation[]
   discountsByDays     EntryDiscountByDays[]
   promoCodesByBooking EntryPromoCodeByBooking[]
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime                  @updatedAt
+  extraServices       EntryExtraService[]
+  includedCommodities CommoditiesIncludedInEntry[]
+  createdAt           DateTime                     @default(now())
+  updatedAt           DateTime                     @updatedAt
 }
 
 model ObjectUnit {
@@ -137,6 +139,35 @@ model EntryPromoCodeByBooking {
   discountedEntriesIds String[]    @db.ObjectId
 }
 
+model EntryExtraService {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  title         String
+  price         Float
+}
+
+model CommoditiesIncludedInEntry {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  objectEntryId String      @db.ObjectId
+  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  commodityId   String      @db.ObjectId
+  commodity     Commodity   @relation(fields: [commodityId], references: [id])
+}
+
+model Commodity {
+  id            String                       @id @default(auto()) @map("_id") @db.ObjectId
+  title         String                       @unique()
+  icon          String                       @default("")
+  selling       Boolean                      @default(false)
+  price         Float                        @default(0)
+  sport         Boolean                      @default(false)
+  sorting       Int                          @default(0)
+  isActive      Boolean                      @default(true)
+  countPayments Int                          @default(0)
+  entries       CommoditiesIncludedInEntry[]
+}
+
 model Booking {
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
   number           String     @unique()
@@ -200,20 +231,6 @@ model Client {
 //   objectEntriesIds String[]      @db.ObjectId
 // }
 
-// model Good {
-//   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-//   title         String       @default("")
-//   icon          String       @default("")
-//   selling       Boolean      @default(false)
-//   price         Float        @default(0)
-//   sport         Boolean      @default(false)
-//   sorting       Int          @default(0)
-//   isActive      Boolean      @default(true)
-//   countPayments Int          @default(0)
-//   objectEntry   ObjectEntry? @relation(fields: [objectEntryId], references: [id])
-//   objectEntryId String?      @db.ObjectId
-// }
-
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 
 // model booking_attachments {
@@ -232,18 +249,6 @@ model Client {
 //   season      Boolean
 //   sorting     Int     @db.UnsignedInt
 //   status      Boolean @default(true)
-// }
-
-// model goodslist {
-//   id             Int     @id @default(autoincrement()) @db.UnsignedInt
-//   title          String  @default("") @db.VarChar(255)
-//   icon           String  @default("") @db.VarChar(255)
-//   selling        Boolean @default(false)
-//   price          Float   @default(0) @db.Float
-//   sport          Boolean @default(false)
-//   sorting        Int     @default(0) @db.UnsignedInt
-//   status         Boolean @default(true)
-//   count_payments Int     @default(0) @db.UnsignedInt
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -299,22 +304,6 @@ model Client {
 
 //   @@index([type_target], map: "type_target")
 //   @@index([type_when], map: "type_when")
-// }
-
-// model objects_minbooking {
-//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
-//   type_id    Int      @db.UnsignedInt
-//   min        Int      @db.UnsignedInt
-//   date_start DateTime @db.Date
-//   date_end   DateTime @db.Date
-// }
-
-// model objects_services {
-//   id      Int     @id @default(autoincrement()) @db.UnsignedInt
-//   type_id Int     @db.UnsignedInt
-//   title   String  @default("") @db.VarChar(150)
-//   price   Float   @default(0) @db.Float
-//   active  Boolean @default(true)
 // }
 
 // model partners {
