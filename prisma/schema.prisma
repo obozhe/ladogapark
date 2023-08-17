@@ -35,7 +35,7 @@ model ObjectGroup {
   title         String
   alias         String        @unique
   type          ObjectType
-  sorting       Int
+  sorting       Int           @default(0)
   isActive      Boolean       @default(true)
   objectEntries ObjectEntry[]
   createdAt     DateTime      @default(now())
@@ -51,14 +51,14 @@ model ObjectEntry {
   description         String
   content             String
   seats               Int
-  extraSeats          Int
+  extraSeats          Int                          @default(0)
   priceWeekdays       Float
   priceWeekends       Float
-  priceRenewal        Float
+  // priceRenewal        Float
   priceExtraSeat      Float
   prepay              Int
-  parking             Int
-  sorting             Int
+  parking             Int                          @default(0)
+  // sorting             Int                       @default(0)
   isActive            Boolean
   units               ObjectUnit[]
   holidayPrices       EntryHolidayPrice[]
