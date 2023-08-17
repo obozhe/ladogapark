@@ -206,10 +206,18 @@ const Contacts = () => {
 
 export default async function Home({ searchParams }: Props) {
   const objectEntries = await getObjectEntries();
-  console.log(searchParams);
 
   return (
     <main>
+      {/* <div className="h-5 w-5">
+        <Image
+          src={process.env.UPLOADS_URL + '91f26491-85ce-4596-a875-8cb0dea4b8a9.jpg'}
+          alt="test"
+          className="h-full w-full"
+          width={0}
+          height={0}
+        />
+      </div> */}
       <Search />
       <div className="flex flex-col gap-36 pt-[150px] layout-container px-2">
         <Houses objectEntries={objectEntries} />

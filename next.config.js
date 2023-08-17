@@ -17,6 +17,16 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ladogapark-crm-production.up.railway.app',
+        port: '',
+        pathname: '/uploads/**',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
