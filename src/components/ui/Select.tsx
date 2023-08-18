@@ -1,4 +1,3 @@
-import { Check, ChevronsUpDown } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
@@ -63,7 +62,7 @@ const Select = <Value extends string | number>({
             <span className="block truncate">{options.find((o) => o.value === selectedOptionValue)?.label}</span>
             {showIcon && (
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronsUpDown className="h-5 w-5 text-primary" aria-hidden="true" />
+                {/* <ChevronsUpDown className="h-5 w-5 text-primary" aria-hidden="true" /> */}v
               </span>
             )}
           </Listbox.Button>
