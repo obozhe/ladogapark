@@ -2,14 +2,13 @@
 
 import HumanIcon from 'icons/human.svg';
 import Link from 'next/link';
-import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
-import { ObjectEntry } from '@prisma/client';
+// import { useState } from 'react';
+import { Entry } from '@prisma/client';
 import { ObjectTypes } from 'server/objects/types';
 import Tabs from 'ui/Tabs';
 
 type Props = {
-  objectEntries: ObjectEntry[];
+  objectEntries: Entry[];
 };
 const rentOptions: Record<'label' | 'value', string | ObjectTypes>[] = [
   { label: 'На сутки', value: ObjectTypes.House },
@@ -18,7 +17,7 @@ const rentOptions: Record<'label' | 'value', string | ObjectTypes>[] = [
 ];
 
 const Houses = ({ objectEntries }: Props) => {
-  const [activeOption, sentActiveOption] = useState(rentOptions[0]);
+  // const [activeOption, sentActiveOption] = useState(rentOptions[0]);
 
   return (
     <section className="flex flex-col gap-8">

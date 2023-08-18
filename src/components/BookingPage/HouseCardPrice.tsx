@@ -1,12 +1,12 @@
 'use client';
 
-import { ObjectGroup } from '@prisma/client';
+import { Group } from '@prisma/client';
 import Button from 'ui/Button';
 import Select from 'ui/Select';
 import Tabs from 'ui/Tabs';
 
 type Props = {
-  object: ObjectGroup;
+  object: Group;
 };
 
 type PriceInfoProps = {

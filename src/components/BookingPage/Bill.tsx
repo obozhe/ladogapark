@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { ObjectEntry } from '@prisma/client';
+import { Entry } from '@prisma/client';
 import formatToRuble from 'core/helpers/number';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
@@ -10,7 +10,7 @@ import Disclosure from 'ui/Disclosure';
 import NumberInput from 'ui/NumberInput';
 
 type InfoProps = {
-  objectEntry: ObjectEntry;
+  entry: Entry;
 };
 
 type AdditionalGoodsProps = {
@@ -58,7 +58,7 @@ const AdditionalGoods = ({ name, price, onChange }: AdditionalGoodsProps) => {
   );
 };
 
-const Bill = ({ objectEntry }: InfoProps) => {
+const Bill = ({ entry }: InfoProps) => {
   const [total, setTotal] = useState(0);
   const [date, setDate] = useState<dayjs.Dayjs>();
   const [nightsAmount, setNightsAmount] = useState(0);
@@ -76,9 +76,9 @@ const Bill = ({ objectEntry }: InfoProps) => {
         const isWeekend = weekday === 0 || weekday === 6;
 
         if (isWeekend) {
-          weekendsPrice += objectEntry.priceWeekends;
+          weekendsPrice += entry.priceWeekends;
         } else {
-          weekdaysPrice += objectEntry.priceWeekdays;
+          weekdaysPrice += entry.priceWeekdays;
         }
 
         currenDate = date.add(i, 'day');
@@ -86,12 +86,12 @@ const Bill = ({ objectEntry }: InfoProps) => {
     }
 
     setTotal(additionalGoodsTotal + weekdaysPrice + weekendsPrice);
-  }, [additionalGoodsTotal, nightsAmount, objectEntry, date]);
+  }, [additionalGoodsTotal, nightsAmount, entry, date]);
 
   return (
     <section className="[&>*:not(:last-child)]:border-b-2 border-tertiary font-semibold">
       <div className="grid grid-rows-[max-content_max-content] pb-2 grid-cols-[max-content_max-content] gap-2">
-        {[objectEntry.priceWeekdays, objectEntry.priceWeekends].map((amount, index) => (
+        {[entry.priceWeekdays, entry.priceWeekends].map((amount, index) => (
           <span key={amount + index} className="text-3xl font-inter">
             {formatToRuble(amount)}
             {index === 0 && ' /'}

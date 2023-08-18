@@ -1,13 +1,13 @@
 import prisma from 'core/prisma';
 
-export const getObjectEntryById = (id: string) => {
-  return prisma.objectEntry.findUnique({ where: { id }, include: { objectGroup: true } });
+export const getEntryById = (id: string) => {
+  return prisma.entry.findUnique({ where: { id }, include: { group: true } });
 };
 
 export const getObjectEntries = () => {
-  return prisma.objectEntry.findMany({ include: { objectGroup: true } });
+  return prisma.entry.findMany({ include: { group: true } });
 };
 
-export const getObjectGroups = () => {
-  return prisma.objectGroup.findMany();
+export const getGroups = () => {
+  return prisma.group.findMany();
 };
