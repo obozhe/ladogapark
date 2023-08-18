@@ -1,9 +1,9 @@
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { ObjectEntry } from '@prisma/client';
+import { Entry } from '@prisma/client';
 import Bill from 'components/BookingPage/Bill';
-import { getObjectEntryById } from 'server/objects/ObjectCollection';
+import { getEntryById } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
@@ -11,20 +11,20 @@ type Props = {
 };
 
 type InfoProps = {
-  objectEntry: ObjectEntry;
+  entry: Entry;
 };
 
-const Info = ({ objectEntry }: InfoProps) => {
-  console.log(objectEntry);
+const Info = ({ entry }: InfoProps) => {
+  console.log(entry);
   return (
     <section className="flex flex-col gap-7">
       <Image src={HouseTest} alt="house image" className="w-full" />
       <div className="flex flex-col gap-2 font-semibold">
-        <p className="text-xl">{objectEntry.title}</p>
-        <p>{objectEntry.description}</p>
+        <p className="text-xl">{entry.title}</p>
+        <p>{entry.description}</p>
         <div
           dangerouslySetInnerHTML={{
-            __html: sanitize(objectEntry.content),
+            __html: sanitize(entry.content),
           }}
         />
       </div>
@@ -33,16 +33,16 @@ const Info = ({ objectEntry }: InfoProps) => {
 };
 
 const BookingId = async ({ params }: Props) => {
-  const objectEntry = await getObjectEntryById(params.id);
+  const entry = await getEntryById(params.id);
 
-  if (!objectEntry) {
+  if (!entry) {
     return redirect('/not-found');
   }
 
   return (
     <div className="grid grid-cols-[2fr_1fr] gap-12 mt-12">
-      <Info objectEntry={objectEntry} />
-      <Bill objectEntry={objectEntry} />
+      <Info entry={entry} />
+      <Bill entry={entry} />
     </div>
   );
 };

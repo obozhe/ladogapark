@@ -30,22 +30,21 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model ObjectGroup {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  alias         String        @unique
-  type          ObjectType
-  sorting       Int           @default(0)
-  isActive      Boolean       @default(true)
-  objectEntries ObjectEntry[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+model Group {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  title     String     @unique
+  type      ObjectType
+  sorting   Int
+  isActive  Boolean    @default(false)
+  entries   Entry[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
-model ObjectEntry {
+model Entry {
   id                  String                       @id @default(auto()) @map("_id") @db.ObjectId
-  objectGroupId       String                       @db.ObjectId
-  objectGroup         ObjectGroup                  @relation(fields: [objectGroupId], references: [id])
+  groupId             String                       @db.ObjectId
+  group               Group                        @relation(fields: [groupId], references: [id])
   title               String
   images              String[]
   description         String
@@ -60,7 +59,7 @@ model ObjectEntry {
   parking             Int                          @default(0)
   // sorting             Int                       @default(0)
   isActive            Boolean
-  units               ObjectUnit[]
+  units               Unit[]
   holidayPrices       EntryHolidayPrice[]
   futurePrices        EntryFuturePrice[]
   bookingLimitations  EntryBookingLimitation[]
@@ -72,11 +71,11 @@ model ObjectEntry {
   updatedAt           DateTime                     @updatedAt
 }
 
-model ObjectUnit {
+model Unit {
   id                String                 @id @default(auto()) @map("_id") @db.ObjectId
   number            String                 @unique()
-  objectEntryId     String                 @db.ObjectId
-  objectEntry       ObjectEntry            @relation(fields: [objectEntryId], references: [id])
+  entryId           String                 @db.ObjectId
+  entry             Entry                  @relation(fields: [entryId], references: [id])
   bookings          Booking[]
   isActive          Boolean                @default(true)
   createdAt         DateTime               @default(now())
@@ -85,74 +84,74 @@ model ObjectUnit {
 }
 
 model UnitTemporaryClosure {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  objectUnitId String     @db.ObjectId
-  objectUnit   ObjectUnit @relation(fields: [objectUnitId], references: [id])
-  start        DateTime
-  end          DateTime
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  unitId String   @db.ObjectId
+  unit   Unit     @relation(fields: [unitId], references: [id])
+  start  DateTime
+  end    DateTime
 }
 
 model EntryBookingLimitation {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  minDays       Int
-  start         DateTime
-  end           DateTime
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId String   @db.ObjectId
+  entry   Entry    @relation(fields: [entryId], references: [id])
+  minDays Int
+  start   DateTime
+  end     DateTime
 }
 
 model EntryHolidayPrice {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  price         Float
-  start         DateTime
-  end           DateTime
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId String   @db.ObjectId
+  entry   Entry    @relation(fields: [entryId], references: [id])
+  price   Float
+  start   DateTime
+  end     DateTime
 }
 
 model EntryFuturePrice {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  priceWeekday  Float
-  priceWeekend  Float
-  start         DateTime
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId      String   @db.ObjectId
+  entry        Entry    @relation(fields: [entryId], references: [id])
+  priceWeekday Float
+  priceWeekend Float
+  start        DateTime
 }
 
 model EntryDiscountByDays {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  daysCount     Int
-  discount      Float
-  start         DateTime
-  end           DateTime
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId   String   @db.ObjectId
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  daysCount Int
+  discount  Float
+  start     DateTime
+  end       DateTime
 }
 
 model EntryPromoCodeByBooking {
-  id                   String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId        String      @db.ObjectId
-  objectEntry          ObjectEntry @relation(fields: [objectEntryId], references: [id])
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  entryId              String   @db.ObjectId
+  entry                Entry    @relation(fields: [entryId], references: [id])
   minDays              Int
   discount             Float
   validityDays         Int
-  discountedEntriesIds String[]    @db.ObjectId
+  discountedEntriesIds String[] @db.ObjectId
 }
 
 model EntryExtraService {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  title         String
-  price         Float
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  entryId String @db.ObjectId
+  entry   Entry  @relation(fields: [entryId], references: [id])
+  title   String
+  price   Float
 }
 
 model CommoditiesIncludedInEntry {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  objectEntryId String      @db.ObjectId
-  objectEntry   ObjectEntry @relation(fields: [objectEntryId], references: [id])
-  commodityId   String      @db.ObjectId
-  commodity     Commodity   @relation(fields: [commodityId], references: [id])
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  entryId     String    @db.ObjectId
+  entry       Entry     @relation(fields: [entryId], references: [id])
+  commodityId String    @db.ObjectId
+  commodity   Commodity @relation(fields: [commodityId], references: [id])
 }
 
 model Commodity {
@@ -169,40 +168,40 @@ model Commodity {
 }
 
 model Booking {
-  id               String     @id @default(auto()) @map("_id") @db.ObjectId
-  number           String     @unique()
-  objectUnitId     String     @db.ObjectId
-  objectUnit       ObjectUnit @relation(fields: [objectUnitId], references: [id])
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  number           String   @unique()
+  unitId           String   @db.ObjectId
+  unit             Unit     @relation(fields: [unitId], references: [id])
   // type_id           Int        @db.UnsignedInt
   datetimeStart    DateTime
   datetimeEnd      DateTime
-  amount           Float      @default(0)
-  prepay           Float      @default(0)
-  paidTotal        Float      @default(0)
-  partnerId        Int        @default(0)
-  partnerFee       Float      @default(0)
-  name             String     @default("")
-  companyName      String     @default("")
-  phone            String     @default("")
-  email            String     @default("")
-  clientId         String     @db.ObjectId
-  client           Client     @relation(fields: [clientId], references: [id])
-  comment          String     @default("")
-  commentAdmin     String     @default("")
-  extraSeats       Int        @default(0)
+  amount           Float    @default(0)
+  prepay           Float    @default(0)
+  paidTotal        Float    @default(0)
+  partnerId        Int      @default(0)
+  partnerFee       Float    @default(0)
+  name             String   @default("")
+  companyName      String   @default("")
+  phone            String   @default("")
+  email            String   @default("")
+  clientId         String   @db.ObjectId
+  client           Client   @relation(fields: [clientId], references: [id])
+  comment          String   @default("")
+  commentAdmin     String   @default("")
+  extraSeats       Int      @default(0)
   typeServicesIds  String
-  parking          Int        @default(0)
-  arrived          Boolean    @default(false)
-  countPayments    Int        @default(0)
-  countAttachments Int        @default(0)
-  promocodeId      Int        @default(0)
-  sourcePoll       Int        @default(0)
+  parking          Int      @default(0)
+  arrived          Boolean  @default(false)
+  countPayments    Int      @default(0)
+  countAttachments Int      @default(0)
+  promocodeId      Int      @default(0)
+  sourcePoll       Int      @default(0)
   payAccData       String
   // token            String
-  status           Int        @default(0)
-  undelitable      Boolean    @default(false)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  status           Int      @default(0)
+  undelitable      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model Client {
@@ -227,8 +226,8 @@ model Client {
 //   sorting          Int           @default(0)
 //   homepage         Boolean       @default(true)
 //   isActive         Boolean       @default(true)
-//   objectEntries    ObjectEntry[] @relation(fields: [objectEntriesIds], references: [id])
-//   objectEntriesIds String[]      @db.ObjectId
+//   entries    Entry[] @relation(fields: [entriesIds], references: [id])
+//   entriesIds String[]      @db.ObjectId
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -252,7 +251,7 @@ model Client {
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-// model goodslist_orders {
+// model goodslist_units {
 //   id               Int      @id @default(autoincrement()) @db.UnsignedInt
 //   booking_id       Int      @db.UnsignedInt
 //   number           String   @default("") @db.VarChar(50)
@@ -311,7 +310,7 @@ model Client {
 //   title        String @default("") @db.VarChar(255)
 //   fee          Int    @default(0) @db.UnsignedTinyInt
 //   fee_objects  String @db.Text
-//   count_orders Int    @default(0) @db.UnsignedInt
+//   count_units Int    @default(0) @db.UnsignedInt
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -343,7 +342,7 @@ model Client {
 // model payments_goodslist {
 //   id               Int      @id @default(autoincrement()) @db.UnsignedInt
 //   goodslist_id     Int      @db.UnsignedInt
-//   order_id         Int      @default(0) @db.UnsignedInt
+//   unit_id         Int      @default(0) @db.UnsignedInt
 //   count            Int      @default(0) @db.UnsignedInt
 //   amount           Float    @default(0) @db.Float
 //   datetime_created DateTime @default(now()) @db.DateTime(0)
@@ -371,7 +370,7 @@ model Client {
 //   limit_count  Int      @default(0) @db.UnsignedInt
 //   limit_date   DateTime @db.Date
 //   types_ids    String   @db.Text
-//   count_orders Int      @default(0) @db.UnsignedInt
+//   count_units Int      @default(0) @db.UnsignedInt
 //   status       Boolean  @default(false)
 //   deleted      Int      @default(0) @db.UnsignedInt
 //   booking_id   Int      @default(0) @db.UnsignedInt
