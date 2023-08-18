@@ -32,11 +32,10 @@ model User {
 
 model Group {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  alias     String     @unique
+  title     String     @unique
   type      ObjectType
-  sorting   Int        @default(0)
-  isActive  Boolean    @default(true)
+  sorting   Int
+  isActive  Boolean    @default(false)
   entries   Entry[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
