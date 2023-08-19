@@ -26,7 +26,7 @@ type Props = {
 };
 
 const Search = async () => {
-  const weather = await getWeather();
+  // const weather = await getWeather();
 
   return (
     <section className="relative flex flex-col justify-center items-center gap-14 pt-[153px] pb-[253px] px-2">
@@ -39,11 +39,11 @@ const Search = async () => {
         <div className="grid md:grid-cols-[1fr_1fr_max-content] md:grid-rows-1 grid-rows-3 gap-3">
           <HousesFilter />
         </div>
-        {weather && (
+        {/* {weather && (
           <span className="text-white font-semibold text-xl">
             У нас сейчас {weather[0]} на выходных {weather[1] ?? weather[0]}
           </span>
-        )}
+        )} */}
       </div>
     </section>
   );

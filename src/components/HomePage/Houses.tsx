@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Man } from 'tabler-icons-react';
 import { Entry } from '@prisma/client';
+import formatToRuble from 'core/helpers/number';
 import HousesTabs from './HousesTabs';
 
 type Props = {
@@ -39,8 +40,8 @@ const Houses = ({ objectEntries }: Props) => {
                   <span>x{entry.seats}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="bg-primary rounded-md p-1 text-xs">{entry.priceWeekday} ₽</span>
-                  <span className="bg-secondary rounded-md p-1 text-xs">{entry.priceWeekend} ₽</span>
+                  <span className="bg-primary rounded-md p-1 text-xs">{formatToRuble(entry.priceWeekday)}</span>
+                  <span className="bg-secondary rounded-md p-1 text-xs">{formatToRuble(entry.priceWeekend)}</span>
                 </div>
               </div>
               <span className="p-2 md:p-4 font-semibold text-4xl">{entry.title}</span>

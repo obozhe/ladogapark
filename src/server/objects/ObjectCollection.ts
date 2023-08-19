@@ -13,7 +13,9 @@ export const getGroupsWithEntries = () => {
 };
 
 export const getGroupsWithEntriesWithFuturePrices = () => {
-  return prisma.group.findMany({ include: { entries: { include: { futurePrices: true } } } });
+  return prisma.group.findMany({
+    include: { entries: { include: { futurePrices: true }, orderBy: { seats: 'asc' } } },
+  });
 };
 
 export const getGroupById = (id: string) => {
