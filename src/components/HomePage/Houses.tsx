@@ -1,5 +1,5 @@
-import HumanIcon from 'icons/human.svg';
 import Link from 'next/link';
+import { Man } from 'tabler-icons-react';
 import { Entry } from '@prisma/client';
 import HousesTabs from './HousesTabs';
 
@@ -35,14 +35,12 @@ const Houses = ({ objectEntries }: Props) => {
               <div className="absolute top-0 h-full w-full brightness-[60%] -z-10 bg-house-image bg-auto bg-left-top" />
               <div className="flex justify-between p-2 md:p-4">
                 <div className="flex items-center">
-                  <span>
-                    <HumanIcon />
-                  </span>
+                  <Man fill="white" />
                   <span>x{entry.seats}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="bg-primary rounded-md p-1 text-xs">{entry.priceWeekdays} ₽</span>
-                  <span className="bg-secondary rounded-md p-1 text-xs">{entry.priceWeekends} ₽</span>
+                  <span className="bg-primary rounded-md p-1 text-xs">{entry.priceWeekday} ₽</span>
+                  <span className="bg-secondary rounded-md p-1 text-xs">{entry.priceWeekend} ₽</span>
                 </div>
               </div>
               <span className="p-2 md:p-4 font-semibold text-4xl">{entry.title}</span>

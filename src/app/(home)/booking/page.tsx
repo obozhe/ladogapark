@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import HouseCardPrice from 'components/BookingPage/HouseCardPrice';
-import { getGroups } from 'server/objects/ObjectCollection';
+import { getGroupsWithEntriesWithFuturePrices } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../public/images/test-house.png';
 
 const Booking = async () => {
-  const group = await getGroups();
+  const group = await getGroupsWithEntriesWithFuturePrices();
 
   return (
     <>

@@ -1,9 +1,7 @@
 'use client';
 
-import MinusIcon from 'icons/minus.svg';
-import PlusIcon from 'icons/plus.svg';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+import { Minus, Plus } from 'tabler-icons-react';
 
 type Props = {
   placeholder: string;
@@ -50,18 +48,12 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
         min={0}
         max={100}
       />
-      <div className="absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-[2px] h-full">
-        <button
-          className="h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer bg-transparent stroke-black"
-          onClick={decrease}
-        >
-          <MinusIcon />
+      <div className="absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-1 h-full">
+        <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={decrease}>
+          <Minus />
         </button>
-        <button
-          className="rounded-r-[10px] h-[calc(100%-4px)] flex items-center px-1 py-1 cursor-pointer bg-transparent stroke-black"
-          onClick={increase}
-        >
-          <PlusIcon />
+        <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={increase}>
+          <Plus />
         </button>
       </div>
     </div>

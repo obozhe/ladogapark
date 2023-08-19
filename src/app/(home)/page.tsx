@@ -1,12 +1,8 @@
 import { getWeather } from 'api/weather';
-import BusIcon from 'icons/bus.svg';
-import EmailIcon from 'icons/email.svg';
-import GoodsIcon from 'icons/goods.svg';
-import LocationIcon from 'icons/location.svg';
-import MassageIcon from 'icons/massage.svg';
-import PhoneIcon from 'icons/phone.svg';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Basket, Bus, Massage } from 'tabler-icons-react';
+import { Location, Mail, Phone } from 'tabler-icons-react';
 import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
@@ -40,7 +36,7 @@ const Search = async () => {
         <p>Ладожского озера</p>
       </div>
       <div className="flex flex-col text-center gap-5">
-        <div className="grid md:grid-cols-[1fr_1fr_max-content] grid-rows-3 gap-3">
+        <div className="grid md:grid-cols-[1fr_1fr_max-content] md:grid-rows-1 grid-rows-3 gap-3">
           <HousesFilter />
         </div>
         {weather && (
@@ -59,18 +55,18 @@ const Services = () => {
       title: 'Дополнительные товары',
       description:
         'Закажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыхаЗакажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыха',
-      icon: <GoodsIcon />,
+      icon: <Basket size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
     {
       title: 'Трансфер до “Ладога парк”',
       description: 'Аренда 17-местного автобуса до базы и обратно. Назначьте удобное время и место подачи',
-      icon: <BusIcon />,
+      icon: <Bus size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
     {
       title: 'Трансфер до “Ладога парк”',
       description:
         'Для заказа массажа необходимо заблаговременно отправить письмо на почту с указанием желаемого вида массажа, временем и датой',
-      icon: <MassageIcon />,
+      icon: <Massage size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
   ];
 
@@ -155,13 +151,17 @@ const Photos = () => {
   return (
     <section className="flex flex-col gap-4 font-semibold">
       <h2>Фотографии</h2>
-      <div className="grid grid-cols-3 grid-rows-1 gap-12">
+      <div className="flex gap-4 overflow-auto md:grid md:grid-cols-3 md:grid-rows-1 md:gap-12">
         {photos.map((photo, index) => (
           <Image
             src={photo}
             alt="house"
             key={index}
-            className={twMerge(index === 2 && 'col-span-2', index === 3 && 'col-start-3 row-start-1 row-span-2')}
+            className={twMerge(
+              index === 2 && 'col-span-2',
+              index === 3 && 'col-start-3 row-start-1 row-span-2',
+              'flex-1'
+            )}
           />
         ))}
       </div>
@@ -179,31 +179,25 @@ const Contacts = () => {
       <div className="flex justify-between gap-3 flex-row font-semibold text-xl">
         <div className="flex flex-col gap-10">
           <div className="flex gap-5 md:gap-10 items-center">
-            <span>
-              <EmailIcon />
-            </span>
+            <Mail size={40} color="rgb(255, 170, 5)" />
             <span>booking@ladogapark.ru</span>
           </div>
           <div className="flex gap-5 md:gap-10 items-center">
-            <span>
-              <PhoneIcon />
-            </span>
+            <Phone size={40} color="rgb(255, 170, 5)" />
             <div className="flex flex-col font-inter">
               <span>+7 (929) 111-01-51</span>
               <span>+7 (931) 213-00-48</span>
             </div>
           </div>
           <div className="flex gap-5 md:gap-10 items-center">
-            <span>
-              <LocationIcon />
-            </span>
+            <Location size={40} color="rgb(255, 170, 5)" />
             <span>Всеволожский р-н Ленобласти, деревня Коккорево, 40 км от Санкт-Петербурга</span>
           </div>
         </div>
         <div className="hidden md:flex flex-col gap-5">
           <span>Соцсети и Мессенджеры:</span>
           <div className="flex gap-4 self-end">
-            <MediaLinks iconColor="black" />
+            <MediaLinks size={40} />
           </div>
         </div>
       </div>
@@ -211,7 +205,7 @@ const Contacts = () => {
       <div className="md:hidden flex flex-col gap-5 font-semibold text-xl">
         <span>Соцсети и Мессенджеры:</span>
         <div className="flex gap-4">
-          <MediaLinks iconColor="black" />
+          <MediaLinks size={40} />
         </div>
       </div>
     </section>
@@ -235,7 +229,7 @@ export default async function Home({ searchParams }: Props) {
         />
       </div> */}
       <Search />
-      <div className="flex flex-col gap-36 pt-[150px] pb-72 layout-container px-2">
+      <div className="flex flex-col gap-36 pt-[150px] layout-container px-2">
         <Houses objectEntries={objectEntries} />
         <Services />
         <Faq />

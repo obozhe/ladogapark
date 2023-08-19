@@ -18,7 +18,7 @@ module.exports = {
         3: '3px',
       },
       backgroundImage: {
-        'home-image': "url('./images/main.png')",
+        'home-image': "url('./images/main.avif')",
         'house-image': "url('./images/test-house.png')",
       },
       fontFamily: {

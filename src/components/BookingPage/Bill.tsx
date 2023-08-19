@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Entry } from '@prisma/client';
 import formatToRuble from 'core/helpers/number';
+import numberInWords from 'core/helpers/numberInWords';
+import pluralize from 'core/helpers/pluralize';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
@@ -17,9 +19,10 @@ type AdditionalGoodsProps = {
   name: string;
   price: number;
   onChange: Dispatch<SetStateAction<number>>;
+  max?: number;
 };
 
-const AdditionalGoods = ({ name, price, onChange }: AdditionalGoodsProps) => {
+const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) => {
   const [amount, setAmount] = useState(0);
 
   const decrease = () => {
@@ -35,6 +38,8 @@ const AdditionalGoods = ({ name, price, onChange }: AdditionalGoodsProps) => {
   const increase = () => {
     setAmount((prev) => {
       const newValue = prev + 1;
+      if (max && newValue >= max) return prev;
+
       onChange((prev) => prev + price);
 
       return newValue;
@@ -64,6 +69,11 @@ const Bill = ({ entry }: InfoProps) => {
   const [nightsAmount, setNightsAmount] = useState(0);
   const [additionalGoodsTotal, setAdditionalGoodsTotal] = useState(0);
 
+  const parking = `${numberInWords(entry.parking)?.[0].toUpperCase()}${numberInWords(entry.parking)?.slice(
+    1
+  )} ${pluralize(['парковочное', 'парковочных', 'парковочных'], entry.parking)}
+  ${pluralize(['место', 'места', 'мест'], entry.parking)}`;
+
   useEffect(() => {
     let weekdaysPrice = 0;
     let weekendsPrice = 0;
@@ -76,9 +86,9 @@ const Bill = ({ entry }: InfoProps) => {
         const isWeekend = weekday === 0 || weekday === 6;
 
         if (isWeekend) {
-          weekendsPrice += entry.priceWeekends;
+          weekendsPrice += entry.priceWeekend;
         } else {
-          weekdaysPrice += entry.priceWeekdays;
+          weekdaysPrice += entry.priceWeekday;
         }
 
         currenDate = date.add(i, 'day');
@@ -91,7 +101,7 @@ const Bill = ({ entry }: InfoProps) => {
   return (
     <section className="[&>*:not(:last-child)]:border-b-2 border-tertiary font-semibold">
       <div className="grid grid-rows-[max-content_max-content] pb-2 grid-cols-[max-content_max-content] gap-2">
-        {[entry.priceWeekdays, entry.priceWeekends].map((amount, index) => (
+        {[entry.priceWeekday, entry.priceWeekend].map((amount, index) => (
           <span key={amount + index} className="text-3xl font-inter">
             {formatToRuble(amount)}
             {index === 0 && ' /'}
@@ -110,7 +120,7 @@ const Bill = ({ entry }: InfoProps) => {
         </div>
         <div className="flex flex-col">
           <span className="text-lg mb-4">Включено в стоимость:</span>
-          <span className="text-base">Парковочных мест: {entry.parking}</span>
+          <span className="text-base">{parking}</span>
           <span className="text-base">Мангал</span>
           <span className="text-base">Электричество</span>
           <span className="text-base">Постельное белье и полотенца (комплект)</span>
@@ -128,6 +138,14 @@ const Bill = ({ entry }: InfoProps) => {
               <AdditionalGoods name="Средство для розжига" price={1000} onChange={setAdditionalGoodsTotal} />
               <AdditionalGoods name="Гигиенический набор" price={500} onChange={setAdditionalGoodsTotal} />
               <AdditionalGoods name="Постельное бельё и полотенца" price={1000} onChange={setAdditionalGoodsTotal} />
+              {Boolean(entry.extraSeats) && (
+                <AdditionalGoods
+                  name="Дополнительное место"
+                  price={entry.priceExtraSeat}
+                  onChange={setAdditionalGoodsTotal}
+                  max={entry.extraSeats}
+                />
+              )}
             </>
           }
         />

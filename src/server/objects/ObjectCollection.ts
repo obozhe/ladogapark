@@ -8,8 +8,12 @@ export const getObjectEntries = () => {
   return prisma.entry.findMany({ include: { group: true } });
 };
 
-export const getGroups = () => {
-  return prisma.group.findMany();
+export const getGroupsWithEntries = () => {
+  return prisma.group.findMany({ include: { entries: true } });
+};
+
+export const getGroupsWithEntriesWithFuturePrices = () => {
+  return prisma.group.findMany({ include: { entries: { include: { futurePrices: true } } } });
 };
 
 export const getGroupById = (id: string) => {
