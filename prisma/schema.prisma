@@ -42,17 +42,18 @@ model Group {
 }
 
 model Entry {
-  id                  String                       @id @default(auto()) @map("_id") @db.ObjectId
-  groupId             String                       @db.ObjectId
-  group               Group                        @relation(fields: [groupId], references: [id])
-  title               String
-  images              String[]
-  description         String
-  content             String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupId     String   @db.ObjectId
+  group       Group    @relation(fields: [groupId], references: [id])
+  title       String
+  images      String[]
+  description String
+  content     String
+
   seats               Int
   extraSeats          Int                          @default(0)
-  priceWeekdays       Float
-  priceWeekends       Float
+  priceWeekday        Float
+  priceWeekend        Float
   // priceRenewal        Float
   priceExtraSeat      Float
   prepay              Int
