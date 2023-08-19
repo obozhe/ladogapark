@@ -28,13 +28,13 @@ const PriceInfo = ({ label, price, priceLabel }: PriceInfoProps) => {
 };
 
 const HouseCardPrice = ({ object }: Props) => {
-  console.log(object);
   return (
     <div className="font-semibold flex flex-col gap-6">
       <div className="text-4xl">{object.title}</div>
       <div className="flex flex-col gap-4">
         <span className="text-tertiary text-lg">Вместимость объекта:</span>
         <Tabs
+          onClick={() => {}}
           tabs={[
             { label: '2 чел.', value: '1' },
             { label: '4 чел.', value: '2' },

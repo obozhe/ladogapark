@@ -15,7 +15,6 @@ const HousesFilter = () => {
   const pathname = usePathname();
 
   const handleClick = () => {
-    console.log(date, nightsAmount);
     if (!date || !nightsAmount) return;
 
     const newSearchParams = new URLSearchParams();
@@ -26,8 +25,6 @@ const HousesFilter = () => {
       router.push(`${pathname}?${newSearchParams.toString()}`);
     });
   };
-
-  console.log(nightsAmount);
 
   return (
     <>

@@ -110,7 +110,7 @@ const Bill = ({ entry }: InfoProps) => {
         </div>
         <div className="flex flex-col">
           <span className="text-lg mb-4">Включено в стоимость:</span>
-          <span className="text-base">Два парковочных места</span>
+          <span className="text-base">Парковочных мест: {entry.parking}</span>
           <span className="text-base">Мангал</span>
           <span className="text-base">Электричество</span>
           <span className="text-base">Постельное белье и полотенца (комплект)</span>

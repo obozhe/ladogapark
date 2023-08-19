@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { Tab } from 'core/types/Tab';
 
 type Props = {
-  tabs: { label: string; value: string }[];
+  tabs: Tab[];
   activeTab?: string | null;
-  onChange?: () => void;
+  onClick: (value: string) => void;
+  fullWidth?: boolean;
 };
 
-const Tabs = ({ tabs, activeTab = null }: Props) => {
+const Tabs = ({ tabs, activeTab = null, onClick, fullWidth = true }: Props) => {
   const [active, setActive] = useState<string | null>(activeTab);
 
   return (
-    <div className="grid grid-rows-1 gap-4" style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}>
+    <div
+      className={twMerge('grid grid-rows-1 gap-4', !fullWidth && 'w-max')}
+      style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
+    >
       {tabs.map((tab, index) => (
         <div
           key={`${tab.value}-${index}`}
@@ -19,7 +24,10 @@ const Tabs = ({ tabs, activeTab = null }: Props) => {
             'flex-1 text-center cursor-pointer bg-white border-2 rounded-lg border-black px-2 py-1',
             active === tab.value && 'bg-primary text-white border-primary'
           )}
-          onClick={() => setActive(tab.value)}
+          onClick={() => {
+            onClick(tab.value);
+            setActive(tab.value);
+          }}
         >
           {tab.label}
         </div>

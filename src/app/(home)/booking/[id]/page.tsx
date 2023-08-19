@@ -3,11 +3,13 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { Entry } from '@prisma/client';
 import Bill from 'components/BookingPage/Bill';
-import { getEntryById } from 'server/objects/ObjectCollection';
+import BookingTabs from 'components/BookingPage/BookingTabs';
+import { getEntryById, getGroupById } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
   params: { id: string };
+  searchParams: { seats: string };
 };
 
 type InfoProps = {
@@ -32,17 +34,25 @@ const Info = ({ entry }: InfoProps) => {
   );
 };
 
-const BookingId = async ({ params }: Props) => {
+const BookingId = async ({ params, searchParams }: Props) => {
   const entry = await getEntryById(params.id);
 
   if (!entry) {
     return redirect('/not-found');
   }
 
+  const group = await getGroupById(entry?.group.id);
+
   return (
-    <div className="grid grid-cols-[2fr_1fr] gap-12 mt-12">
-      <Info entry={entry} />
-      <Bill entry={entry} />
+    <div className="flex flex-col gap-5 mt-12">
+      <BookingTabs
+        activeTab={String(entry.id)}
+        tabs={group?.entries.map((entry) => ({ label: `${entry.seats} человека`, value: String(entry.id) })) ?? []}
+      />
+      <div className="grid grid-cols-[2fr_1fr] gap-12">
+        <Info entry={entry} />
+        <Bill entry={entry} />
+      </div>
     </div>
   );
 };

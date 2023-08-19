@@ -11,7 +11,9 @@ import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
 import YandexMap from 'components/HomePage/YandexMap';
+import MediaLinks from 'components/MediaLinks';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
+import { ObjectTypes } from 'server/objects/types';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';
 import House1Image from '../../../public/images/house-1.png';
@@ -23,6 +25,7 @@ type Props = {
   searchParams: {
     from: string;
     to: string;
+    type: ObjectTypes;
   };
 };
 
@@ -171,9 +174,9 @@ const Photos = () => {
 
 const Contacts = () => {
   return (
-    <section className="flex flex-col md:gap-4">
+    <section className="flex flex-col gap-4">
       <h2>Контакты</h2>
-      <div className="flex justify-between flex-col gap-3 md:flex-row font-semibold text-xl">
+      <div className="flex justify-between gap-3 flex-row font-semibold text-xl">
         <div className="flex flex-col gap-10">
           <div className="flex gap-5 md:gap-10 items-center">
             <span>
@@ -197,15 +200,28 @@ const Contacts = () => {
             <span>Всеволожский р-н Ленобласти, деревня Коккорево, 40 км от Санкт-Петербурга</span>
           </div>
         </div>
-        <div>Соцсети и Мессенджеры:</div>
+        <div className="hidden md:flex flex-col gap-5">
+          <span>Соцсети и Мессенджеры:</span>
+          <div className="flex gap-4 self-end">
+            <MediaLinks iconColor="black" />
+          </div>
+        </div>
       </div>
       <YandexMap />
+      <div className="md:hidden flex flex-col gap-5 font-semibold text-xl">
+        <span>Соцсети и Мессенджеры:</span>
+        <div className="flex gap-4">
+          <MediaLinks iconColor="black" />
+        </div>
+      </div>
     </section>
   );
 };
 
 export default async function Home({ searchParams }: Props) {
-  const objectEntries = await getObjectEntries();
+  const objectEntries = (await getObjectEntries()).filter(
+    (entry) => entry.group.type === (searchParams.type ?? 'Daily')
+  );
 
   return (
     <main>

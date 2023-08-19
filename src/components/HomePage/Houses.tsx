@@ -1,43 +1,18 @@
-'use client';
-
 import HumanIcon from 'icons/human.svg';
 import Link from 'next/link';
-// import { useState } from 'react';
 import { Entry } from '@prisma/client';
-import { ObjectTypes } from 'server/objects/types';
-import Tabs from 'ui/Tabs';
+import HousesTabs from './HousesTabs';
 
 type Props = {
   objectEntries: Entry[];
 };
-const rentOptions: Record<'label' | 'value', string | ObjectTypes>[] = [
-  { label: 'На сутки', value: ObjectTypes.House },
-  { label: 'На день', value: ObjectTypes.Daily },
-  { label: 'Бани', value: ObjectTypes.Bath },
-];
 
 const Houses = ({ objectEntries }: Props) => {
-  // const [activeOption, sentActiveOption] = useState(rentOptions[0]);
-
   return (
     <section className="flex flex-col gap-8">
       <h2>Каталог домов</h2>
       <div className="flex justify-between flex-col md:flex-row gap-10">
-        <Tabs tabs={rentOptions} />
-        {/* {rentOptions.map((option) => {
-            return (
-              <span
-                key={option.value}
-                onClick={() => sentActiveOption(option)}
-                className={twMerge(
-                  'border-3 rounded-md border-black py-1 px-2 font-semibold text-lg cursor-pointer',
-                  activeOption === option && 'bg-primary text-white border-primary'
-                )}
-              >
-                {option.label}
-              </span>
-            );
-          })} */}
+        <HousesTabs />
         <div className="flex flex-col font-semibold text-xs font-inter text-black gap-1 -order-1 md:order-1">
           <div className="flex gap-2 items-center">
             <div className="bg-secondary w-4 h-4" />
@@ -53,7 +28,7 @@ const Houses = ({ objectEntries }: Props) => {
         {objectEntries.map((entry) => {
           return (
             <Link
-              href={'booking/' + entry.id}
+              href={`booking/${entry.id}?seats=${entry.seats}`}
               className="relative h-64 text-white font-semibold flex flex-col justify-between font-inter"
               key={entry.id}
             >

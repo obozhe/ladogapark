@@ -11,3 +11,7 @@ export const getObjectEntries = () => {
 export const getGroups = () => {
   return prisma.group.findMany();
 };
+
+export const getGroupById = (id: string) => {
+  return prisma.group.findUnique({ where: { id }, include: { entries: true } });
+};
