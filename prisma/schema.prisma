@@ -158,11 +158,9 @@ model CommoditiesIncludedInEntry {
 model Commodity {
   id            String                       @id @default(auto()) @map("_id") @db.ObjectId
   title         String                       @unique()
-  icon          String                       @default("")
-  selling       Boolean                      @default(false)
   price         Float                        @default(0)
   sport         Boolean                      @default(false)
-  sorting       Int                          @default(0)
+  sorting       Int
   isActive      Boolean                      @default(true)
   countPayments Int                          @default(0)
   entries       CommoditiesIncludedInEntry[]
