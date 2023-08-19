@@ -219,7 +219,7 @@ export default async function Home({ searchParams }: Props) {
         />
       </div> */}
       <Search />
-      <div className="flex flex-col gap-36 pt-[150px] layout-container px-2">
+      <div className="flex flex-col gap-36 pt-[150px] pb-72 layout-container px-2">
         <Houses objectEntries={objectEntries} />
         <Services />
         <Faq />
