@@ -1,18 +1,20 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Entry } from '@prisma/client';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import CountUp from 'react-countup';
+import usePrevious from 'hooks/usePrevious';
 import formatToRuble from 'core/helpers/number';
 import numberInWords from 'core/helpers/numberInWords';
 import pluralize from 'core/helpers/pluralize';
+import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
 import NumberInput from 'ui/NumberInput';
 
 type InfoProps = {
-  entry: Entry;
+  entry: EntryWithFuturePricesWithGroup;
 };
 
 type AdditionalGoodsProps = {
@@ -65,6 +67,7 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 
 const Bill = ({ entry }: InfoProps) => {
   const [total, setTotal] = useState(0);
+  const previousTotal = usePrevious(total);
   const [date, setDate] = useState<dayjs.Dayjs>();
   const [nightsAmount, setNightsAmount] = useState(0);
   const [additionalGoodsTotal, setAdditionalGoodsTotal] = useState(0);
@@ -73,6 +76,43 @@ const Bill = ({ entry }: InfoProps) => {
     1
   )} ${pluralize(['парковочное', 'парковочных', 'парковочных'], entry.parking)}
   ${pluralize(['место', 'места', 'мест'], entry.parking)}`;
+
+  console.log(entry.futurePrices);
+
+  const renderDayContents = useMemo(
+    // eslint-disable-next-line react/display-name
+    () => (day: number, date: Date | undefined) => {
+      let price;
+
+      const dayjsDate = dayjs(date);
+      const currentDate = dayjs();
+      const isWeekend = dayjsDate.day() === 0 || dayjsDate.day() === 6;
+      const isSameOrAfter = dayjsDate.isSameOrAfter(currentDate, 'day');
+
+      if (isSameOrAfter) {
+        const futurePrice = entry.futurePrices.findLast((futurePrice) => {
+          const futurePriceDayjs = dayjs(futurePrice.start);
+          return dayjsDate.isSameOrAfter(futurePriceDayjs, 'day');
+        });
+
+        if (futurePrice) {
+          price = isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
+        } else {
+          price = isWeekend ? entry.priceWeekend : entry.priceWeekday;
+        }
+      }
+
+      return (
+        <div className="relative mb-2">
+          <span className="">{day}</span>
+          {price && (
+            <span className="absolute text-[10px] left-1/2 -translate-x-1/2 -bottom-[15px] text-primary">{price}</span>
+          )}
+        </div>
+      );
+    },
+    [entry.futurePrices, entry.priceWeekday, entry.priceWeekend]
+  );
 
   useEffect(() => {
     let weekdaysPrice = 0;
@@ -115,7 +155,12 @@ const Bill = ({ entry }: InfoProps) => {
       </div>
       <div className="flex flex-col py-5 gap-5">
         <div className="flex gap-4">
-          <DatePicker placeholderText="Дата заезда" onChange={setDate} minDate={new Date()} />
+          <DatePicker
+            placeholderText="Дата заезда"
+            onChange={setDate}
+            minDate={new Date()}
+            renderDayContents={renderDayContents}
+          />
           <NumberInput placeholder="Кол-во ночей" onChange={setNightsAmount} />
         </div>
         <div className="flex flex-col">
@@ -152,7 +197,7 @@ const Bill = ({ entry }: InfoProps) => {
       </div>
       <div className="py-5 flex justify-between text-2xl">
         <span>Итого:</span>
-        <span>{formatToRuble(total)}</span>
+        <CountUp start={previousTotal ?? 0} end={total} suffix=" ₽" duration={0.5} />
       </div>
       <Button color="primary" className="ml-auto mt-5">
         Забронировать

@@ -1,11 +1,11 @@
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { Entry } from '@prisma/client';
 import Bill from 'components/BookingPage/Bill';
 import BookingTabs from 'components/BookingPage/BookingTabs';
 import pluralize from 'core/helpers/pluralize';
-import { getEntryById, getGroupById } from 'server/objects/ObjectCollection';
+import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
+import { getEntryByIdWithFuturePrices, getGroupById } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 };
 
 type InfoProps = {
-  entry: Entry;
+  entry: EntryWithFuturePricesWithGroup;
 };
 
 const Info = ({ entry }: InfoProps) => {
@@ -49,7 +49,7 @@ const Info = ({ entry }: InfoProps) => {
 };
 
 const BookingId = async ({ params, searchParams }: Props) => {
-  const entry = await getEntryById(params.id);
+  const entry = await getEntryByIdWithFuturePrices(params.id);
 
   if (!entry) {
     return redirect('/not-found');

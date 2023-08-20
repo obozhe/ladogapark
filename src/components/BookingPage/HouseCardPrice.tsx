@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import formatToRuble from 'core/helpers/number';
+import { truthy } from 'core/helpers/typeGuards';
 import { GroupWithEntriesWithFuturePrices } from 'core/types/Prisma';
-import { truthy } from 'core/types/typeGuards';
 import Button from 'ui/Button';
 import Select from 'ui/Select';
 import Tabs from 'ui/Tabs';

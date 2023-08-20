@@ -4,6 +4,10 @@ export const getEntryById = (id: string) => {
   return prisma.entry.findUnique({ where: { id }, include: { group: true } });
 };
 
+export const getEntryByIdWithFuturePrices = (id: string) => {
+  return prisma.entry.findUnique({ where: { id }, include: { group: true, futurePrices: true } });
+};
+
 export const getObjectEntries = () => {
   return prisma.entry.findMany({ include: { group: true } });
 };
