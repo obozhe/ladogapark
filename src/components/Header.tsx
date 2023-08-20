@@ -1,9 +1,9 @@
 'use client';
 
-import BurgerIcon from 'icons/burger.svg';
 import LogoMobileIcon from 'icons/logo-mobile.svg';
 import LogoIcon from 'icons/logo.svg';
 import Link from 'next/link';
+import { Menu2 } from 'tabler-icons-react';
 import DropDown from 'ui/Dropdown';
 import MediaLinks from './MediaLinks';
 
@@ -36,7 +36,7 @@ const Header = () => {
       </div>
       <div className="lg:flex lg:flex-col lg:font-semibold lg:justify-between lg:font-inter hidden">
         <div className="flex gap-4 self-end">
-          <MediaLinks iconColor="black" />
+          <MediaLinks />
         </div>
         <span>+7 (929) 111-01-51</span>
         <span>+7 (929) 111-01-51</span>
@@ -44,7 +44,7 @@ const Header = () => {
 
       <DropDown
         className="lg:hidden"
-        menuButton={<BurgerIcon />}
+        menuButton={<Menu2 size={40} />}
         items={navLinks.map((navLink) => (
           <Link href={navLink.link} key={navLink.link} className="font-bold">
             {navLink.title}

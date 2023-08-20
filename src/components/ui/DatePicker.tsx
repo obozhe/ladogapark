@@ -1,6 +1,5 @@
 import ru from 'date-fns/locale/ru';
 import dayjs, { Dayjs } from 'dayjs';
-import CalendarIcon from 'icons/calendar.svg';
 import { useEffect, useState } from 'react';
 import DatePickerLib, {
   ReactDatePickerCustomHeaderProps,
@@ -8,6 +7,7 @@ import DatePickerLib, {
   registerLocale,
 } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Calendar } from 'tabler-icons-react';
 import useOutsideClick from 'hooks/useOutsideClick';
 import { getCurrentYear, getSelectOptions } from 'core/helpers/date';
 import '../../../public/datePicker.css';
@@ -68,8 +68,8 @@ const DatePicker = ({ onChange, selected, ...rest }: Props) => {
         renderCustomHeader={CustomHeader}
         {...rest}
       />
-      <div className="absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] rounded-r-[10px] bg-transparent cursor-pointer">
-        <CalendarIcon className="fill-black" />
+      <div className="absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] cursor-pointer">
+        <Calendar />
       </div>
     </div>
   );

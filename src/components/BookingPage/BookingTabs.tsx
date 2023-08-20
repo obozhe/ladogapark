@@ -5,7 +5,7 @@ import { Tab } from 'core/types/Tab';
 import Tabs from 'ui/Tabs';
 
 type Props = {
-  tabs: Tab[];
+  tabs: Tab<string>[];
   activeTab: string;
 };
 
@@ -13,7 +13,7 @@ const BookingTabs = ({ tabs, activeTab }: Props) => {
   const router = useRouter();
 
   return (
-    <Tabs fullWidth={false} activeTab={activeTab} tabs={tabs} onClick={(value) => router.push(`/booking/${value}`)} />
+    <Tabs className="w-max" activeTab={activeTab} tabs={tabs} onClick={(value) => router.push(`/booking/${value}`)} />
   );
 };
 

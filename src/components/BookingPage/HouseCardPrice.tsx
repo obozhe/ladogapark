@@ -1,12 +1,16 @@
 'use client';
 
-import { Group } from '@prisma/client';
+import Link from 'next/link';
+import { useState } from 'react';
+import formatToRuble from 'core/helpers/number';
+import { GroupWithEntriesWithFuturePrices } from 'core/types/Prisma';
+import { truthy } from 'core/types/typeGuards';
 import Button from 'ui/Button';
 import Select from 'ui/Select';
 import Tabs from 'ui/Tabs';
 
 type Props = {
-  object: Group;
+  object: GroupWithEntriesWithFuturePrices;
 };
 
 type PriceInfoProps = {
@@ -28,40 +32,67 @@ const PriceInfo = ({ label, price, priceLabel }: PriceInfoProps) => {
 };
 
 const HouseCardPrice = ({ object }: Props) => {
+  const [activeObject, setActiveObject] = useState(object.entries[0]);
+  const [selectValue, setSelectValue] = useState('');
+
+  const currentFuturePrice = activeObject.futurePrices.find((futurePrice) => futurePrice.id === selectValue);
+
+  const prices = [
+    {
+      label: 'Понедельник - Четверг',
+      price: formatToRuble(currentFuturePrice?.priceWeekday ?? activeObject.priceWeekday),
+      priceLabel: 'сутки',
+    },
+    {
+      label: 'Пятница - Воскресенье',
+      price: formatToRuble(currentFuturePrice?.priceWeekend ?? activeObject.priceWeekend),
+      priceLabel: 'сутки',
+    },
+    activeObject.extraSeats && { label: 'Дополнительное место:', price: '+1 000 ₽', priceLabel: 'человек' },
+  ].filter(truthy);
+
   return (
     <div className="font-semibold flex flex-col gap-6">
       <div className="text-4xl">{object.title}</div>
       <div className="flex flex-col gap-4">
         <span className="text-tertiary text-lg">Вместимость объекта:</span>
         <Tabs
-          onClick={() => {}}
-          tabs={[
-            { label: '2 чел.', value: '1' },
-            { label: '4 чел.', value: '2' },
-            { label: '6 чел.', value: '3' },
-            { label: '8 чел.', value: '4' },
-          ]}
+          activeTab={activeObject}
+          onClick={(value) => setActiveObject(value as (typeof object.entries)[0])}
+          tabs={object.entries.map((entry) => ({ label: String(entry.seats), value: entry }))}
         />
       </div>
-      <p>Дом для укромного отдыха на природе в кругу самых близких людей.</p>
-      <Select
-        options={[{ value: '1', label: 'Цены до 8 октября' }]}
-        value="1"
-        fullWidth
-        className="border-none shadow"
-        onChange={() => {}}
-      />
+      <p>{activeObject.description}</p>
+      {Boolean(activeObject.futurePrices.length) && (
+        <Select
+          fullWidth
+          size="xxl"
+          options={[
+            {
+              value: '',
+              label: `Цены до ${activeObject.futurePrices[0].start.toLocaleDateString('ru', {
+                month: 'long',
+                day: 'numeric',
+              })}`,
+            },
+            ...activeObject.futurePrices.map((futurePrice) => ({
+              value: futurePrice.id,
+              label: `Цены после ${futurePrice.start.toLocaleDateString('ru', { month: 'long', day: 'numeric' })}`,
+            })),
+          ]}
+          value={selectValue}
+          className="border-none shadow"
+          onChange={setSelectValue}
+        />
+      )}
       <div className="flex flex-col gap-4">
-        {[
-          { label: 'Понедельник - Четверг', price: '8 000 ₽', priceLabel: 'сутки' },
-          { label: 'Дополнительное место:', price: '+1 000 ₽', priceLabel: 'человек' },
-        ].map((priceInfo, index) => (
+        {prices.map((priceInfo, index) => (
           <PriceInfo {...priceInfo} key={`${priceInfo.label}-${priceInfo.price}-${index}`} />
         ))}
       </div>
-      <div className="self-end mt-auto">
+      <Link className="self-end mt-auto" href={`/booking/${activeObject.id}`}>
         <Button color="primary">Бронировать</Button>
-      </div>
+      </Link>
     </div>
   );
 };

@@ -1,15 +1,15 @@
 'use client';
 
-import { Disclosure as DisclosureUI, Transition } from '@headlessui/react';
-import ArrowCircleIcon from 'icons/arrow-circle.svg';
 import { ReactNode, useRef, useState } from 'react';
+import { ArrowDownCircle } from 'tabler-icons-react';
 import { twMerge } from 'tailwind-merge';
+import { Disclosure as DisclosureUI } from '@headlessui/react';
 
 type Props = {
   title: ReactNode;
   description: ReactNode;
   showIcon?: boolean;
-  className?: string
+  className?: string;
 };
 
 const Disclosure = ({ title, description, showIcon = true, className }: Props) => {
@@ -17,7 +17,7 @@ const Disclosure = ({ title, description, showIcon = true, className }: Props) =
   const [maxHeight, setMaxHeight] = useState<string | 0>(0);
 
   return (
-    <div className={twMerge("w-full", className)}>
+    <div className={twMerge('w-full', className)}>
       <DisclosureUI>
         {({ open }) => (
           <>
@@ -29,8 +29,8 @@ const Disclosure = ({ title, description, showIcon = true, className }: Props) =
             >
               {title}
               {showIcon && (
-                <span className={twMerge('rotate-180 transition', open && 'rotate-0')}>
-                  <ArrowCircleIcon />
+                <span className={twMerge('transition', open && 'rotate-180')}>
+                  <ArrowDownCircle size={30} />
                 </span>
               )}
             </DisclosureUI.Button>

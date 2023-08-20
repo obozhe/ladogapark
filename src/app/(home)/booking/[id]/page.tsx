@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { Entry } from '@prisma/client';
 import Bill from 'components/BookingPage/Bill';
 import BookingTabs from 'components/BookingPage/BookingTabs';
+import pluralize from 'core/helpers/pluralize';
 import { getEntryById, getGroupById } from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../public/images/test-house.png';
 
@@ -17,10 +18,23 @@ type InfoProps = {
 };
 
 const Info = ({ entry }: InfoProps) => {
-  console.log(entry);
   return (
     <section className="flex flex-col gap-7">
-      <Image src={HouseTest} alt="house image" className="w-full" />
+      <div className="flex flex-col gap-5">
+        <div>
+          <Image src={HouseTest} alt="house image" className="w-full" />
+        </div>
+        <div className="flex gap-1 overflow-auto">
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+        </div>
+      </div>
       <div className="flex flex-col gap-2 font-semibold">
         <p className="text-xl">{entry.title}</p>
         <p>{entry.description}</p>
@@ -47,7 +61,12 @@ const BookingId = async ({ params, searchParams }: Props) => {
     <div className="flex flex-col gap-5 mt-12">
       <BookingTabs
         activeTab={String(entry.id)}
-        tabs={group?.entries.map((entry) => ({ label: `${entry.seats} человека`, value: String(entry.id) })) ?? []}
+        tabs={
+          group?.entries.map((entry) => ({
+            label: `${entry.seats} ${pluralize(['человек', 'человека', 'человек'], entry.seats)}`,
+            value: String(entry.id),
+          })) ?? []
+        }
       />
       <div className="grid grid-cols-[2fr_1fr] gap-12">
         <Info entry={entry} />
