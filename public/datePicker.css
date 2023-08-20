@@ -36,13 +36,13 @@
 .react-datepicker__week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
 }
 
 .react-datepicker__day {
   font-weight: 600;
   border-radius: 0;
   margin: 0;
+  width: 100%;
 }
 
 .react-datepicker__day--today {
