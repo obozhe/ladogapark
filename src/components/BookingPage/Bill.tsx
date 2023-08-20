@@ -105,9 +105,7 @@ const Bill = ({ entry }: InfoProps) => {
       return (
         <div className="relative mb-2">
           <span className="">{day}</span>
-          {price && (
-            <span className="absolute text-[10px] left-1/2 -translate-x-1/2 -bottom-[15px] text-primary">{price}</span>
-          )}
+          {price && <span className="absolute text-[10px] left-1/2 -translate-x-1/2 -bottom-[15px]">{price}</span>}
         </div>
       );
     },
