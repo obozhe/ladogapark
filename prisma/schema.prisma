@@ -7,7 +7,7 @@ datasource db {
   url      = env("MONGODB_URL")
 }
 
-enum Roles {
+enum Role {
   Manager
   Admin
 }
@@ -18,12 +18,18 @@ enum ObjectType {
   Bath
 }
 
+enum Status {
+  Active
+  Inactive
+  Archived
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   login     String   @unique
   password  String
-  role      Roles    @default(Manager)
+  role      Role     @default(Manager)
   salt      String
   banned    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -35,31 +41,28 @@ model Group {
   title     String     @unique
   type      ObjectType
   sorting   Int
-  isActive  Boolean    @default(false)
+  status    Status
   entries   Entry[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
 
 model Entry {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId     String   @db.ObjectId
-  group       Group    @relation(fields: [groupId], references: [id])
-  title       String
-  images      String[]
-  description String
-  content     String
-
+  id                  String                       @id @default(auto()) @map("_id") @db.ObjectId
+  groupId             String                       @db.ObjectId
+  group               Group                        @relation(fields: [groupId], references: [id])
+  title               String
+  images              String[]
+  description         String
+  content             String
   seats               Int
   extraSeats          Int                          @default(0)
   priceWeekday        Float
   priceWeekend        Float
-  // priceRenewal        Float
   priceExtraSeat      Float
   prepay              Int
   parking             Int                          @default(0)
-  // sorting             Int                       @default(0)
-  isActive            Boolean
+  status              Status
   units               Unit[]
   holidayPrices       EntryHolidayPrice[]
   futurePrices        EntryFuturePrice[]
@@ -78,10 +81,10 @@ model Unit {
   entryId           String                 @db.ObjectId
   entry             Entry                  @relation(fields: [entryId], references: [id])
   bookings          Booking[]
-  isActive          Boolean                @default(true)
+  status            Status                 @default(Active)
+  temporaryClosures UnitTemporaryClosure[]
   createdAt         DateTime               @default(now())
   updatedAt         DateTime               @updatedAt
-  temporaryClosures UnitTemporaryClosure[]
 }
 
 model UnitTemporaryClosure {
@@ -161,7 +164,7 @@ model Commodity {
   price         Float                        @default(0)
   sport         Boolean                      @default(false)
   sorting       Int
-  isActive      Boolean                      @default(true)
+  status        Status
   countPayments Int                          @default(0)
   entries       CommoditiesIncludedInEntry[]
 }
