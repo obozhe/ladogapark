@@ -162,11 +162,24 @@ model Commodity {
   id            String                       @id @default(auto()) @map("_id") @db.ObjectId
   title         String                       @unique()
   price         Float                        @default(0)
-  sport         Boolean                      @default(false)
+  isSport       Boolean                      @default(false)
   sorting       Int
   status        Status
   countPayments Int                          @default(0)
   entries       CommoditiesIncludedInEntry[]
+}
+
+model Service {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String   @unique
+  icon         String   @default("")
+  description  String
+  content      String   @default("")
+  images       String[]
+  link         String   @default("")
+  sorting      Int      @default(0)
+  isOnHomepage Boolean  @default(false)
+  status       Status   @default(Active)
 }
 
 model Booking {
@@ -216,21 +229,6 @@ model Client {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
-
-// model Service {
-//   id               String        @id @default(auto()) @map("_id") @db.ObjectId
-//   title            String        @default("")
-//   alias            String        @default("")
-//   icon             String        @default("")
-//   description      String        @default("")
-//   content          String        @default("")
-//   location         String        @default("")
-//   sorting          Int           @default(0)
-//   homepage         Boolean       @default(true)
-//   isActive         Boolean       @default(true)
-//   entries    Entry[] @relation(fields: [entriesIds], references: [id])
-//   entriesIds String[]      @db.ObjectId
-// }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 
