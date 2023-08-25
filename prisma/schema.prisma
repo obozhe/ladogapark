@@ -24,6 +24,12 @@ enum Status {
   Archived
 }
 
+enum Season {
+  All
+  Summer
+  Winter
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -41,7 +47,7 @@ model Group {
   title     String     @unique
   type      ObjectType
   sorting   Int
-  status    Status
+  status    Status     @default(Inactive)
   entries   Entry[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -182,6 +188,15 @@ model Service {
   status       Status   @default(Active)
 }
 
+model GalleryImage {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  image       String
+  description String @default("")
+  season      Season @default(All)
+  sorting     Int
+  status      Status @default(Inactive)
+}
+
 model Booking {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   number           String   @unique()
@@ -230,6 +245,17 @@ model Client {
   updatedAt DateTime  @updatedAt
 }
 
+model News {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  start     DateTime
+  end       DateTime
+  status    Status
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 
 // model booking_attachments {
@@ -239,15 +265,6 @@ model Client {
 //   description String   @db.Text
 //   datetime    DateTime @default(now()) @db.DateTime(0)
 //   user_id     Int      @default(0) @db.UnsignedInt
-// }
-
-// model gallery {
-//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
-//   photo       String  @default("") @db.VarChar(255)
-//   description String  @db.Text
-//   season      Boolean
-//   sorting     Int     @db.UnsignedInt
-//   status      Boolean @default(true)
 // }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -275,15 +292,6 @@ model Client {
 //   status    Boolean  @default(false)
 
 //   @@index([target_id], map: "target_id")
-// }
-
-// model news {
-//   id           Int      @id @default(autoincrement()) @db.UnsignedInt
-//   title        String   @default("") @db.VarChar(250)
-//   content      String   @db.Text
-//   date_publish DateTime @db.Date
-//   date_end     DateTime @db.Date
-//   status       Boolean  @default(true)
 // }
 
 // model objects_days_discounts {
