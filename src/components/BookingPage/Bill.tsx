@@ -202,6 +202,10 @@ const Bill = ({ entry }: InfoProps) => {
         color="primary"
         className="ml-auto mt-5"
         onClick={() => {
+          const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
+          const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
+          const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
+
           axios
             .post(
               'https://api.yookassa.ru/v3/',
@@ -218,11 +222,10 @@ const Bill = ({ entry }: InfoProps) => {
                 description: 'Заказ №1',
               },
               {
-                auth: {
-                  username: process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string,
-                  password: process.env.NEXT_PUBLIC_YOOKASSA_API as string,
+                headers: {
+                  Authorization: `Basic ${t}`,
+                  'Content-Type': 'application/json',
                 },
-                // headers: { auth: 'test_whCRHOs6d9gfrErPHySMFKsJhGZEvWsKaKkNqF9muJU' },
               }
             )
             .then((data) => console.log(data))
