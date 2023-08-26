@@ -1,13 +1,11 @@
+import { IconBasket, IconBus, IconMassage } from '@tabler/icons-react';
 import { getWeather } from 'api/weather';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Basket, Bus, Massage } from 'tabler-icons-react';
-import { Location, Mail, Phone } from 'tabler-icons-react';
 import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
-import YandexMap from 'components/HomePage/YandexMap';
-import MediaLinks from 'components/MediaLinks';
+import HousesContacts from 'components/HomePage/HousesContacts';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { ObjectTypes } from 'server/objects/types';
 import Button from 'ui/Button';
@@ -55,18 +53,18 @@ const Services = () => {
       title: 'Дополнительные товары',
       description:
         'Закажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыхаЗакажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыха',
-      icon: <Basket size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
+      icon: <IconBasket size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
     {
       title: 'Трансфер до “Ладога парк”',
       description: 'Аренда 17-местного автобуса до базы и обратно. Назначьте удобное время и место подачи',
-      icon: <Bus size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
+      icon: <IconBus size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
     {
       title: 'Трансфер до “Ладога парк”',
       description:
         'Для заказа массажа необходимо заблаговременно отправить письмо на почту с указанием желаемого вида массажа, временем и датой',
-      icon: <Massage size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
+      icon: <IconMassage size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
     },
   ];
 
@@ -172,46 +170,6 @@ const Photos = () => {
   );
 };
 
-const Contacts = () => {
-  return (
-    <section className="flex flex-col gap-4">
-      <h2>Контакты</h2>
-      <div className="flex justify-between gap-3 flex-row font-semibold text-xl">
-        <div className="flex flex-col gap-10">
-          <div className="flex gap-5 md:gap-10 items-center">
-            <Mail size={40} color="rgb(255, 170, 5)" />
-            <span>booking@ladogapark.ru</span>
-          </div>
-          <div className="flex gap-5 md:gap-10 items-center">
-            <Phone size={40} color="rgb(255, 170, 5)" />
-            <div className="flex flex-col font-inter">
-              <span>+7 (929) 111-01-51</span>
-              <span>+7 (931) 213-00-48</span>
-            </div>
-          </div>
-          <div className="flex gap-5 md:gap-10 items-center">
-            <Location size={40} color="rgb(255, 170, 5)" />
-            <span>Всеволожский р-н Ленобласти, деревня Коккорево, 40 км от Санкт-Петербурга</span>
-          </div>
-        </div>
-        <div className="hidden md:flex flex-col gap-5">
-          <span>Соцсети и Мессенджеры:</span>
-          <div className="flex gap-4 self-end">
-            <MediaLinks size={40} />
-          </div>
-        </div>
-      </div>
-      <YandexMap />
-      <div className="md:hidden flex flex-col gap-5 font-semibold text-xl">
-        <span>Соцсети и Мессенджеры:</span>
-        <div className="flex gap-4">
-          <MediaLinks size={40} />
-        </div>
-      </div>
-    </section>
-  );
-};
-
 export default async function Home({ searchParams }: Props) {
   const objectEntries = (await getObjectEntries()).filter(
     (entry) => entry.group.type === (searchParams.type ?? 'Daily')
@@ -234,7 +192,7 @@ export default async function Home({ searchParams }: Props) {
         <Services />
         <Faq />
         <Photos />
-        <Contacts />
+        <HousesContacts />
       </div>
     </main>
   );

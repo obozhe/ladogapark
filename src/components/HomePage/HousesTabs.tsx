@@ -11,13 +11,13 @@ const rentOptions: Record<'label' | 'value', string | ObjectTypes>[] = [
 ];
 
 const HousesTabs = () => {
-  const { callback: handleClick } = useRouterParams();
+  const { setQueryParams } = useRouterParams();
 
   return (
     <Tabs
       tabs={rentOptions}
       activeTab={rentOptions[0].value}
-      onClick={(value) => handleClick({ queryName: 'type', value })}
+      onClick={(value) => setQueryParams({ queryName: 'type', value })}
     />
   );
 };

@@ -1,5 +1,5 @@
+import { IconMan } from '@tabler/icons-react';
 import Link from 'next/link';
-import { Man } from 'tabler-icons-react';
 import { Entry } from '@prisma/client';
 import formatToRuble from 'core/helpers/number';
 import HousesTabs from './HousesTabs';
@@ -36,7 +36,7 @@ const Houses = ({ objectEntries }: Props) => {
               <div className="absolute top-0 h-full w-full brightness-[60%] -z-10 bg-house-image bg-auto bg-left-top" />
               <div className="flex justify-between p-2 md:p-4">
                 <div className="flex items-center">
-                  <Man fill="white" />
+                  <IconMan fill="white" />
                   <span>x{entry.seats}</span>
                 </div>
                 <div className="flex gap-2">

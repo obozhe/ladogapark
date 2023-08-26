@@ -1,5 +1,6 @@
 'use client';
 
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import CountUp from 'react-countup';
@@ -197,7 +198,37 @@ const Bill = ({ entry }: InfoProps) => {
         <span>Итого:</span>
         <CountUp start={previousTotal ?? 0} end={total} suffix=" ₽" duration={0.5} />
       </div>
-      <Button color="primary" className="ml-auto mt-5">
+      <Button
+        color="primary"
+        className="ml-auto mt-5"
+        onClick={() => {
+          axios
+            .post(
+              'https://api.yookassa.ru/v3/',
+              {
+                amount: {
+                  value: '100.00',
+                  currency: 'RUB',
+                },
+                capture: true,
+                confirmation: {
+                  type: 'redirect',
+                  return_url: 'https://ladogapark.vercel.app',
+                },
+                description: 'Заказ №1',
+              },
+              {
+                auth: {
+                  username: process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string,
+                  password: process.env.NEXT_PUBLIC_YOOKASSA_API as string,
+                },
+                // headers: { auth: 'test_whCRHOs6d9gfrErPHySMFKsJhGZEvWsKaKkNqF9muJU' },
+              }
+            )
+            .then((data) => console.log(data))
+            .catch((error) => console.log(error));
+        }}
+      >
         Забронировать
       </Button>
     </section>

@@ -1,7 +1,7 @@
 'use client';
 
+import { IconCircleArrowDown } from '@tabler/icons-react';
 import { ReactNode, useRef, useState } from 'react';
-import { ArrowDownCircle } from 'tabler-icons-react';
 import { twMerge } from 'tailwind-merge';
 import { Disclosure as DisclosureUI } from '@headlessui/react';
 
@@ -30,7 +30,7 @@ const Disclosure = ({ title, description, showIcon = true, className }: Props) =
               {title}
               {showIcon && (
                 <span className={twMerge('transition', open && 'rotate-180')}>
-                  <ArrowDownCircle size={30} />
+                  <IconCircleArrowDown size={30} />
                 </span>
               )}
             </DisclosureUI.Button>

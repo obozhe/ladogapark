@@ -9,7 +9,6 @@ const pluralize = (strings: string[], n: number) => {
   } else {
     idx = 2; // many
   }
-  console.log(idx);
   return strings[idx] || '';
 };
 

@@ -1,15 +1,16 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useTransition } from 'react';
 
-type CallbackArgs = { queryName: string; value: string }[];
+type setQueryParamsArgs = { queryName: string; value: string }[];
+type deleteQueryParamsArgs = string[];
 
 const useRouterParams = (scroll = false) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isTransition, startTransition] = useTransition();
 
-  const callback = useCallback(
-    (...args: CallbackArgs) => {
+  const setQueryParams = useCallback(
+    (...args: setQueryParamsArgs) => {
       const newSearchParams = new URLSearchParams();
       args.forEach(({ value, queryName }) => newSearchParams.set(queryName, value));
 
@@ -17,8 +18,17 @@ const useRouterParams = (scroll = false) => {
     },
     [router, pathname, scroll]
   );
+  const deleteQueryParams = useCallback(
+    (...args: deleteQueryParamsArgs) => {
+      const newSearchParams = new URLSearchParams();
+      args.forEach((queryName) => newSearchParams.delete(queryName));
 
-  return { callback, isTransition };
+      startTransition(() => router.push(`${pathname}?${newSearchParams.toString()}`, { scroll }));
+    },
+    [scroll, router, pathname]
+  );
+
+  return { setQueryParams, deleteQueryParams, isTransition };
 };
 
 export default useRouterParams;

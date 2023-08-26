@@ -1,5 +1,5 @@
+import { IconSelect } from '@tabler/icons-react';
 import { Fragment, useState } from 'react';
-import { Select as SelectIcon } from 'tabler-icons-react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
 import { Listbox, Transition } from '@headlessui/react';
@@ -64,7 +64,7 @@ const Select = <Value extends string | number>({
               <span className="block truncate">{options.find((o) => o.value === selectedOptionValue)?.label}</span>
               {showIcon && (
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <SelectIcon className={twMerge('h-5 w-5', open && 'rotate-180')} aria-hidden="true" />
+                  <IconSelect className={twMerge('h-5 w-5', open && 'rotate-180')} aria-hidden="true" />
                 </span>
               )}
             </Listbox.Button>

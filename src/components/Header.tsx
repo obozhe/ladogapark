@@ -1,9 +1,9 @@
 'use client';
 
+import { IconMenu2 } from '@tabler/icons-react';
 import LogoMobileIcon from 'icons/logo-mobile.svg';
 import LogoIcon from 'icons/logo.svg';
 import Link from 'next/link';
-import { Menu2 } from 'tabler-icons-react';
 import DropDown from 'ui/Dropdown';
 import MediaLinks from './MediaLinks';
 
@@ -12,7 +12,6 @@ const navLinks = [
   { link: '/map', title: 'Карта парка' },
   { link: '/services', title: 'Услуги' },
   { link: '/photos', title: 'Фотогалерея' },
-  { link: '/reviews', title: 'Отзывы' },
   { link: '/contacts', title: 'Контакты' },
 ];
 
@@ -44,7 +43,7 @@ const Header = () => {
 
       <DropDown
         className="lg:hidden"
-        menuButton={<Menu2 size={40} />}
+        menuButton={<IconMenu2 size={40} />}
         items={navLinks.map((navLink) => (
           <Link href={navLink.link} key={navLink.link} className="font-bold">
             {navLink.title}

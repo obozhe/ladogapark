@@ -1,5 +1,5 @@
+import { IconBrandInstagram, IconBrandTelegram, IconBrandVk, IconBrandWhatsapp } from '@tabler/icons-react';
 import Link from 'next/link';
-import { BrandInstagram, BrandTelegram, BrandVk, BrandWhatsapp } from 'tabler-icons-react';
 
 type Props = {
   className?: string;
@@ -11,16 +11,16 @@ const MediaLinks = ({ className, color, size = 20 }: Props) => {
   return (
     <>
       <Link href="https://www.instagram.com/ladoga_park/" target="_blank" className={className}>
-        <BrandInstagram size={size} color={color} />
+        <IconBrandInstagram size={size} color={color} />
       </Link>
       <Link href="https://t.me/ladogapark" target="_blank" className={className}>
-        <BrandTelegram size={size} color={color} />
+        <IconBrandTelegram size={size} color={color} />
       </Link>
       <Link href="https://vk.com/ladogapark" target="_blank" className={className}>
-        <BrandVk size={size} color={color} />
+        <IconBrandVk size={size} color={color} />
       </Link>
       <Link href="https://wa.me/+79312130048" target="_blank" className={className}>
-        <BrandWhatsapp size={size} color={color} />
+        <IconBrandWhatsapp size={size} color={color} />
       </Link>
     </>
   );

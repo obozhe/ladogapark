@@ -20,14 +20,6 @@ export const Input = React.forwardRef(
   ) => {
     return (
       <fieldset>
-        {label && (
-          <label htmlFor={label + '-field'}>
-            <span className={twMerge('font-semibold text-sm whitespace-nowrap', error ? 'text-error' : '')}>
-              {label}
-            </span>
-          </label>
-        )}
-
         <div className="relative">
           <input
             {...rest}
@@ -35,12 +27,12 @@ export const Input = React.forwardRef(
             ref={ref}
             style={{ height: sizes[_size] }}
             className={twMerge(
-              'rounded p-2 w-full border-2 bg-bg-main',
+              'rounded p-2 w-full border-2',
               'focus:outline-none focus:border-secondary',
               'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 invalid:border-error invalid:text-error',
               endAdornment ? 'pr-12' : '',
               error ? 'border-error text-error' : '',
-              !error ? 'border-primary' : '',
+              !error ? 'border-black' : '',
               className
             )}
             id={label + '-field'}

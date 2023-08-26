@@ -1,7 +1,7 @@
 'use client';
 
+import { IconMinus, IconPlus } from '@tabler/icons-react';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Minus, Plus } from 'tabler-icons-react';
 
 type Props = {
   placeholder: string;
@@ -50,10 +50,10 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
       />
       <div className="absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-1 h-full">
         <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={decrease}>
-          <Minus />
+          <IconMinus />
         </button>
         <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={increase}>
-          <Plus />
+          <IconPlus />
         </button>
       </div>
     </div>

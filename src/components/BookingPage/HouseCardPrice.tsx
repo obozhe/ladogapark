@@ -10,7 +10,7 @@ import Select from 'ui/Select';
 import Tabs from 'ui/Tabs';
 
 type Props = {
-  object: GroupWithEntriesWithFuturePrices;
+  group: GroupWithEntriesWithFuturePrices;
 };
 
 type PriceInfoProps = {
@@ -31,8 +31,8 @@ const PriceInfo = ({ label, price, priceLabel }: PriceInfoProps) => {
   );
 };
 
-const HouseCardPrice = ({ object }: Props) => {
-  const [activeObject, setActiveObject] = useState(object.entries[0]);
+const HouseCardPrice = ({ group }: Props) => {
+  const [activeObject, setActiveObject] = useState(group.entries[0]);
   const [selectValue, setSelectValue] = useState('');
 
   const currentFuturePrice = activeObject.futurePrices.find((futurePrice) => futurePrice.id === selectValue);
@@ -53,13 +53,13 @@ const HouseCardPrice = ({ object }: Props) => {
 
   return (
     <div className="font-semibold flex flex-col gap-6">
-      <div className="text-4xl">{object.title}</div>
+      <div className="text-4xl">{group.title}</div>
       <div className="flex flex-col gap-4">
         <span className="text-tertiary text-lg">Вместимость объекта:</span>
         <Tabs
           activeTab={activeObject}
-          onClick={(value) => setActiveObject(value as (typeof object.entries)[0])}
-          tabs={object.entries.map((entry) => ({ label: String(entry.seats), value: entry }))}
+          onClick={(value) => setActiveObject(value as (typeof group.entries)[0])}
+          tabs={group.entries.map((entry) => ({ label: String(entry.seats), value: entry }))}
         />
       </div>
       <p>{activeObject.description}</p>
