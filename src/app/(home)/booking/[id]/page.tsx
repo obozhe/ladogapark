@@ -36,6 +36,7 @@ const onSubmit = async (total: number) => {
       return_url: 'http://localhost:3000/booking-test',
     },
     description: 'Заказ №1',
+    metadata: { id: '123' },
   };
 
   const res = await fetch('https://api.yookassa.ru/v3/payments', {

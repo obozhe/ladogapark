@@ -10,16 +10,12 @@ const Booking = async () => {
     <>
       <h2 className="mb-6">Бронирование</h2>
       <div className="flex flex-col gap-12">
-        {group.map((group) => {
-          if (!group.entries.length) return;
-
-          return (
-            <div key={group.id} className="grid grid-cols-[2fr,1fr] gap-12">
-              <Image src={HouseTest} alt="house image" className="w-full flex-[70%]" />
-              <HouseCardPrice group={group} />
-            </div>
-          );
-        })}
+        {group.map((group) => (
+          <div key={group.id} className="grid grid-cols-[2fr,1fr] gap-12">
+            <Image src={HouseTest} alt="house image" className="w-full flex-[70%]" />
+            <HouseCardPrice group={group} />
+          </div>
+        ))}
       </div>
     </>
   );

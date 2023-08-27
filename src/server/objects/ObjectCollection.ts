@@ -13,12 +13,13 @@ export const getObjectEntries = () => {
 };
 
 export const getGroupsWithEntries = () => {
-  return prisma.group.findMany({ include: { entries: true } });
+  return prisma.group.findMany({ include: { entries: true }, where: { entries: { none: {} } } });
 };
 
 export const getGroupsWithEntriesWithFuturePrices = () => {
   return prisma.group.findMany({
     include: { entries: { include: { futurePrices: true }, orderBy: { seats: 'asc' } } },
+    where: { NOT: { entries: { none: {} } } },
   });
 };
 
