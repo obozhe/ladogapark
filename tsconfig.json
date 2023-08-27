@@ -22,6 +22,7 @@
     "baseUrl": "src",
     "paths": {
       "icons/*": ["../public/icons/*"],
+      "images/*": ["../public/images/*"],
       "ui/*": ["components/ui/*"],
       "mui/*": ["components/mui/*"],
       "components/*": ["components/*"]

@@ -1,15 +1,18 @@
 import { IconBasket, IconBus, IconMassage } from '@tabler/icons-react';
 import { getWeather } from 'api/weather';
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
 import HousesContacts from 'components/HomePage/HousesContacts';
+import { getNews } from 'server/news';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { ObjectTypes } from 'server/objects/types';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';
+import Slider from 'ui/Slider';
 import House1Image from '../../../public/images/house-1.png';
 import House2Image from '../../../public/images/house-2.png';
 import House3Image from '../../../public/images/house-3.png';
@@ -18,13 +21,13 @@ import House4Image from '../../../public/images/house-4.png';
 type Props = {
   searchParams: {
     from: string;
-    to: string;
     type: ObjectTypes;
   };
 };
 
 const Search = async () => {
   // const weather = await getWeather();
+  const news = await getNews();
 
   return (
     <section className="relative flex flex-col justify-center items-center gap-14 pt-[153px] pb-[253px] px-2">
@@ -34,15 +37,21 @@ const Search = async () => {
         <p>Ладожского озера</p>
       </div>
       <div className="flex flex-col text-center gap-5">
-        <div className="grid md:grid-cols-[1fr_1fr_max-content] md:grid-rows-1 grid-rows-3 gap-3">
-          <HousesFilter />
-        </div>
+        <HousesFilter />
         {/* {weather && (
           <span className="text-white font-semibold text-xl">
             У нас сейчас {weather[0]} на выходных {weather[1] ?? weather[0]}
           </span>
         )} */}
       </div>
+      <Slider
+        autoPlay
+        items={news.map((newsItem) => ({
+          title: newsItem.title,
+          content: newsItem.content,
+          date: dayjs(newsItem.updatedAt).format('DD.MM.YYYY'),
+        }))}
+      />
     </section>
   );
 };

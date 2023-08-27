@@ -17,6 +17,42 @@ type InfoProps = {
   entry: EntryWithFuturePricesWithGroup;
 };
 
+// TODO: store payment id in session storage -> redirect to our confirm payment page -> send request with id in session storage -> store this id in db and delete id from session storage
+const onSubmit = async (total: number) => {
+  'use server';
+
+  const shopId = process.env.YOOKASSA_SHOP_ID as string;
+  const secretKey = process.env.YOOKASSA_API as string;
+  const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
+
+  const body = {
+    amount: {
+      value: '100.00',
+      currency: 'RUB',
+    },
+    capture: true,
+    confirmation: {
+      type: 'redirect',
+      return_url: 'http://localhost:3000/booking-test',
+    },
+    description: 'Заказ №1',
+  };
+
+  const res = await fetch('https://api.yookassa.ru/v3/payments', {
+    method: 'POST',
+
+    headers: {
+      Authorization: `Basic ${t}`,
+      'Content-Type': 'application/json',
+      'Idempotence-Key': String(Math.random()),
+    },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  console.log(json);
+  redirect(json.confirmation.confirmation_url);
+};
+
 const Info = ({ entry }: InfoProps) => {
   return (
     <section className="flex flex-col gap-7">
@@ -70,7 +106,7 @@ const BookingId = async ({ params, searchParams }: Props) => {
       />
       <div className="grid grid-cols-[2fr_1fr] gap-12">
         <Info entry={entry} />
-        <Bill entry={entry} />
+        <Bill entry={entry} onSubmit={onSubmit} />
       </div>
     </div>
   );

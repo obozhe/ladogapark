@@ -22,7 +22,7 @@ const Textarea = forwardRef<HTMLTextAreaElement | null, Props>(
           className={twMerge(
             'rounded p-2 w-full border-2 resize-none block',
             'focus:outline-none focus:border-secondary',
-            'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 invalid:border-error invalid:text-error',
+            'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200',
             error ? 'border-error text-error' : '',
             !error ? 'border-black' : '',
             className

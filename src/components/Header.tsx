@@ -1,9 +1,12 @@
 'use client';
 
 import { IconMenu2 } from '@tabler/icons-react';
+import LogoMobileBlackIcon from 'icons/logo-mobile-black.svg';
 import LogoMobileIcon from 'icons/logo-mobile.svg';
 import LogoIcon from 'icons/logo.svg';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { twMerge } from 'tailwind-merge';
 import DropDown from 'ui/Dropdown';
 import MediaLinks from './MediaLinks';
 
@@ -16,11 +19,16 @@ const navLinks = [
 ];
 
 const Header = () => {
+  const location = usePathname();
+  const isHomePage = location === '/';
+
   return (
-    <header className="flex py-8 justify-between layout-container absolute z-10 lg:static w-full p-3">
+    <header
+      className={twMerge('flex py-8 justify-between layout-container w-full', isHomePage && 'absolute z-10 lg:static')}
+    >
       <div className="flex gap-5 xl:gap-24">
         <Link href="/" className="lg:hidden">
-          <LogoMobileIcon />
+          {isHomePage ? <LogoMobileIcon /> : <LogoMobileBlackIcon />}
         </Link>
         <Link href="/" className="hidden lg:block">
           <LogoIcon />
@@ -43,7 +51,7 @@ const Header = () => {
 
       <DropDown
         className="lg:hidden"
-        menuButton={<IconMenu2 size={40} />}
+        menuButton={<IconMenu2 size={40} color={isHomePage ? 'white' : 'black'} />}
         items={navLinks.map((navLink) => (
           <Link href={navLink.link} key={navLink.link} className="font-bold">
             {navLink.title}

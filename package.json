@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
-    "@hookform/resolvers": "^3.3.0",
     "@pbe/react-yandex-maps": "^1.2.4",
     "@prisma/client": "^5.1.1",
     "@svgr/webpack": "^8.1.0",
@@ -36,12 +35,11 @@
     "react-countup": "^6.4.2",
     "react-datepicker": "^4.16.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.45.4",
     "react-photo-album": "^2.3.0",
+    "sharp": "^0.32.5",
     "swr": "^2.2.1",
     "tailwind-merge": "^1.14.0",
-    "tailwindcss": "3.3.3",
-    "zod": "^3.22.2"
+    "tailwindcss": "3.3.3"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",

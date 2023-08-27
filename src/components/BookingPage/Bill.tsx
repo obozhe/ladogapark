@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { redirect } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import CountUp from 'react-countup';
 import usePrevious from 'hooks/usePrevious';
@@ -16,6 +17,7 @@ import NumberInput from 'ui/NumberInput';
 
 type InfoProps = {
   entry: EntryWithFuturePricesWithGroup;
+  onSubmit: (amount: number) => Promise<void>;
 };
 
 type AdditionalGoodsProps = {
@@ -66,7 +68,7 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
   );
 };
 
-const Bill = ({ entry }: InfoProps) => {
+const Bill = ({ entry, onSubmit }: InfoProps) => {
   const [total, setTotal] = useState(0);
   const previousTotal = usePrevious(total);
   const [date, setDate] = useState<dayjs.Dayjs>();
@@ -77,8 +79,6 @@ const Bill = ({ entry }: InfoProps) => {
     1
   )} ${pluralize(['парковочное', 'парковочных', 'парковочных'], entry.parking)}
   ${pluralize(['место', 'места', 'мест'], entry.parking)}`;
-
-  console.log(entry.futurePrices);
 
   const renderDayContents = useMemo(
     // eslint-disable-next-line react/display-name
@@ -198,40 +198,7 @@ const Bill = ({ entry }: InfoProps) => {
         <span>Итого:</span>
         <CountUp start={previousTotal ?? 0} end={total} suffix=" ₽" duration={0.5} />
       </div>
-      <Button
-        color="primary"
-        className="ml-auto mt-5"
-        onClick={() => {
-          const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
-          const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
-          const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
-
-          axios
-            .post(
-              'https://api.yookassa.ru/v3/',
-              {
-                amount: {
-                  value: '100.00',
-                  currency: 'RUB',
-                },
-                capture: true,
-                confirmation: {
-                  type: 'redirect',
-                  return_url: 'https://ladogapark.vercel.app',
-                },
-                description: 'Заказ №1',
-              },
-              {
-                headers: {
-                  Authorization: `Basic ${t}`,
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error));
-        }}
-      >
+      <Button color="primary" className="ml-auto mt-5" onClick={() => onSubmit(total)}>
         Забронировать
       </Button>
     </section>

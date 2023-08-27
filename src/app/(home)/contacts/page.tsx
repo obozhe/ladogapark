@@ -1,6 +1,12 @@
 import Link from 'next/link';
-import ContactsForm from 'components/ContactsPage/ContactsForm';
 import HousesContacts from 'components/HomePage/HousesContacts';
+import Button from 'ui/Button';
+import { Input } from 'ui/Input';
+import Textarea from 'ui/Textarea';
+
+const onSubmit = async (formData: FormData) => {
+  'use server';
+};
 
 const Contacts = () => {
   return (
@@ -12,10 +18,17 @@ const Contacts = () => {
             <span className="text-xl">Задайте любой вопрос</span>
             <span className="text-tertiary font-medium">Ответим в течение дня</span>
           </div>
-          <ContactsForm />
+          <form action={onSubmit}>
+            <Input required name="name" placeholder="Имя" _size="lg" />
+            <Input required type="email" name="email" placeholder="E-mail" _size="lg" />
+            <Textarea required name="message" placeholder="Введите сообщение..." />
+            <Button type="submit" color="primary" fullWidth>
+              Отправить
+            </Button>
+          </form>
           <p className="text-sm text-tertiary mt-4">
             Отправляя сообщение, вы подтверждаете своё согласие с{' '}
-            <Link href="" className="text-primary">
+            <Link href="/" className="text-primary">
               политикой конфиденциальности.
             </Link>
           </p>

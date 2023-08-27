@@ -1,5 +1,3 @@
-'use client';
-
 import React, { ForwardedRef, InputHTMLAttributes, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
@@ -29,7 +27,7 @@ export const Input = React.forwardRef(
             className={twMerge(
               'rounded p-2 w-full border-2',
               'focus:outline-none focus:border-secondary',
-              'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 invalid:border-error invalid:text-error',
+              'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200',
               endAdornment ? 'pr-12' : '',
               error ? 'border-error text-error' : '',
               !error ? 'border-black' : '',

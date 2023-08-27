@@ -2,6 +2,7 @@
 const nextConfig = {
   experimental: {
     legacyBrowsers: false,
+    serverActions: true,
   },
   webpack(config) {
     config.module.rules.push({
@@ -21,6 +22,7 @@ const nextConfig = {
     ];
   },
   images: {
+    formats: ['image/avif'],
     remotePatterns: [
       {
         protocol: 'https',

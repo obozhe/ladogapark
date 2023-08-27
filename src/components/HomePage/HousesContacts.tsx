@@ -15,7 +15,7 @@ const HousesContacts = () => {
           </div>
           <div className="flex gap-5 md:gap-10 items-center">
             <IconPhone size={40} color="rgb(255, 170, 5)" />
-            <div className="flex flex-col font-inter">
+            <div className="flex flex-col font-inter font-medium">
               <span>+7 (929) 111-01-51</span>
               <span>+7 (931) 213-00-48</span>
             </div>
