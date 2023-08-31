@@ -56,11 +56,11 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
       <span className="text-tertiary">{name}</span>
       <span className="justify-self-end text-tertiary">{formatToRuble(price)}</span>
       <div className="justify-self-end">
-        <button className="px-2 text-tertiary cursor-pointer" onClick={decrease}>
+        <button className="cursor-pointer px-2 text-tertiary" onClick={decrease}>
           -
         </button>
         <span className="px-2">{amount}</span>
-        <button className="px-2 cursor-pointer" onClick={increase}>
+        <button className="cursor-pointer px-2" onClick={increase}>
           +
         </button>
       </div>
@@ -106,7 +106,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
       return (
         <div className="relative mb-2">
           <span className="">{day}</span>
-          {price && <span className="absolute text-[10px] left-1/2 -translate-x-1/2 -bottom-[15px]">{price}</span>}
+          {price && <span className="absolute -bottom-[15px] left-1/2 -translate-x-1/2 text-[10px]">{price}</span>}
         </div>
       );
     },
@@ -138,10 +138,10 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
   }, [additionalGoodsTotal, nightsAmount, entry, date]);
 
   return (
-    <section className="[&>*:not(:last-child)]:border-b-2 border-tertiary font-semibold">
-      <div className="grid grid-rows-[max-content_max-content] pb-2 grid-cols-[max-content_max-content] gap-2">
+    <section className="border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
+      <div className="grid grid-cols-[max-content_max-content] grid-rows-[max-content_max-content] gap-2 pb-2">
         {[entry.priceWeekday, entry.priceWeekend].map((amount, index) => (
-          <span key={amount + index} className="text-3xl font-inter">
+          <span key={amount + index} className="font-inter text-3xl">
             {formatToRuble(amount)}
             {index === 0 && ' /'}
           </span>
@@ -152,7 +152,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           </span>
         ))}
       </div>
-      <div className="flex flex-col py-5 gap-5">
+      <div className="flex flex-col gap-5 py-5">
         <div className="flex gap-4">
           <DatePicker
             placeholderText="Дата заезда"
@@ -163,7 +163,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           <NumberInput placeholder="Кол-во ночей" onChange={setNightsAmount} />
         </div>
         <div className="flex flex-col">
-          <span className="text-lg mb-4">Включено в стоимость:</span>
+          <span className="mb-4 text-lg">Включено в стоимость:</span>
           <span className="text-base">{parking}</span>
           <span className="text-base">Мангал</span>
           <span className="text-base">Электричество</span>
@@ -194,7 +194,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           }
         />
       </div>
-      <div className="py-5 flex justify-between text-2xl">
+      <div className="flex justify-between py-5 text-2xl">
         <span>Итого:</span>
         <CountUp start={previousTotal ?? 0} end={total} suffix=" ₽" duration={0.5} />
       </div>

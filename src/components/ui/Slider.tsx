@@ -58,11 +58,11 @@ const Slider = ({ autoPlay, items }: Props) => {
   };
 
   return (
-    <div className=" text-white flex flex-col gap-[10px] w-full md:w-fit">
-      <div className="flex gap-[10px] w-full md:w-fit items-center">
+    <div className=" flex w-full flex-col gap-[10px] text-white md:w-fit">
+      <div className="flex w-full items-center gap-[10px] md:w-fit">
         <IconCaretLeftFilled className="hidden md:block" onClick={() => changeSlide(-1)} />
         <div
-          className="bg-white bg-opacity-30 rounded-2xl relative overflow-hidden"
+          className="relative overflow-hidden rounded-2xl bg-white bg-opacity-30"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
         >
@@ -72,7 +72,7 @@ const Slider = ({ autoPlay, items }: Props) => {
           >
             {items.map((item) => (
               <div
-                className="flex flex-col gap-2 flex-[1_0_100%] relative p-4"
+                className="relative flex flex-[1_0_100%] flex-col gap-2 p-4"
                 key={`slide-${item.title}-${item.date}`}
               >
                 <div className="flex justify-between">
@@ -95,7 +95,7 @@ const Slider = ({ autoPlay, items }: Props) => {
         {items.map((item, index) => (
           <span
             className={twMerge(
-              'w-[10px] h-[10px] bg-white rounded-full cursor-pointer opacity-30',
+              'h-[10px] w-[10px] cursor-pointer rounded-full bg-white opacity-30',
               currentSlideIndex === index && 'opacity-100'
             )}
             key={`circle-${item.title}-${item.date}`}

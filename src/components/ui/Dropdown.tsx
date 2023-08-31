@@ -29,14 +29,14 @@ const DropDown = ({ menuButton, items, className }: Props) => {
       >
         <Menu.Items
           static
-          className="absolute right-0 mt-2 pt-2 p-4 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white p-4 pt-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           {items.map((item, index) => (
             <Menu.Item key={'dropDownItem' + index}>
               {({ active }) => (
                 <button
                   className={twMerge(
-                    'text-gray-900 group flex w-full items-center px-2 py-2 text-sm border-b border-[#DDDDDD]',
+                    'group flex w-full items-center border-b border-[#DDDDDD] px-2 py-2 text-sm text-gray-900',
                     active && 'bg-primary text-white'
                   )}
                 >

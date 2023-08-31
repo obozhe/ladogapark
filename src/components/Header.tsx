@@ -24,7 +24,7 @@ const Header = () => {
 
   return (
     <header
-      className={twMerge('flex py-8 justify-between layout-container w-full', isHomePage && 'absolute z-10 lg:static')}
+      className={twMerge('layout-container flex w-full justify-between py-8', isHomePage && 'absolute z-10 lg:static')}
     >
       <div className="flex gap-5 xl:gap-24">
         <Link href="/" className="lg:hidden">
@@ -33,7 +33,7 @@ const Header = () => {
         <Link href="/" className="hidden lg:block">
           <LogoIcon />
         </Link>
-        <nav className="lg:self-end lg:font-bold lg:flex gap-5 xl:gap-11 hidden">
+        <nav className="hidden gap-5 lg:flex lg:self-end lg:font-bold xl:gap-11">
           {navLinks.map((navLink) => (
             <Link href={navLink.link} key={navLink.link}>
               {navLink.title}
@@ -41,7 +41,7 @@ const Header = () => {
           ))}
         </nav>
       </div>
-      <div className="lg:flex lg:flex-col lg:font-semibold lg:justify-between lg:font-inter hidden">
+      <div className="hidden lg:flex lg:flex-col lg:justify-between lg:font-inter lg:font-semibold">
         <div className="flex gap-4 self-end">
           <MediaLinks />
         </div>

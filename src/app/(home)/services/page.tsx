@@ -15,9 +15,9 @@ const Services = async ({ searchParams }: Props) => {
     <>
       <div className="layout-container">
         <h2 className="my-14">Услуги</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr gap-12">
+        <div className="grid auto-rows-fr grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <div key={service.id} className="flex flex-col gap-2 shadow rounded-lg p-5">
+            <div key={service.id} className="flex flex-col gap-2 rounded-lg p-5 shadow">
               <DynamicTablerIcon icon={service.icon} size={100} className="mb-1" color="rgb(255, 170, 5)" />
               <span className="text-xl font-semibold">{service.title}</span>
               <div

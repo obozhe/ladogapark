@@ -5,7 +5,7 @@ const Map = () => {
   return (
     <div className="layout-container">
       <h2 className="mb-10">Карта парка</h2>
-      <div className="flex justify-center relative">
+      <div className="relative flex justify-center">
         <Image src={MapImage} alt="map" />
       </div>
     </div>

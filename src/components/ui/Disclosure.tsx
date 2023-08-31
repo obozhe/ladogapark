@@ -37,7 +37,7 @@ const Disclosure = ({ title, description, showIcon = true, className }: Props) =
             <DisclosureUI.Panel
               static
               ref={panelRef}
-              className="font-semibold transition-[max-height] overflow-hidden duration-300 ease-out"
+              className="overflow-hidden font-semibold transition-[max-height] duration-300 ease-out"
               style={{ maxHeight }}
             >
               <div className="py-4">{description}</div>

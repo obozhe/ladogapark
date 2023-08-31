@@ -26,19 +26,19 @@ const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHe
   const currentYear = getCurrentYear();
 
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex justify-center gap-2">
       <Select
         options={monthsOptions}
         value={currentMonth}
         showIcon={false}
-        className="border-0 text-primary p-0 capitalize font-medium text-base hover:text-secondary"
+        className="border-0 p-0 text-base font-medium capitalize text-primary hover:text-secondary"
         onChange={(value) => changeMonth(value - 1)}
       />
       <Select
         options={yearOptions}
         value={currentYear}
         showIcon={false}
-        className="border-0 text-primary p-0 font-medium text-base hover:text-secondary"
+        className="border-0 p-0 text-base font-medium text-primary hover:text-secondary"
         onChange={changeYear}
       />
     </div>
@@ -63,12 +63,12 @@ const DatePicker = ({ onChange, selected, ...rest }: Props) => {
           setDate(value);
         }}
         open={open}
-        className="h-full w-full overflow-hidden rounded-[10px] pl-3 pr-[29px] min-h-[50px]"
+        className="h-full min-h-[50px] w-full overflow-hidden rounded-[10px] pl-3 pr-[29px]"
         selected={date}
         renderCustomHeader={CustomHeader}
         {...rest}
       />
-      <div className="absolute top-1/2 -translate-y-1/2 right-[2px] flex justify-center items-center w-[30px] h-[calc(100%-4px)] cursor-pointer">
+      <div className="absolute right-[2px] top-1/2 flex h-[calc(100%-4px)] w-[30px] -translate-y-1/2 cursor-pointer items-center justify-center">
         <IconCalendar />
       </div>
     </div>

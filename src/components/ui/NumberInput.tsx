@@ -36,9 +36,9 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
   }, [value, onChange]);
 
   return (
-    <div className="relative w-full h-full font-semibold">
+    <div className="relative h-full w-full font-semibold">
       <input
-        className="h-full w-full rounded-[10px] pl-[10px] min-h-[50px]"
+        className="h-full min-h-[50px] w-full rounded-[10px] pl-[10px]"
         type="number"
         pattern="[0-9]*"
         inputMode="decimal"
@@ -48,11 +48,11 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
         min={0}
         max={100}
       />
-      <div className="absolute right-[2px] top-1/2 -translate-y-1/2 flex items-center gap-1 h-full">
-        <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={decrease}>
+      <div className="absolute right-[2px] top-1/2 flex h-full -translate-y-1/2 items-center gap-1">
+        <button className="flex h-[calc(100%-4px)] cursor-pointer items-center" onClick={decrease}>
           <IconMinus />
         </button>
-        <button className="h-[calc(100%-4px)] flex items-center cursor-pointer" onClick={increase}>
+        <button className="flex h-[calc(100%-4px)] cursor-pointer items-center" onClick={increase}>
           <IconPlus />
         </button>
       </div>

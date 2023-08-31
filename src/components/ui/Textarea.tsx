@@ -20,9 +20,9 @@ const Textarea = forwardRef<HTMLTextAreaElement | null, Props>(
           style={{ height: 100 }}
           aria-invalid={Boolean(error)}
           className={twMerge(
-            'rounded p-2 w-full border-2 resize-none block',
-            'focus:outline-none focus:border-secondary',
-            'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200',
+            'block w-full resize-none rounded border-2 p-2',
+            'focus:border-secondary focus:outline-none',
+            'disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500',
             error ? 'border-error text-error' : '',
             !error ? 'border-black' : '',
             className
@@ -30,7 +30,7 @@ const Textarea = forwardRef<HTMLTextAreaElement | null, Props>(
           id={label + '-field'}
         />
         {!disableHelper && (
-          <div className={twMerge('text-sm h-5', error ? 'text-error' : 'text-gray-500')}>{error || helper || ''}</div>
+          <div className={twMerge('h-5 text-sm', error ? 'text-error' : 'text-gray-500')}>{error || helper || ''}</div>
         )}
       </fieldset>
     );

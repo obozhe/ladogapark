@@ -12,11 +12,11 @@ const Contacts = () => {
   return (
     <div className="layout-container">
       <HousesContacts />
-      <section className="mt-10 grid grid-cols-1 lg:grid-cols-[2fr,1fr,1fr] gap-4 font-semibold">
+      <section className="mt-10 grid grid-cols-1 gap-4 font-semibold lg:grid-cols-[2fr,1fr,1fr]">
         <div className="max-w-[450px]">
-          <div className="flex justify-between items-center mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <span className="text-xl">Задайте любой вопрос</span>
-            <span className="text-tertiary font-medium">Ответим в течение дня</span>
+            <span className="font-medium text-tertiary">Ответим в течение дня</span>
           </div>
           <form action={onSubmit}>
             <Input required name="name" placeholder="Имя" _size="lg" />
@@ -26,7 +26,7 @@ const Contacts = () => {
               Отправить
             </Button>
           </form>
-          <p className="text-sm text-tertiary mt-4">
+          <p className="mt-4 text-sm text-tertiary">
             Отправляя сообщение, вы подтверждаете своё согласие с{' '}
             <Link href="/" className="text-primary">
               политикой конфиденциальности.
@@ -34,7 +34,7 @@ const Contacts = () => {
           </p>
         </div>
         <div>
-          <p className="pb-2 mb-4 w-fit border-b-[3px] border-black text-xl">На машине</p>
+          <p className="mb-4 w-fit border-b-[3px] border-black pb-2 text-xl">На машине</p>
           <div className="flex flex-col gap-4">
             <p>Двигаться по трассе А-128 «Санкт-Петербург – Морье»</p>
             <p>Проехать Всеволожск, деревни Романовку, Борисову Гриву, Ваганово</p>
@@ -44,7 +44,7 @@ const Contacts = () => {
           </div>
         </div>
         <div>
-          <p className="pb-2 mb-4 border-b-[3px] border-black w-fit text-xl">Общественный транспорт</p>
+          <p className="mb-4 w-fit border-b-[3px] border-black pb-2 text-xl">Общественный транспорт</p>
           <div className="flex flex-col gap-4">
             <p>От Финляндского вокзала – до Ваганово</p>
             <p>На автобусе №602 – до Коккорево (5 км, предварительно рекомендуем свериться с расписанием автобусом)</p>

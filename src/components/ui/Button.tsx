@@ -28,13 +28,13 @@ const Button = ({
       {...rest}
       type={type}
       className={twMerge(
-        'flex justify-center items-center',
-        'transition-all border-none text-sm font-medium',
+        'flex items-center justify-center',
+        'border-none text-sm font-medium transition-all',
         color === 'primary' ? 'bg-primary text-white hover:bg-opacity-70' : '',
         color === 'secondary' ? 'bg-gray-500 text-white hover:bg-opacity-70' : '',
         color === 'error' ? 'bg-error text-white hover:bg-opacity-70' : '',
         color === 'transparent' ? 'bg-transparent text-primary hover:bg-gray-200' : '',
-        disabled ? '!bg-gray-200 !text-gray-400 !pointer-events-none' : '',
+        disabled ? '!pointer-events-none !bg-gray-200 !text-gray-400' : '',
         !isIconButton ? 'px-4 py-2' : '',
         isIconButton ? 'p-1' : '',
         circle ? 'rounded-full' : 'rounded-md',

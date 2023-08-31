@@ -18,7 +18,7 @@
 }
 
 .react-datepicker__day-names > * {
-  @apply text-tertiary uppercase;
+  @apply uppercase text-tertiary;
 }
 
 .react-datepicker__triangle {
@@ -62,7 +62,7 @@
 }
 
 .react-datepicker__day:hover {
-  @apply bg-primary bg-opacity-50 text-white rounded-none;
+  @apply rounded-none bg-primary bg-opacity-50 text-white;
 }
 
 .react-datepicker__day:hover span:nth-child(2) {

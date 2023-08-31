@@ -62,14 +62,14 @@ const Info = ({ entry }: InfoProps) => {
           <Image src={HouseTest} alt="house image" className="w-full" />
         </div>
         <div className="flex gap-1 overflow-auto">
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
-          <Image src={HouseTest} alt="house image" className="max-h-24 max-w-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
+          <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
         </div>
       </div>
       <div className="flex flex-col gap-2 font-semibold">
@@ -95,7 +95,7 @@ const BookingId = async ({ params, searchParams }: Props) => {
   const group = await getGroupById(entry?.group.id);
 
   return (
-    <div className="flex flex-col gap-5 mt-12">
+    <div className="mt-12 flex flex-col gap-5">
       <BookingTabs
         activeTab={String(entry.id)}
         tabs={

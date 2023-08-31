@@ -21,8 +21,8 @@ const Tabs = <T,>({ tabs, activeTab = null, onClick, className }: Props<T>) => {
         <div
           key={`${tab.value}-${index}`}
           className={twMerge(
-            'flex-1 text-center cursor-pointer bg-white border-2 rounded-lg border-black px-2 py-1',
-            active === tab.value && 'bg-primary text-white border-primary'
+            'flex-1 cursor-pointer rounded-lg border-2 border-black bg-white px-2 py-1 text-center',
+            active === tab.value && 'border-primary bg-primary text-white'
           )}
           onClick={() => {
             onClick(tab.value);

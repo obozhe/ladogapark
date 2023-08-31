@@ -47,7 +47,7 @@ const Select = <Value extends string | number>({
     <fieldset style={{ width: fullWidth ? '100%' : 'fit-content' }}>
       {label && (
         <label htmlFor={label + '-field'}>
-          <span className={twMerge('font-semibold text-sm')}>{label}</span>
+          <span className={twMerge('text-sm font-semibold')}>{label}</span>
         </label>
       )}
 
@@ -57,7 +57,7 @@ const Select = <Value extends string | number>({
             <Listbox.Button
               style={{ height: sizes[size] }}
               className={twMerge(
-                'relative w-full bg-bg-main border-2 border-primary cursor-default rounded pl-3 pr-10 text-left focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary',
+                'bg-bg-main relative w-full cursor-default rounded border-2 border-primary pl-3 pr-10 text-left focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary',
                 className
               )}
             >
@@ -80,7 +80,7 @@ const Select = <Value extends string | number>({
               <Listbox.Options
                 className={twMerge(
                   'absolute z-10 max-h-60 w-fit overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
-                  showAbove ? 'mb-1 bottom-full' : 'mt-1 top-full',
+                  showAbove ? 'bottom-full mb-1' : 'top-full mt-1',
                   fullWidth && 'w-full'
                 )}
               >
@@ -91,7 +91,7 @@ const Select = <Value extends string | number>({
                     <Listbox.Option
                       key={`${label}_${option.value}_${index}`}
                       className={({ active }) =>
-                        `relative cursor-default select-none py-2 px-4 ${
+                        `relative cursor-default select-none px-4 py-2 ${
                           active ? 'bg-secondary text-white' : 'text-primary'
                         }`
                       }

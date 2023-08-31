@@ -4,11 +4,11 @@ import MediaLinks from './MediaLinks';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#221F20] pt-7 pb-5 px-2 text-white font-semibold text-sm mt-[300px]">
-      <div className="layout-container flex justify-center lg:justify-between lg:border-b-2 lg:border-white pb-5">
+    <footer className="mt-[300px] bg-[#221F20] px-2 pb-5 pt-7 text-sm font-semibold text-white">
+      <div className="layout-container flex justify-center pb-5 lg:justify-between lg:border-b-2 lg:border-white">
         <div className="flex gap-5 xl:gap-24">
           <LogoWhiteIcon />
-          <div className="lg:grid hidden grid-cols-3 grid-rows-4 gap-3">
+          <div className="hidden grid-cols-3 grid-rows-4 gap-3 lg:grid">
             <Link href="/">Главная</Link>
             <Link href="/booking">Фотогалерея</Link>
             <Link href="/">Публичная оферта</Link>
@@ -21,7 +21,7 @@ const Footer = () => {
             <Link href="/">Услуги</Link>
           </div>
         </div>
-        <div className="lg:flex hidden flex-col gap-5">
+        <div className="hidden flex-col gap-5 lg:flex">
           <div className="flex justify-between">
             <MediaLinks />
           </div>
@@ -32,7 +32,7 @@ const Footer = () => {
           <span>booking@ladogapark.ru</span>
         </div>
       </div>
-      <div className="lg:flex hidden justify-between pt-5 layout-container">
+      <div className="layout-container hidden justify-between pt-5 lg:flex">
         <span>© ООО «Аква Марин Групп», 2005-2023</span>
         <span>qtaki</span>
       </div>

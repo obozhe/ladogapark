@@ -24,7 +24,7 @@ const HousesFilter = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-[2fr,1fr] md:grid-rows-1 grid-cols-[minmax(250px,1fr)] grid-rows-2 gap-3">
+    <div className="grid grid-cols-[minmax(250px,1fr)] grid-rows-2 gap-3 md:grid-cols-[2fr,1fr] md:grid-rows-1">
       <DatePicker placeholderText="Дата заезда" onChange={(value) => setDate(value)} minDate={new Date()} />
       <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleClick}>
         {isTransition ? 'loading...' : 'Показать объекты'}
