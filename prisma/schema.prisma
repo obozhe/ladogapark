@@ -228,9 +228,9 @@ model GalleryImage {
 model Client {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String    @default("")
-  phone     String    @default("")
+  phone     String    @unique
   email     String    @default("")
-  vip       Boolean
+  isVIP     Boolean   @default(false)
   bookings  Booking[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -281,34 +281,33 @@ model PromoCode {
 }
 
 model Booking {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  number          String           @unique
-  start           DateTime
-  end             DateTime
-  total           Float            @default(0)
-  companyName     String           @default("")
-  clientId        String           @db.ObjectId
-  client          Client           @relation(fields: [clientId], references: [id])
-  comment         String           @default("")
-  commentAdmin    String           @default("")
-  extraSeats      Int              @default(0)
-  typeServicesIds String
-  parking         Int              @default(0)
-  isArrived       Boolean          @default(false)
-  promocodeId     Int              @default(0)
-  sourcePoll      SourcePoll       @default(SocialNetwork)
-  payAccData      String
-  token           String?          @default("")
-  status          Int              @default(0)
-  partnerId       String           @db.ObjectId
-  partner         Partner          @relation(fields: [partnerId], references: [id])
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  payments        BookingPayment[]
-  unitId          String           @db.ObjectId
-  unit            Unit             @relation(fields: [unitId], references: [id])
-  promoCodeId     String?          @db.ObjectId
-  promoCode       PromoCode?       @relation(fields: [promoCodeId], references: [id])
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  number       String           @unique
+  start        DateTime
+  end          DateTime
+  total        Float            @default(0)
+  companyName  String?          @default("")
+  clientId     String           @db.ObjectId
+  client       Client           @relation(fields: [clientId], references: [id])
+  comment      String           @default("")
+  commentAdmin String           @default("")
+  extraSeats   Int              @default(0)
+  servicesIds  String[]
+  parking      Int              @default(0)
+  isArrived    Boolean          @default(false)
+  promocodeId  Int              @default(0)
+  sourcePoll   SourcePoll       @default(SocialNetwork)
+  token        String?          @default("")
+  status       Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  payments     BookingPayment[]
+  unitId       String           @db.ObjectId
+  unit         Unit             @relation(fields: [unitId], references: [id])
+  promoCodeId  String?          @db.ObjectId
+  promoCode    PromoCode?       @relation(fields: [promoCodeId], references: [id])
+  partnerId    String?          @db.ObjectId
+  partner      Partner?         @relation(fields: [partnerId], references: [id])
 }
 
 model BookingPayment {
