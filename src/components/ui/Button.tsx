@@ -1,3 +1,4 @@
+import { IconLoader2 } from '@tabler/icons-react';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
@@ -9,6 +10,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: Size;
   fullWidth?: boolean;
   circle?: boolean;
+  isLoading?: boolean;
 };
 
 const Button = ({
@@ -21,6 +23,7 @@ const Button = ({
   fullWidth = false,
   circle = false,
   disabled = false,
+  isLoading = false,
   ...rest
 }: ButtonProps) => {
   return (
@@ -46,7 +49,7 @@ const Button = ({
         width: isIconButton ? sizes[size] : '',
       }}
     >
-      {children}
+      {isLoading ? <IconLoader2 className="animate-spin" /> : children}
     </button>
   );
 };

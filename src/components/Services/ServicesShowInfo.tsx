@@ -8,18 +8,17 @@ type Props = {
 };
 
 const ShowInfo = ({ id }: Props) => {
-  const { setQueryParams } = useRouterParams();
+  const { setQueryParams, isTransition } = useRouterParams();
 
   return (
-    <>
-      <Button
-        color="primary"
-        className="self-end"
-        onClick={() => setQueryParams({ queryName: 'openModal', value: id })}
-      >
-        Заказать
-      </Button>
-    </>
+    <Button
+      color="primary"
+      className="self-end"
+      isLoading={isTransition}
+      onClick={() => setQueryParams({ queryName: 'openModal', value: id })}
+    >
+      Заказать
+    </Button>
   );
 };
 
