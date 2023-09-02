@@ -1,4 +1,3 @@
-import { IconBasket, IconBus, IconMassage } from '@tabler/icons-react';
 import { getWeather } from 'api/weather';
 import dayjs from 'dayjs';
 import Image from 'next/image';
@@ -10,18 +9,20 @@ import HousesContacts from 'components/HomePage/HousesContacts';
 import { getNews } from 'server/news';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { ObjectTypes } from 'server/objects/types';
-import Button from 'ui/Button';
+import { getServicesMain } from 'server/services';
 import Disclosure from 'ui/Disclosure';
 import Slider from 'ui/Slider';
 import House1Image from '../../../public/images/house-1.png';
 import House2Image from '../../../public/images/house-2.png';
 import House3Image from '../../../public/images/house-3.png';
 import House4Image from '../../../public/images/house-4.png';
+import { ServicesItems } from './services/page';
 
 type Props = {
   searchParams: {
     from: string;
     type: ObjectTypes;
+    openModal: string;
   };
 };
 
@@ -44,60 +45,29 @@ const Search = async () => {
           </span>
         )} */}
       </div>
-      <Slider
-        autoPlay
-        items={news.map((newsItem) => ({
-          title: newsItem.title,
-          content: newsItem.content,
-          date: dayjs(newsItem.updatedAt).format('DD.MM.YYYY'),
-        }))}
-      />
+      {Boolean(news.length) && (
+        <Slider
+          autoPlay
+          items={news.map((newsItem) => ({
+            title: newsItem.title,
+            content: newsItem.content,
+            date: dayjs(newsItem.updatedAt).format('DD.MM.YYYY'),
+          }))}
+        />
+      )}
     </section>
   );
 };
 
-const Services = () => {
-  const services = [
-    {
-      title: 'Дополнительные товары',
-      description:
-        'Закажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыхаЗакажите уголь, розжиг, спорт. инвентарь и другие товары для вашего отдыха',
-      icon: <IconBasket size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
-    },
-    {
-      title: 'Трансфер до “Ладога парк”',
-      description: 'Аренда 17-местного автобуса до базы и обратно. Назначьте удобное время и место подачи',
-      icon: <IconBus size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
-    },
-    {
-      title: 'Трансфер до “Ладога парк”',
-      description:
-        'Для заказа массажа необходимо заблаговременно отправить письмо на почту с указанием желаемого вида массажа, временем и датой',
-      icon: <IconMassage size={100} color="rgb(255, 170, 5)" strokeWidth={1.5} />,
-    },
-  ];
+const Services = async ({ openModal }: { openModal: string }) => {
+  const services = await getServicesMain();
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2>Услуги</h2>
-      <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-        {services.map((service) => {
-          return (
-            <div key={service.title} className="flex flex-col p-5 font-semibold shadow">
-              <div className="flex-1">
-                <div className="mb-[10px]">{service.icon}</div>
-                <div className="mb-[15px] text-xl">{service.title}</div>
-                <p>{service.description}</p>
-              </div>
-              <Button className="self-end font-inter text-[15px]">заказать</Button>
-            </div>
-          );
-        })}
-      </div>
+    <ServicesItems services={services} openModal={openModal} className="flex flex-col gap-4">
       <Link href="/services" className="self-end font-semibold">
         Смотреть все услуги
       </Link>
-    </section>
+    </ServicesItems>
   );
 };
 
@@ -198,7 +168,7 @@ export default async function Home({ searchParams }: Props) {
       <Search />
       <div className="layout-container flex flex-col gap-36 px-2 pt-[150px]">
         <Houses objectEntries={objectEntries} />
-        <Services />
+        <Services openModal={searchParams.openModal} />
         <Faq />
         <Photos />
         <HousesContacts />

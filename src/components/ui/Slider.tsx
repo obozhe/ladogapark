@@ -44,8 +44,6 @@ const Slider = ({ autoPlay, items }: Props) => {
     const currentPosition = e.touches[0].clientX;
     const direction = touchPosition - currentPosition;
 
-    console.log(direction);
-
     if (direction > 10) {
       changeSlide(1);
     }
@@ -60,7 +58,7 @@ const Slider = ({ autoPlay, items }: Props) => {
   return (
     <div className=" flex w-full flex-col gap-[10px] text-white md:w-fit">
       <div className="flex w-full items-center gap-[10px] md:w-fit">
-        <IconCaretLeftFilled className="hidden md:block" onClick={() => changeSlide(-1)} />
+        <IconCaretLeftFilled className="hidden cursor-pointer md:block" onClick={() => changeSlide(-1)} />
         <div
           className="relative overflow-hidden rounded-2xl bg-white bg-opacity-30"
           onTouchStart={onTouchStart}
@@ -88,7 +86,7 @@ const Slider = ({ autoPlay, items }: Props) => {
             ))}
           </div>
         </div>
-        <IconCaretRightFilled className="hidden md:block" onClick={() => changeSlide(1)} />
+        <IconCaretRightFilled className="hidden cursor-pointer md:block" onClick={() => changeSlide(1)} />
       </div>
 
       <div className="flex justify-center gap-[10px]">

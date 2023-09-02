@@ -10,7 +10,6 @@ import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
   params: { id: string };
-  searchParams: { seats: string };
 };
 
 type InfoProps = {
@@ -85,7 +84,7 @@ const Info = ({ entry }: InfoProps) => {
   );
 };
 
-const BookingId = async ({ params, searchParams }: Props) => {
+const BookingId = async ({ params }: Props) => {
   const entry = await getEntryByIdWithFuturePrices(params.id);
 
   if (!entry) {

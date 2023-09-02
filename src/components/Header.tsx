@@ -24,7 +24,10 @@ const Header = () => {
 
   return (
     <header
-      className={twMerge('layout-container flex w-full justify-between py-8', isHomePage && 'absolute z-10 lg:static')}
+      className={twMerge(
+        'layout-container flex w-full justify-between px-2 py-8 lg:px-0',
+        isHomePage && 'absolute z-10 lg:static'
+      )}
     >
       <div className="flex gap-5 xl:gap-24">
         <Link href="/" className="lg:hidden">
@@ -52,11 +55,7 @@ const Header = () => {
       <DropDown
         className="lg:hidden"
         menuButton={<IconMenu2 size={40} color={isHomePage ? 'white' : 'black'} />}
-        items={navLinks.map((navLink) => (
-          <Link href={navLink.link} key={navLink.link} className="font-bold">
-            {navLink.title}
-          </Link>
-        ))}
+        links={navLinks}
       />
     </header>
   );

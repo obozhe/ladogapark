@@ -11,6 +11,14 @@
   visibility: hidden;
 }
 
+.react-datepicker-popper,
+.react-datepicker-popper > div:first-child,
+.react-datepicker,
+.react-datepicker__month-container {
+  min-width: 250px;
+  width: 100%;
+}
+
 .react-datepicker__header {
   background-color: white;
   border: none;
@@ -33,7 +41,8 @@
   padding: 10px;
 }
 
-.react-datepicker__week {
+.react-datepicker__week,
+.react-datepicker__day-names {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }

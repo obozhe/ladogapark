@@ -29,7 +29,7 @@ const Houses = ({ objectEntries }: Props) => {
         {objectEntries.map((entry) => {
           return (
             <Link
-              href={`booking/${entry.id}?seats=${entry.seats}`}
+              href={`booking/${entry.id}`}
               className="relative flex h-64 flex-col justify-between font-inter font-semibold text-white"
               key={entry.id}
             >

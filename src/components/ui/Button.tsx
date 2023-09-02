@@ -37,7 +37,7 @@ const Button = ({
         disabled ? '!pointer-events-none !bg-gray-200 !text-gray-400' : '',
         !isIconButton ? 'px-4 py-2' : '',
         isIconButton ? 'p-1' : '',
-        circle ? 'rounded-full' : 'rounded-md',
+        circle ? 'rounded-full' : 'rounded-[10px]',
         fullWidth ? 'w-full' : 'w-fit',
         className
       )}

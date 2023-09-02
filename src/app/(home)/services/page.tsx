@@ -1,20 +1,27 @@
 import { sanitize } from 'isomorphic-dompurify';
+import { ReactNode } from 'react';
+import { Service } from '@prisma/client';
 import DynamicTablerIcon from 'components/DynamicTablerIcon';
 import ServicesDialog from 'components/Services/ServicesDialog';
 import ShowInfo from 'components/Services/ServicesShowInfo';
 import { getServicesSorted } from 'server/services';
 
 type Props = {
-  searchParams: { showInfo: string };
+  searchParams: { openModal: string };
 };
 
-const Services = async ({ searchParams }: Props) => {
-  const services = await getServicesSorted();
+type ServicesItemsProps = {
+  services: Service[];
+  openModal: string;
+  children?: ReactNode;
+  className?: string;
+};
 
+export const ServicesItems = ({ services, openModal, children, className }: ServicesItemsProps) => {
   return (
     <>
-      <div className="layout-container">
-        <h2 className="my-14">Услуги</h2>
+      <div className={className}>
+        <h2>Услуги</h2>
         <div className="grid auto-rows-fr grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <div key={service.id} className="flex flex-col gap-2 rounded-lg p-5 shadow">
@@ -30,12 +37,22 @@ const Services = async ({ searchParams }: Props) => {
             </div>
           ))}
         </div>
+        {children}
       </div>
-      <ServicesDialog
-        isOpen={Boolean(searchParams.showInfo)}
-        {...services.find((service) => service.id === searchParams.showInfo)!}
-      />
+      <ServicesDialog isOpen={Boolean(openModal)} {...services.find((service) => service.id === openModal)!} />
     </>
+  );
+};
+
+const Services = async ({ searchParams }: Props) => {
+  const services = await getServicesSorted();
+
+  return (
+    <ServicesItems
+      services={services}
+      openModal={searchParams.openModal}
+      className="layout-container mt-14 flex flex-col gap-14"
+    />
   );
 };
 

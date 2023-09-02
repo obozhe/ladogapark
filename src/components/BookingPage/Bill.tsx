@@ -1,8 +1,6 @@
 'use client';
 
-import axios from 'axios';
 import dayjs from 'dayjs';
-import { redirect } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import CountUp from 'react-countup';
 import usePrevious from 'hooks/usePrevious';
@@ -23,7 +21,7 @@ type InfoProps = {
 type AdditionalGoodsProps = {
   name: string;
   price: number;
-  onChange: Dispatch<SetStateAction<number>>;
+  onChange: Dispatch<SetStateAction<{ total: number; extraSeatsCount: number }>>;
   max?: number;
 };
 
@@ -34,7 +32,7 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
     if (!amount) return;
     setAmount((prev) => {
       const newValue = prev - 1;
-      onChange((prev) => prev - price);
+      onChange((prev) => ({ ...prev, total: prev.total - price }));
 
       return newValue;
     });
@@ -45,7 +43,7 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
       const newValue = prev + 1;
       if (max && newValue >= max) return prev;
 
-      onChange((prev) => prev + price);
+      onChange((prev) => ({ ...prev, total: prev.total + price }));
 
       return newValue;
     });
@@ -73,7 +71,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
   const previousTotal = usePrevious(total);
   const [date, setDate] = useState<dayjs.Dayjs>();
   const [nightsAmount, setNightsAmount] = useState(0);
-  const [additionalGoodsTotal, setAdditionalGoodsTotal] = useState(0);
+  const [additionalGoods, setAdditionalGoods] = useState({ total: 0, extraSeatsCount: 0 });
 
   const parking = `${numberInWords(entry.parking)?.[0].toUpperCase()}${numberInWords(entry.parking)?.slice(
     1
@@ -134,8 +132,10 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
       }
     }
 
-    setTotal(additionalGoodsTotal + weekdaysPrice + weekendsPrice);
-  }, [additionalGoodsTotal, nightsAmount, entry, date]);
+    const extraSeatsTotal = additionalGoods.extraSeatsCount * entry.priceExtraSeat * nightsAmount;
+
+    setTotal(additionalGoods.total + weekdaysPrice + weekendsPrice + extraSeatsTotal);
+  }, [additionalGoods.total, additionalGoods.extraSeatsCount, nightsAmount, entry, date]);
 
   return (
     <section className="border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
@@ -176,17 +176,19 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           title={<span className="text-primary">Дополнительные товары</span>}
           description={
             <>
-              <AdditionalGoods name="Уголь" price={500} onChange={setAdditionalGoodsTotal} />
-              <AdditionalGoods name="Вязанка дров" price={500} onChange={setAdditionalGoodsTotal} />
-              <AdditionalGoods name="Веник дубовый" price={500} onChange={setAdditionalGoodsTotal} />
-              <AdditionalGoods name="Средство для розжига" price={1000} onChange={setAdditionalGoodsTotal} />
-              <AdditionalGoods name="Гигиенический набор" price={500} onChange={setAdditionalGoodsTotal} />
-              <AdditionalGoods name="Постельное бельё и полотенца" price={1000} onChange={setAdditionalGoodsTotal} />
-              {Boolean(entry.extraSeats) && (
+              <AdditionalGoods name="Уголь" price={500} onChange={setAdditionalGoods} />
+              <AdditionalGoods name="Вязанка дров" price={500} onChange={setAdditionalGoods} />
+              <AdditionalGoods name="Веник дубовый" price={500} onChange={setAdditionalGoods} />
+              <AdditionalGoods name="Средство для розжига" price={1000} onChange={setAdditionalGoods} />
+              <AdditionalGoods name="Гигиенический набор" price={500} onChange={setAdditionalGoods} />
+              <AdditionalGoods name="Постельное бельё и полотенца" price={1000} onChange={setAdditionalGoods} />
+              {!Boolean(entry.extraSeats) && (
                 <AdditionalGoods
                   name="Дополнительное место"
                   price={entry.priceExtraSeat}
-                  onChange={setAdditionalGoodsTotal}
+                  onChange={() =>
+                    setAdditionalGoods((prev) => ({ ...prev, extraSeatsCount: prev.extraSeatsCount + 1 }))
+                  }
                   max={entry.extraSeats}
                 />
               )}

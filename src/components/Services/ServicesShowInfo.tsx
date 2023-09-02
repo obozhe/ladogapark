@@ -12,7 +12,11 @@ const ShowInfo = ({ id }: Props) => {
 
   return (
     <>
-      <Button color="primary" className="self-end" onClick={() => setQueryParams({ queryName: 'showInfo', value: id })}>
+      <Button
+        color="primary"
+        className="self-end"
+        onClick={() => setQueryParams({ queryName: 'openModal', value: id })}
+      >
         Заказать
       </Button>
     </>

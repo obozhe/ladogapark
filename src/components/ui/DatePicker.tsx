@@ -1,4 +1,5 @@
 import { IconCalendar } from '@tabler/icons-react';
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from '@tabler/icons-react';
 import ru from 'date-fns/locale/ru';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -21,26 +22,32 @@ registerLocale('ru', ru);
 
 const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHeaderProps) => {
   const monthsOptions = getSelectOptions({ locale: 'ru', type: 'month', date: dayjs() });
-  const currentMonth = dayjs(date).get('M') + 1;
+  const currentMonth = dayjs(date).get('M');
   const yearOptions = getSelectOptions({ type: 'year', yearStart: 0, yearEnd: 10, date: dayjs() });
-  const currentYear = getCurrentYear();
+  const currentYear = dayjs(date).get('year');
 
   return (
-    <div className="flex justify-center gap-2">
-      <Select
-        options={monthsOptions}
-        value={currentMonth}
-        showIcon={false}
-        className="border-0 p-0 text-base font-medium capitalize text-primary hover:text-secondary"
-        onChange={(value) => changeMonth(value - 1)}
-      />
-      <Select
-        options={yearOptions}
-        value={currentYear}
-        showIcon={false}
-        className="border-0 p-0 text-base font-medium text-primary hover:text-secondary"
-        onChange={changeYear}
-      />
+    <div className="flex items-center justify-between">
+      <IconArrowNarrowLeft className="cursor-pointer" onClick={() => changeMonth(currentMonth - 1)} />
+      <div className="flex gap-2">
+        <Select
+          key={currentMonth + 1}
+          options={monthsOptions}
+          value={currentMonth + 1}
+          showIcon={false}
+          className="border-0 p-0 text-base font-medium capitalize text-primary hover:text-secondary"
+          onChange={(value) => changeMonth(value - 1)}
+        />
+        <Select
+          key={currentYear}
+          options={yearOptions}
+          value={currentYear}
+          showIcon={false}
+          className="border-0 p-0 text-base font-medium text-primary hover:text-secondary"
+          onChange={changeYear}
+        />
+      </div>
+      <IconArrowNarrowRight className="cursor-pointer" onClick={() => changeMonth(currentMonth + 1)} />
     </div>
   );
 };

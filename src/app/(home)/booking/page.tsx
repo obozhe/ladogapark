@@ -11,7 +11,7 @@ const Booking = async () => {
       <h2 className="mb-6">Бронирование</h2>
       <div className="flex flex-col gap-12">
         {group.map((group) => (
-          <div key={group.id} className="grid grid-cols-[2fr,1fr] gap-12">
+          <div key={group.id} className="grid grid-cols-1 gap-12 md:grid-cols-[2fr,1fr]">
             <Image src={HouseTest} alt="house image" className="w-full flex-[70%]" />
             <HouseCardPrice group={group} />
           </div>
