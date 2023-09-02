@@ -30,6 +30,33 @@ enum Season {
   Winter
 }
 
+enum DiscountType {
+  Percent
+  Amount
+}
+
+enum PaymentType {
+  Cash
+  Amount
+  Yandex
+  Partner
+  BusinessTransfer
+}
+
+enum PaymentStatus {
+  Paid
+  Pending
+  Cancelled
+  Refund
+}
+
+enum SourcePoll {
+  SocialNetwork
+  Friends
+  SearchEngines
+  Other
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -37,7 +64,7 @@ model User {
   password  String
   role      Role     @default(Manager)
   salt      String
-  banned    Boolean  @default(false)
+  isBanned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -84,7 +111,7 @@ model Entry {
 
 model Unit {
   id                String                 @id @default(auto()) @map("_id") @db.ObjectId
-  number            String                 @unique()
+  number            String                 @unique
   entryId           String                 @db.ObjectId
   entry             Entry                  @relation(fields: [entryId], references: [id])
   bookings          Booking[]
@@ -167,7 +194,7 @@ model CommoditiesIncludedInEntry {
 
 model Commodity {
   id            String                       @id @default(auto()) @map("_id") @db.ObjectId
-  title         String                       @unique()
+  title         String                       @unique
   price         Float                        @default(0)
   isSport       Boolean                      @default(false)
   sorting       Int
@@ -198,43 +225,6 @@ model GalleryImage {
   status      Status @default(Inactive)
 }
 
-model Booking {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  number           String   @unique()
-  unitId           String   @db.ObjectId
-  unit             Unit     @relation(fields: [unitId], references: [id])
-  // type_id           Int        @db.UnsignedInt
-  datetimeStart    DateTime
-  datetimeEnd      DateTime
-  amount           Float    @default(0)
-  prepay           Float    @default(0)
-  paidTotal        Float    @default(0)
-  name             String   @default("")
-  companyName      String   @default("")
-  phone            String   @default("")
-  email            String   @default("")
-  clientId         String   @db.ObjectId
-  client           Client   @relation(fields: [clientId], references: [id])
-  comment          String   @default("")
-  commentAdmin     String   @default("")
-  extraSeats       Int      @default(0)
-  typeServicesIds  String
-  parking          Int      @default(0)
-  arrived          Boolean  @default(false)
-  countPayments    Int      @default(0)
-  countAttachments Int      @default(0)
-  promocodeId      Int      @default(0)
-  sourcePoll       Int      @default(0)
-  payAccData       String
-  // token            String
-  status           Int      @default(0)
-  undelitable      Boolean  @default(false)
-  partnerId        String   @db.ObjectId
-  partner          Partner  @relation(fields: [partnerId], references: [id])
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-}
-
 model Client {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String    @default("")
@@ -259,7 +249,7 @@ model News {
 
 model Partner {
   id       String            @id @default(auto()) @map("_id") @db.ObjectId
-  title    String            @unique()
+  title    String            @unique
   fee      Int
   bookings Booking[]
   entries  PartnerEntryFee[]
@@ -275,6 +265,73 @@ model PartnerEntryFee {
 
   @@unique([partnerId, entryId])
 }
+
+model PromoCode {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  code             String       @unique
+  discount         Float
+  type             DiscountType
+  comment          String       @default("")
+  usageCountLimit  Int          @default(0)
+  bookingDateLimit DateTime?    @db.Date
+  usageDateLimit   DateTime?    @db.Date
+  entriesIds       String[]     @default([])
+  status           Status
+  bookings         Booking[]
+}
+
+model Booking {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  number          String           @unique
+  start           DateTime
+  end             DateTime
+  total           Float            @default(0)
+  companyName     String           @default("")
+  clientId        String           @db.ObjectId
+  client          Client           @relation(fields: [clientId], references: [id])
+  comment         String           @default("")
+  commentAdmin    String           @default("")
+  extraSeats      Int              @default(0)
+  typeServicesIds String
+  parking         Int              @default(0)
+  isArrived       Boolean          @default(false)
+  promocodeId     Int              @default(0)
+  sourcePoll      SourcePoll       @default(SocialNetwork)
+  payAccData      String
+  token           String?          @default("")
+  status          Int              @default(0)
+  partnerId       String           @db.ObjectId
+  partner         Partner          @relation(fields: [partnerId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  payments        BookingPayment[]
+  unitId          String           @db.ObjectId
+  unit            Unit             @relation(fields: [unitId], references: [id])
+  promoCodeId     String?          @db.ObjectId
+  promoCode       PromoCode?       @relation(fields: [promoCodeId], references: [id])
+}
+
+model BookingPayment {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  bookingId String        @db.ObjectId
+  booking   Booking       @relation(fields: [bookingId], references: [id])
+  amount    Float
+  type      Int
+  token     String        @default("")
+  paidDate  DateTime      @db.Date
+  status    PaymentStatus @default(Pending)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+// model payments_booking_moves {
+//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
+//   payment_id Int      @db.UnsignedInt
+//   from_id    Int      @db.UnsignedInt
+//   to_id      Int      @db.UnsignedInt
+//   datetime   DateTime @default(now()) @db.DateTime(0)
+//   user_id    Int      @default(0) @db.UnsignedInt
+// }
 
 // /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 
@@ -324,32 +381,6 @@ model PartnerEntryFee {
 //   @@index([type_when], map: "type_when")
 // }
 
-// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-// model payments_booking {
-//   id               Int      @id @default(autoincrement()) @db.UnsignedInt
-//   booking_id       Int      @db.UnsignedInt
-//   amount           Float    @db.Float
-//   type             Int      @db.UnsignedTinyInt
-//   yandextoken      String   @default("") @db.VarChar(100)
-//   datetime_created DateTime @default(now()) @db.DateTime(0)
-//   datetime_updated DateTime @default(now()) @db.DateTime(0)
-//   date_paid        DateTime @db.Date
-//   status           Int      @default(0) @db.UnsignedTinyInt
-//   user_id          Int      @default(0) @db.UnsignedInt
-
-//   @@index([booking_id], map: "booking_id")
-//   @@index([datetime_created, datetime_updated, status], map: "datetime_created")
-// }
-
-// model payments_booking_moves {
-//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
-//   payment_id Int      @db.UnsignedInt
-//   from_id    Int      @db.UnsignedInt
-//   to_id      Int      @db.UnsignedInt
-//   datetime   DateTime @default(now()) @db.DateTime(0)
-//   user_id    Int      @default(0) @db.UnsignedInt
-// }
-
 // model payments_goodslist {
 //   id               Int      @id @default(autoincrement()) @db.UnsignedInt
 //   goodslist_id     Int      @db.UnsignedInt
@@ -363,49 +394,12 @@ model PartnerEntryFee {
 //   user_id          Int      @default(0) @db.UnsignedInt
 // }
 
-// model prices_hollidays {
-//   id         Int      @id @default(autoincrement()) @db.UnsignedInt
-//   type_id    Int      @db.UnsignedInt
-//   price      Float    @db.Float
-//   date_start DateTime @db.Date
-//   date_end   DateTime @db.Date
-// }
-
-// /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-// model promocodes {
-//   id           Int      @id @default(autoincrement()) @db.UnsignedInt
-//   promocode    String   @unique(map: "promocode") @default("") @db.VarChar(15)
-//   sale         Float    @default(0) @db.Float
-//   sale_type    Boolean  @default(true)
-//   comment      String   @default("") @db.VarChar(150)
-//   limit_count  Int      @default(0) @db.UnsignedInt
-//   limit_date   DateTime @db.Date
-//   types_ids    String   @db.Text
-//   count_units Int      @default(0) @db.UnsignedInt
-//   status       Boolean  @default(false)
-//   deleted      Int      @default(0) @db.UnsignedInt
-//   booking_id   Int      @default(0) @db.UnsignedInt
-// }
-
 // model referrers {
 //   id           Int      @id @default(autoincrement()) @db.UnsignedInt
 //   booking_id   Int      @default(0) @db.UnsignedInt
 //   client_id    Int      @default(0) @db.UnsignedInt
 //   http_referer String   @db.Text
 //   datetime     DateTime @default(now()) @db.DateTime(0)
-// }
-
-// model services {
-//   id          Int     @id @default(autoincrement()) @db.UnsignedInt
-//   title       String  @default("") @db.VarChar(150)
-//   alias       String  @default("") @db.VarChar(50)
-//   icon        String  @db.VarChar(150)
-//   description String  @db.Text
-//   content     String  @db.Text
-//   location    String  @default("") @db.VarChar(255)
-//   sorting     Int     @db.UnsignedInt
-//   homepage    Boolean
-//   status      Boolean
 // }
 
 // model testimonials {
