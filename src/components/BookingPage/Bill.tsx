@@ -1,41 +1,53 @@
 'use client';
 
-import dayjs from 'dayjs';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { useMemo, useState } from 'react';
 import CountUp from 'react-countup';
+import useLatest from 'hooks/useLatest';
 import usePrevious from 'hooks/usePrevious';
 import formatToRuble from 'core/helpers/number';
 import numberInWords from 'core/helpers/numberInWords';
 import pluralize from 'core/helpers/pluralize';
-import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
+import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
 import NumberInput from 'ui/NumberInput';
 
 type InfoProps = {
-  entry: EntryWithFuturePricesWithGroup;
-  onSubmit: (amount: number) => Promise<void>;
+  entry: EntryWithFuturePricesWithGroupWithServices;
+  onSubmit: ({
+    total,
+    entryId,
+    startDate,
+    endDate,
+  }: {
+    total: number;
+    entryId: string;
+    startDate: string;
+    endDate: string;
+  }) => Promise<void>;
 };
 
 type AdditionalGoodsProps = {
   name: string;
   price: number;
-  onChange: Dispatch<SetStateAction<{ total: number; extraSeatsCount: number }>>;
+  onChange: (amount: 1 | -1) => void;
   max?: number;
 };
 
 const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) => {
   const [amount, setAmount] = useState(0);
+  const latestOnChange = useLatest(onChange);
 
   const decrease = () => {
     if (!amount) return;
     setAmount((prev) => {
       const newValue = prev - 1;
-      onChange((prev) => ({ ...prev, total: prev.total - price }));
 
       return newValue;
     });
+    latestOnChange.current(-1);
   };
 
   const increase = () => {
@@ -43,10 +55,10 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
       const newValue = prev + 1;
       if (max && newValue >= max) return prev;
 
-      onChange((prev) => ({ ...prev, total: prev.total + price }));
-
       return newValue;
     });
+
+    latestOnChange.current(1);
   };
 
   return (
@@ -67,11 +79,23 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 };
 
 const Bill = ({ entry, onSubmit }: InfoProps) => {
-  const [total, setTotal] = useState(0);
-  const previousTotal = usePrevious(total);
-  const [date, setDate] = useState<dayjs.Dayjs>();
-  const [nightsAmount, setNightsAmount] = useState(0);
-  const [additionalGoods, setAdditionalGoods] = useState({ total: 0, extraSeatsCount: 0 });
+  const [billInfo, setBillInfo] = useState<{
+    total: number;
+    startDate: Dayjs | null;
+    nightsAmount: number;
+    extraServices: Record<'title' | 'amount' | 'price', string | number>[];
+    extraSeats: number;
+    extraServicesTotal: number;
+  }>(() => ({
+    total: 0,
+    startDate: null,
+    nightsAmount: 0,
+    extraSeats: 0,
+    extraServices: entry.extraServices.map((service) => ({ title: service.title, amount: 0, price: service.price })),
+    extraServicesTotal: 0,
+  }));
+
+  const prevBillInfoTotal = usePrevious(billInfo.total);
 
   const parking = `${numberInWords(entry.parking)?.[0].toUpperCase()}${numberInWords(entry.parking)?.slice(
     1
@@ -111,12 +135,12 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
     [entry.futurePrices, entry.priceWeekday, entry.priceWeekend]
   );
 
-  useEffect(() => {
+  const updateTotalByDate = (startDate: Dayjs | null, nightsAmount: number) => {
     let weekdaysPrice = 0;
     let weekendsPrice = 0;
 
-    if (date) {
-      let currenDate = date;
+    if (startDate && nightsAmount) {
+      let currenDate = startDate;
 
       for (let i = 1; i <= nightsAmount; i++) {
         const weekday = currenDate.day();
@@ -128,14 +152,42 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           weekdaysPrice += entry.priceWeekday;
         }
 
-        currenDate = date.add(i, 'day');
+        currenDate = startDate.add(i, 'day');
       }
     }
 
-    const extraSeatsTotal = additionalGoods.extraSeatsCount * entry.priceExtraSeat * nightsAmount;
+    const totalPrice = weekdaysPrice + weekendsPrice;
+    setBillInfo((prev) => ({
+      ...prev,
+      total: prev.extraServicesTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
+      startDate,
+      nightsAmount,
+    }));
+  };
 
-    setTotal(additionalGoods.total + weekdaysPrice + weekendsPrice + extraSeatsTotal);
-  }, [additionalGoods.total, additionalGoods.extraSeatsCount, nightsAmount, entry, date]);
+  const updateServicesAmount = ({ amount, title, price }: { amount: 1 | -1; title: string; price: number }) => {
+    setBillInfo((prev) => {
+      const extraServiceByTitle = prev.extraServices.find((service) => service.title === title);
+      const filteredExtraServices = prev.extraServices.filter((service) => service.title !== title);
+
+      return {
+        ...prev,
+        total: prev.total + amount * price,
+        extraServices: [
+          ...filteredExtraServices,
+          { title, amount: ((extraServiceByTitle?.amount as number) ?? 0) + amount, price },
+        ],
+        extraServicesTotal: prev.extraServicesTotal + amount * price,
+      };
+    });
+  };
+  const updateExtraSeats = (amount: 1 | -1) => {
+    setBillInfo((prev) => ({
+      ...prev,
+      extraSeats: prev.extraSeats + amount,
+      total: prev.total + amount * 1000 * prev.nightsAmount,
+    }));
+  };
 
   return (
     <section className="border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
@@ -156,11 +208,18 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
         <div className="flex gap-4">
           <DatePicker
             placeholderText="Дата заезда"
-            onChange={setDate}
+            onChange={(date) => {
+              updateTotalByDate(date, billInfo.nightsAmount);
+            }}
             minDate={new Date()}
             renderDayContents={renderDayContents}
           />
-          <NumberInput placeholder="Кол-во ночей" onChange={setNightsAmount} />
+          <NumberInput
+            placeholder="Кол-во ночей"
+            onChange={(nightsAmount) => {
+              updateTotalByDate(billInfo.startDate, nightsAmount);
+            }}
+          />
         </div>
         <div className="flex flex-col">
           <span className="mb-4 text-lg">Включено в стоимость:</span>
@@ -176,20 +235,20 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
           title={<span className="text-primary">Дополнительные товары</span>}
           description={
             <>
-              <AdditionalGoods name="Уголь" price={500} onChange={setAdditionalGoods} />
-              <AdditionalGoods name="Вязанка дров" price={500} onChange={setAdditionalGoods} />
-              <AdditionalGoods name="Веник дубовый" price={500} onChange={setAdditionalGoods} />
-              <AdditionalGoods name="Средство для розжига" price={1000} onChange={setAdditionalGoods} />
-              <AdditionalGoods name="Гигиенический набор" price={500} onChange={setAdditionalGoods} />
-              <AdditionalGoods name="Постельное бельё и полотенца" price={1000} onChange={setAdditionalGoods} />
+              {entry.extraServices.map((service) => (
+                <AdditionalGoods
+                  price={service.price}
+                  name={service.title}
+                  key={service.id}
+                  onChange={(amount) => updateServicesAmount({ amount, title: service.title, price: service.price })}
+                />
+              ))}
               {!Boolean(entry.extraSeats) && (
                 <AdditionalGoods
                   name="Дополнительное место"
-                  price={entry.priceExtraSeat}
-                  onChange={() =>
-                    setAdditionalGoods((prev) => ({ ...prev, extraSeatsCount: prev.extraSeatsCount + 1 }))
-                  }
-                  max={entry.extraSeats}
+                  price={1000 ?? entry.priceExtraSeat}
+                  onChange={updateExtraSeats}
+                  max={entry.extraSeats ?? 2}
                 />
               )}
             </>
@@ -198,9 +257,13 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
       </div>
       <div className="flex justify-between py-5 text-2xl">
         <span>Итого:</span>
-        <CountUp start={previousTotal ?? 0} end={total} suffix=" ₽" duration={0.5} />
+        <CountUp start={prevBillInfoTotal ?? 0} end={billInfo.total} suffix=" ₽" duration={0.5} />
       </div>
-      <Button color="primary" className="ml-auto mt-5" onClick={() => onSubmit(total)}>
+      <Button
+        color="primary"
+        className="ml-auto mt-5"
+        onClick={() => onSubmit({ total: billInfo.total, entryId: entry.id, startDate: '', endDate: '' })}
+      >
         Забронировать
       </Button>
     </section>

@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
@@ -5,7 +6,12 @@ import Bill from 'components/BookingPage/Bill';
 import BookingTabs from 'components/BookingPage/BookingTabs';
 import pluralize from 'core/helpers/pluralize';
 import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
-import { getEntryByIdWithFuturePrices, getGroupById } from 'server/objects/ObjectCollection';
+import { createBooking, updatePaymentToken } from 'server/bookings';
+import {
+  getEntryByIdWithFuturePrices,
+  getEntryByIdWithFutureWithService,
+  getGroupById,
+} from 'server/objects/ObjectCollection';
 import HouseTest from '../../../../../public/images/test-house.png';
 
 type Props = {
@@ -17,12 +23,23 @@ type InfoProps = {
 };
 
 // TODO: store payment id in session storage -> redirect to our confirm payment page -> send request with id in session storage -> store this id in db and delete id from session storage
-const onSubmit = async (total: number) => {
+const onSubmit = async ({
+  total,
+  entryId,
+  startDate,
+  endDate,
+}: {
+  total: number;
+  entryId: string;
+  startDate: string;
+  endDate: string;
+}) => {
   'use server';
 
   const shopId = process.env.YOOKASSA_SHOP_ID as string;
   const secretKey = process.env.YOOKASSA_API as string;
   const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
+  const booking = await createBooking(total, dayjs(), dayjs().add(1, 'd'), entryId);
 
   const body = {
     amount: {
@@ -32,7 +49,7 @@ const onSubmit = async (total: number) => {
     capture: true,
     confirmation: {
       type: 'redirect',
-      return_url: 'http://localhost:3000/booking-test',
+      return_url: `http://localhost:3000/payment/${booking.id}`,
     },
     description: 'Заказ №1',
     metadata: { id: '123' },
@@ -48,8 +65,23 @@ const onSubmit = async (total: number) => {
     },
     body: JSON.stringify(body),
   });
-  const json = await res.json();
-  console.log(json);
+  const json = (await res.json()) as {
+    id: string;
+    status: 'pending';
+    amount: { value: string; currency: 'RUB' };
+    description: string;
+    recipient: { account_id: string; gateway_id: string };
+    created_at: string;
+    confirmation: {
+      type: 'redirect';
+      confirmation_url: string;
+    };
+    test?: boolean;
+    paid: boolean;
+    refundable: boolean;
+    metadata: { id: '123' };
+  };
+  await updatePaymentToken(booking.id, json.id);
   redirect(json.confirmation.confirmation_url);
 };
 
@@ -85,7 +117,7 @@ const Info = ({ entry }: InfoProps) => {
 };
 
 const BookingId = async ({ params }: Props) => {
-  const entry = await getEntryByIdWithFuturePrices(params.id);
+  const entry = await getEntryByIdWithFutureWithService(params.id);
 
   if (!entry) {
     return redirect('/not-found');

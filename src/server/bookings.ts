@@ -31,6 +31,10 @@ export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayj
   });
 };
 
-const updatePaymentToken = (bookingId: string, token: string) => {
+export const updatePaymentToken = (bookingId: string, token: string) => {
   return prisma.booking.update({ where: { id: bookingId }, data: { token } });
+};
+
+export const getBookingById = (id: string) => {
+  return prisma.booking.findUnique({ where: { id: id } });
 };

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import Tippy from '@tippyjs/react/headless';
+import Image from 'next/image';
+import { forwardRef, useState } from 'react';
 import { objectsInfo } from 'core/mapObjects';
 
 type ObjectsType = 'picnicTable' | 'tent';
@@ -12,19 +14,26 @@ type ObjectProps = {
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  objectType: string;
 };
 
-const MapObject = ({ top, left, width, height, onClick, onMouseEnter, onMouseLeave }: ObjectProps) => {
-  return (
-    <div
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onClick}
-      style={{ top: top - width / 2, left: left - width / 2, width: width * 2, height: height * 2 }}
-      className="absolute cursor-pointer rounded-full bg-white opacity-30"
-    />
-  );
-};
+// eslint-disable-next-line react/display-name
+const MapObject = forwardRef<HTMLDivElement, ObjectProps>(
+  ({ top, left, width, height, onClick, onMouseEnter, onMouseLeave, objectType }, ref) => {
+    return (
+      <div
+        ref={ref}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
+        style={{ top: top - width / 4, left: left - width / 4, width: width * 1.5, height: height * 1.5 }}
+        className="absolute flex cursor-pointer items-center justify-center rounded-full bg-[hsla(0,0%,100%,.5)]"
+      >
+        <Image src={`/icons/map/${objectType}.svg`} alt={objectType} width={width} height={height} />
+      </div>
+    );
+  }
+);
 
 const MapObjects = () => {
   const [highlightedType, setHighlightedType] = useState<ObjectsType | null>(null);
@@ -32,14 +41,23 @@ const MapObjects = () => {
   return (
     <div className="absolute left-0 top-0 z-10 h-full w-full">
       {/* {Object.entries(objectsInfo).map(([objectType, objects]) =>
-        objects.map((object, index) => (
-          <MapObject
-            {...object}
+        objects.positions.map((object, index) => (
+          <Tippy
+            render={(attrs) => (
+              <div {...attrs} className="rounded-[10px] bg-white p-1 text-black">
+                {objects.title}
+              </div>
+            )}
             key={`${objectType}-${index}`}
-            onMouseEnter={() => setHighlightedType(objectType as ObjectsType)}
-            onMouseLeave={() => setHighlightedType(null)}
-            onClick={() => {}}
-          />
+          >
+            <MapObject
+              {...object}
+              objectType={objectType}
+              onMouseEnter={() => setHighlightedType(objectType as ObjectsType)}
+              onMouseLeave={() => setHighlightedType(null)}
+              onClick={() => {}}
+            />
+          </Tippy>
         ))
       )} */}
     </div>

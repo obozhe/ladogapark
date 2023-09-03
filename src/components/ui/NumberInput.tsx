@@ -2,6 +2,7 @@
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
 import { ChangeEvent, useEffect, useState } from 'react';
+import useLatest from 'hooks/useLatest';
 
 type Props = {
   placeholder: string;
@@ -13,6 +14,7 @@ type Props = {
 
 const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
   const [value, setValue] = useState(0);
+  const latestOnChange = useLatest(onChange);
 
   const decrease = () => {
     if (!value) return;
@@ -32,8 +34,8 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
   };
 
   useEffect(() => {
-    onChange(value);
-  }, [value, onChange]);
+    latestOnChange.current(value);
+  }, [value, latestOnChange]);
 
   return (
     <div className="relative h-full w-full font-semibold">
