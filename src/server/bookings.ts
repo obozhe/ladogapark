@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
-import shortid from 'shortid';
+import { customAlphabet } from 'nanoid';
 import prisma from 'core/prisma';
 import { Unit } from '.prisma/client';
+
+const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
 export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayjs.Dayjs, entryId: string) => {
   const mockData = {
@@ -22,7 +24,7 @@ export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayj
   return await prisma.booking.create({
     data: {
       total,
-      number: shortid.generate().toUpperCase(),
+      number: nanoid(),
       start: start.toDate(),
       end: end.toDate(),
       clientId: client.id,
