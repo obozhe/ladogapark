@@ -1,9 +1,6 @@
 import dayjs from 'dayjs';
-import { customAlphabet } from 'nanoid';
 import prisma from 'core/prisma';
 import { Unit } from '.prisma/client';
-
-const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
 export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayjs.Dayjs, entryId: string) => {
   const mockData = {
@@ -24,11 +21,12 @@ export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayj
   return await prisma.booking.create({
     data: {
       total,
-      number: nanoid(),
+      number: `${unit.number}-${dayjs().format('YYMMDD')}-${Math.floor(100 + Math.random() * (999 + 1 - 100))}`,
       start: start.toDate(),
       end: end.toDate(),
       clientId: client.id,
       unitId: unit.id,
+      token: '', // token  в куку чтобы блюрить данные клиента
     },
   });
 };
