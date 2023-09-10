@@ -12,7 +12,7 @@ const Contacts = () => {
   return (
     <div className="layout-container">
       <HousesContacts />
-      <section className="mt-10 grid grid-cols-1 gap-4 font-semibold lg:grid-cols-[2fr,1fr,1fr]">
+      <section className="mobile-container mt-10 grid grid-cols-1 gap-4 font-semibold lg:grid-cols-[2fr,1fr,1fr]">
         <div className="max-w-[450px]">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xl">Задайте любой вопрос</span>

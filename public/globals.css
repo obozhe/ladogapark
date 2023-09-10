@@ -7,6 +7,10 @@
     max-width: 1450px;
     margin-inline: auto;
   }
+
+  .mobile-container {
+    @apply px-[10px] lg:px-0;
+  }
 }
 
 @layer base {

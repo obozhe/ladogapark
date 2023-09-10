@@ -1,10 +1,8 @@
 type ObjectType =
   | 'abk'
   | 'arbor'
-  | 'arborhexagonal-2'
   | 'arborhexagonal'
-  | 'barnhouse.png'
-  | 'bath-big'
+  | 'barnhouse'
   | 'bath-big2'
   | 'bath-veranda'
   | 'bath'
@@ -15,7 +13,6 @@ type ObjectType =
   | 'foresthouse-4'
   | 'foresthouse'
   | 'grillhouse-big'
-  | 'grillhouse-med'
   | 'grillhouse'
   | 'kpp1'
   | 'kpp2'
@@ -28,14 +25,12 @@ type ObjectType =
   | 'toilet'
   | 'trash'
   | 'veranda'
-  | 'volleyball'
-  | 'workout';
+  | 'volleyball';
 
-// export const objectsInfo: Record<
-//   ObjectType,
-//   { positions: { top: number; left: number; height: number; width: number }[]; title: string }
-// > = {
-export const objectsInfo: any = {
+export const objectsInfo: Record<
+  ObjectType,
+  { positions: { top: number; left: number; height: number; width: number }[]; title: string }
+> = {
   picnic: {
     positions: [
       { top: 130, left: 107, height: 24, width: 24 },
@@ -93,7 +88,114 @@ export const objectsInfo: any = {
     title: 'Беседка открытая',
   },
   arborhexagonal: {
-    positions: [{ top: 197, left: 1397, height: 32, width: 32 }],
+    positions: [
+      { top: 197, left: 1397, height: 32, width: 32 },
+      { top: 197, left: 1145, height: 32, width: 32 },
+      { top: 185, left: 1078, height: 32, width: 32 },
+      { top: 175, left: 1009, height: 32, width: 32 },
+    ],
     title: 'Беседка восьмигранная',
+  },
+  veranda: {
+    positions: [
+      { left: 1326, top: 284, height: 32, width: 32 },
+      { left: 1232, top: 284, height: 32, width: 32 },
+    ],
+    title: 'Веранда на берегу',
+  },
+  shop: {
+    positions: [{ left: 198, top: 300, height: 32, width: 32 }],
+    title: 'Магазин',
+  },
+  kpp1: {
+    positions: [{ left: 145, top: 315, height: 32, width: 32 }],
+    title: 'КПП',
+  },
+  abk: {
+    positions: [
+      { left: 73, top: 361, height: 32, width: 32 },
+      { left: 409, top: 838, height: 32, width: 32 },
+    ],
+    title: 'АБК',
+  },
+  'food-truck': {
+    positions: [{ left: 303, top: 397, height: 50, width: 50 }],
+    title: 'Фудтрак',
+  },
+  trash: {
+    positions: [{ left: 414, top: 352, height: 32, width: 32 }],
+    title: 'Мусорный бак',
+  },
+  kpp2: {
+    positions: [
+      { left: 628, top: 329, height: 32, width: 32 },
+      { left: 989, top: 329, height: 32, width: 32 },
+    ],
+    title: 'КПП',
+  },
+  toilet: {
+    positions: [
+      { left: 391, top: 465, height: 32, width: 32 },
+      { left: 900, top: 465, height: 32, width: 32 },
+    ],
+    title: 'Туалет',
+  },
+  foresthouse: {
+    positions: [
+      { left: 350, top: 499, height: 40, width: 40 },
+      { left: 363, top: 580, height: 40, width: 40 },
+      { left: 376, top: 661, height: 40, width: 40 },
+    ],
+    title: 'Дом в лесу',
+  },
+  pavilion: {
+    positions: [{ left: 410, top: 540, height: 32, width: 32 }],
+    title: 'Павильон',
+  },
+  barnhouse: {
+    positions: [
+      { left: 562, top: 519, height: 32, width: 32 },
+      { left: 617, top: 519, height: 32, width: 32 },
+      { left: 684, top: 519, height: 32, width: 32 },
+      { left: 740, top: 519, height: 32, width: 32 },
+    ],
+    title: 'Барнхаус',
+  },
+  'bath-veranda': {
+    positions: [{ left: 452, top: 734, height: 60, width: 60 }],
+    title: 'Баня в лесу',
+  },
+  'foresthouse-2': {
+    positions: [
+      { left: 183, top: 598, height: 32, width: 32 },
+      { left: 240, top: 610, height: 32, width: 32 },
+      { left: 185, top: 655, height: 32, width: 32 },
+      { left: 240, top: 665, height: 32, width: 32 },
+      { left: 185, top: 710, height: 32, width: 32 },
+      { left: 240, top: 720, height: 32, width: 32 },
+    ],
+    title: 'Мини-домик на 2 человека',
+  },
+  'foresthouse-4': {
+    positions: [
+      { left: 218, top: 784, height: 32, width: 32 },
+      { left: 241, top: 843, height: 32, width: 32 },
+    ],
+    title: 'Мини-дом на 4 человека',
+  },
+  volleyball: {
+    positions: [
+      { top: 140, left: 450, height: 32, width: 32 },
+      { top: 140, left: 838, height: 32, width: 32 },
+    ],
+    title: 'Волейбольная площадка',
+  },
+  playground: {
+    positions: [{ top: 174, left: 565, height: 32, width: 32 }],
+    title: 'Детская площадка',
+  },
+  playground2: {
+    positions: [{ left: 232, top: 520, height: 32, width: 32 }],
+    title: 'Детская площадка (качели, песочница)',
   },
 };

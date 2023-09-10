@@ -103,7 +103,7 @@ const Info = ({ entry }: InfoProps) => {
           <Image src={HouseTest} alt="house image" className="max-w-24 max-h-24" />
         </div>
       </div>
-      <div className="flex flex-col gap-2 font-semibold">
+      <div className="hidden flex-col gap-2 font-semibold lg:flex">
         <p className="text-xl">{entry.title}</p>
         <p>{entry.description}</p>
         <div
@@ -136,9 +136,18 @@ const BookingId = async ({ params }: Props) => {
           })) ?? []
         }
       />
-      <div className="grid grid-cols-[2fr_1fr] gap-12">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
         <Info entry={entry} />
         <Bill entry={entry} onSubmit={onSubmit} />
+        <div className="mobile-container block flex-col gap-2 font-semibold lg:hidden ">
+          <p className="text-xl">{entry.title}</p>
+          <p>{entry.description}</p>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: sanitize(entry.content),
+            }}
+          />
+        </div>
       </div>
     </div>
   );

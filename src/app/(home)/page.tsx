@@ -63,7 +63,7 @@ const Services = async ({ openModal }: { openModal: string }) => {
   const services = await getServicesMain();
 
   return (
-    <ServicesItems services={services} openModal={openModal} className="flex flex-col gap-4">
+    <ServicesItems services={services} openModal={openModal} className="mobile-container flex flex-col gap-4">
       <Link href="/services" className="self-end font-semibold">
         Смотреть все услуги
       </Link>
@@ -101,7 +101,7 @@ const Faq = () => {
   ];
 
   return (
-    <section>
+    <section className="mobile-container">
       <h2 className="mb-10">FAQ</h2>
       <div className="md:pl-[35%]">
         {questions.map((question) => {
@@ -166,7 +166,7 @@ export default async function Home({ searchParams }: Props) {
         />
       </div> */}
       <Search />
-      <div className="layout-container flex flex-col gap-36 px-2 pt-[150px]">
+      <div className="layout-container flex flex-col gap-36 pt-[150px]">
         <Houses objectEntries={objectEntries} />
         <Services openModal={searchParams.openModal} />
         <Faq />

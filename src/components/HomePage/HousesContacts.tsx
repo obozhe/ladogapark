@@ -5,7 +5,7 @@ import YandexReviews from 'components/YandeReviews';
 
 const HousesContacts = () => {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="mobile-container flex flex-col gap-4">
       <h2 className="mb-10">Контакты</h2>
       <div className="flex flex-row justify-between gap-3 text-xl font-semibold">
         <div className="flex flex-col gap-10">
@@ -22,7 +22,9 @@ const HousesContacts = () => {
           </div>
           <div className="flex items-center gap-5 md:gap-10">
             <IconLocation size={40} color="rgb(255, 170, 5)" />
-            <span>Всеволожский р-н Ленобласти, деревня Коккорево, 40 км от Санкт-Петербурга</span>
+            <span className="text-sm lg:text-xs">
+              Всеволожский р-н Ленобласти, деревня Коккорево, 40 км от Санкт-Петербурга
+            </span>
           </div>
         </div>
         <div className="hidden flex-col gap-5 md:flex">

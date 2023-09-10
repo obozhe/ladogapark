@@ -25,7 +25,7 @@ const Header = () => {
   return (
     <header
       className={twMerge(
-        'layout-container flex w-full justify-between px-2 py-8 lg:px-0',
+        'layout-container mobile-container flex w-full justify-between py-8',
         isHomePage && 'absolute z-10 lg:static'
       )}
     >

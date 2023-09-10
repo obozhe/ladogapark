@@ -11,8 +11,8 @@ type Props = {
 const Houses = ({ objectEntries }: Props) => {
   return (
     <section className="flex flex-col gap-8">
-      <h2>Каталог домов</h2>
-      <div className="flex flex-col justify-between gap-10 md:flex-row">
+      <h2 className="mobile-container">Каталог домов</h2>
+      <div className="mobile-container flex flex-col justify-between gap-10 md:flex-row">
         <HousesTabs />
         <div className="-order-1 flex flex-col gap-1 font-inter text-xs font-semibold text-black md:order-1">
           <div className="flex items-center gap-2">

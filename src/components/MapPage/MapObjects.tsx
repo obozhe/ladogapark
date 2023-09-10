@@ -27,7 +27,7 @@ const MapObject = forwardRef<HTMLDivElement, ObjectProps>(
         onMouseLeave={onMouseLeave}
         onClick={onClick}
         style={{ top: top - width / 4, left: left - width / 4, width: width * 1.5, height: height * 1.5 }}
-        className="absolute flex cursor-pointer items-center justify-center rounded-full bg-[hsla(0,0%,100%,.5)]"
+        className="absolute z-50 flex cursor-pointer items-center justify-center rounded-full bg-[hsla(0,0%,100%,.5)]"
       >
         <Image src={`/icons/map/${objectType}.svg`} alt={objectType} width={width} height={height} />
       </div>
@@ -40,15 +40,15 @@ const MapObjects = () => {
 
   return (
     <div className="absolute left-0 top-0 z-10 h-full w-full">
-      {/* {Object.entries(objectsInfo).map(([objectType, objects]) =>
-        objects.positions.map((object, index) => (
+      {Object.entries(objectsInfo).map(([objectType, objects]) =>
+        objects.positions.map((object) => (
           <Tippy
             render={(attrs) => (
               <div {...attrs} className="rounded-[10px] bg-white p-1 text-black">
                 {objects.title}
               </div>
             )}
-            key={`${objectType}-${index}`}
+            key={`wrapper-${objectType}-${object.left}-${object.top}`}
           >
             <MapObject
               {...object}
@@ -59,7 +59,7 @@ const MapObjects = () => {
             />
           </Tippy>
         ))
-      )} */}
+      )}
     </div>
   );
 };

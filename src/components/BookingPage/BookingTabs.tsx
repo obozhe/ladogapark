@@ -13,7 +13,12 @@ const BookingTabs = ({ tabs, activeTab }: Props) => {
   const router = useRouter();
 
   return (
-    <Tabs className="w-max" activeTab={activeTab} tabs={tabs} onClick={(value) => router.push(`/booking/${value}`)} />
+    <Tabs
+      className="mobile-container w-max"
+      activeTab={activeTab}
+      tabs={tabs}
+      onClick={(value) => router.push(`/booking/${value}`)}
+    />
   );
 };
 

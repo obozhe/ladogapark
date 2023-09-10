@@ -190,7 +190,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
   };
 
   return (
-    <section className="border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
+    <section className="mobile-container border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
       <div className="grid grid-cols-[max-content_max-content] grid-rows-[max-content_max-content] gap-2 pb-2">
         {[entry.priceWeekday, entry.priceWeekend].map((amount, index) => (
           <span key={amount + index} className="font-inter text-3xl">
@@ -205,7 +205,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
         ))}
       </div>
       <div className="flex flex-col gap-5 py-5">
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row">
           <DatePicker
             placeholderText="Дата заезда"
             onChange={(date) => {
@@ -261,7 +261,7 @@ const Bill = ({ entry, onSubmit }: InfoProps) => {
       </div>
       <Button
         color="primary"
-        className="ml-auto mt-5"
+        className="mt-5 w-full lg:ml-auto lg:w-fit"
         onClick={() => onSubmit({ total: billInfo.total, entryId: entry.id, startDate: '', endDate: '' })}
       >
         Забронировать
