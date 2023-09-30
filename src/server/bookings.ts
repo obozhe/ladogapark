@@ -21,18 +21,19 @@ export const createBooking = async (total: number, start: dayjs.Dayjs, end: dayj
   return await prisma.booking.create({
     data: {
       total,
+      prePay: total,
       number: `${unit.number}-${dayjs().format('YYMMDD')}-${Math.floor(100 + Math.random() * (999 + 1 - 100))}`,
       start: start.toDate(),
       end: end.toDate(),
       clientId: client.id,
       unitId: unit.id,
-      token: '', // token  в куку чтобы блюрить данные клиента
     },
   });
 };
 
 export const updatePaymentToken = (bookingId: string, token: string) => {
-  return prisma.booking.update({ where: { id: bookingId }, data: { token } });
+  // тут будем у BookingPayment менять токен
+  // return prisma.booking.update({ where: { id: bookingId }, data: { token } });
 };
 
 export const getBookingById = (id: string) => {
