@@ -16,7 +16,8 @@ import Select from './Select';
 
 type Props = {
   onChange: (value: Dayjs) => void;
-} & Omit<ReactDatePickerProps, 'onChange'>;
+  value?: Date;
+} & Omit<ReactDatePickerProps, 'onChange' | 'value'>;
 
 registerLocale('ru', ru);
 
@@ -52,8 +53,8 @@ const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHe
   );
 };
 
-const DatePicker = ({ onChange, selected, ...rest }: Props) => {
-  const [date, setDate] = useState<Date | null>(null);
+const DatePicker = ({ onChange, selected, value, ...rest }: Props) => {
+  const [date, setDate] = useState<Date | null>(value ?? null);
   const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
 
   useEffect(() => {

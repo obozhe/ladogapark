@@ -2,6 +2,7 @@ type ObjectType =
   | 'abk'
   | 'arbor'
   | 'arborhexagonal'
+  | 'arborhexagonal-2'
   | 'barnhouse'
   | 'bath-big2'
   | 'bath-veranda'
@@ -29,7 +30,7 @@ type ObjectType =
 
 export const objectsInfo: Record<
   ObjectType,
-  { positions: { top: number; left: number; height: number; width: number }[]; title: string }
+  { positions: { top: number; left: number; height: number; width: number }[]; title: string; entryId?: string }
 > = {
   picnic: {
     positions: [
@@ -37,6 +38,7 @@ export const objectsInfo: Record<
       { top: 130, left: 174, height: 24, width: 24 },
     ],
     title: 'Столик для пикника',
+    entryId: '64e27c49bee3891b2febcbd7',
   },
   tent: {
     positions: [
@@ -46,10 +48,12 @@ export const objectsInfo: Record<
       { top: 217, left: 659, height: 32, width: 32 },
     ],
     title: 'Шатер',
+    entryId: '64e27c49bee3891b2febcbdd',
   },
   fisherman: {
     positions: [{ top: 200, left: 273, height: 32, width: 32 }],
     title: 'Домик рыбака',
+    entryId: '64e27c49bee3891b2febcbde',
   },
   bath: {
     positions: [{ top: 188, left: 333, height: 32, width: 32 }],
@@ -58,10 +62,12 @@ export const objectsInfo: Record<
   catering: {
     positions: [{ top: 222, left: 353, height: 32, width: 32 }],
     title: 'Кайтерская',
+    entryId: '64e27c49bee3891b2febcbd2',
   },
   'bath-big2': {
     positions: [{ top: 197, left: 423, height: 60, width: 60 }],
     title: 'Большая кедровая баня',
+    entryId: '64e27c49bee3891b2febcbd8',
   },
   grillhouse: {
     positions: [
@@ -70,6 +76,7 @@ export const objectsInfo: Record<
       { top: 263, left: 797, height: 32, width: 32 },
     ],
     title: 'Гриль-домик',
+    entryId: '64e27c3dbee3891b2febcbca',
   },
   'grillhouse-big': {
     positions: [
@@ -77,6 +84,7 @@ export const objectsInfo: Record<
       { top: 254, left: 600, height: 45, width: 45 },
     ],
     title: 'Гриль-домик с террасой под навесом',
+    entryId: '64e27c3dbee3891b2febcbcd',
   },
   arbor: {
     positions: [
@@ -86,15 +94,21 @@ export const objectsInfo: Record<
       { top: 194, left: 1235, height: 32, width: 32 },
     ],
     title: 'Беседка открытая',
+    entryId: '64e27c48bee3891b2febcbcf',
   },
   arborhexagonal: {
     positions: [
-      { top: 197, left: 1397, height: 32, width: 32 },
+      { top: 175, left: 1009, height: 32, width: 32 },
       { top: 197, left: 1145, height: 32, width: 32 },
       { top: 185, left: 1078, height: 32, width: 32 },
-      { top: 175, left: 1009, height: 32, width: 32 },
     ],
+    title: 'Беседка шестигранная',
+    entryId: '64e27c49bee3891b2febcbd3',
+  },
+  'arborhexagonal-2': {
+    positions: [{ top: 197, left: 1397, height: 32, width: 32 }],
     title: 'Беседка восьмигранная',
+    entryId: '64e27c49bee3891b2febcbd6',
   },
   veranda: {
     positions: [
@@ -102,6 +116,7 @@ export const objectsInfo: Record<
       { left: 1232, top: 284, height: 32, width: 32 },
     ],
     title: 'Веранда на берегу',
+    entryId: '64e27c3cbee3891b2febcbb3',
   },
   shop: {
     positions: [{ left: 198, top: 300, height: 32, width: 32 }],
@@ -147,10 +162,12 @@ export const objectsInfo: Record<
       { left: 376, top: 661, height: 40, width: 40 },
     ],
     title: 'Дом в лесу',
+    entryId: '64e27c4abee3891b2febcbe0',
   },
   pavilion: {
     positions: [{ left: 410, top: 540, height: 32, width: 32 }],
     title: 'Павильон',
+    entryId: '64e27c3dbee3891b2febcbcb',
   },
   barnhouse: {
     positions: [
@@ -164,6 +181,7 @@ export const objectsInfo: Record<
   'bath-veranda': {
     positions: [{ left: 452, top: 734, height: 60, width: 60 }],
     title: 'Баня в лесу',
+    entryId: '64e27c49bee3891b2febcbda',
   },
   'foresthouse-2': {
     positions: [

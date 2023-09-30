@@ -6,16 +6,13 @@ import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
 import HousesContacts from 'components/HomePage/HousesContacts';
+import { getMainPageImages } from 'server/gallery';
 import { getNews } from 'server/news';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { ObjectTypes } from 'server/objects/types';
 import { getServicesMain } from 'server/services';
 import Disclosure from 'ui/Disclosure';
 import Slider from 'ui/Slider';
-import House1Image from '../../../public/images/house-1.png';
-import House2Image from '../../../public/images/house-2.png';
-import House3Image from '../../../public/images/house-3.png';
-import House4Image from '../../../public/images/house-4.png';
 import { ServicesItems } from './services/page';
 
 type Props = {
@@ -122,8 +119,8 @@ const Faq = () => {
   );
 };
 
-const Photos = () => {
-  const photos = [House1Image, House2Image, House3Image, House4Image];
+const Photos = async () => {
+  const photos = await getMainPageImages();
 
   return (
     <section className="flex flex-col gap-4 font-semibold">
@@ -131,9 +128,11 @@ const Photos = () => {
       <div className="flex gap-4 overflow-auto md:grid md:grid-cols-3 md:grid-rows-1 md:gap-12">
         {photos.map((photo, index) => (
           <Image
-            src={photo}
+            src={process.env.UPLOADS_URL + photo.image}
             alt="house"
             key={index}
+            width={200}
+            height={100}
             className={twMerge(
               index === 2 && 'col-span-2',
               index === 3 && 'col-start-3 row-span-2 row-start-1',

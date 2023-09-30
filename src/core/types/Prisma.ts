@@ -11,7 +11,7 @@ const entryWithFuturePricesWithGroup = Prisma.validator<Prisma.EntryDefaultArgs>
 });
 
 const entryWithFuturePricesWithGroupWithServices = Prisma.validator<Prisma.EntryDefaultArgs>()({
-  include: { futurePrices: true, group: true, extraServices: true },
+  include: { futurePrices: true, group: true, extraServices: true, units: true },
 });
 
 export type EntryWithFuturePricesWithGroup = Prisma.EntryGetPayload<typeof entryWithFuturePricesWithGroup>;

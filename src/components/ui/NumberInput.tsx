@@ -1,7 +1,8 @@
 'use client';
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import useLatest from 'hooks/useLatest';
 
 type Props = {
@@ -10,32 +11,33 @@ type Props = {
   iconTheme?: 'black' | 'white';
   min?: number;
   max?: number;
+  value?: number;
 };
 
-const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
-  const [value, setValue] = useState(0);
+const NumberInput = ({ placeholder, min, max, onChange, value }: Props) => {
+  const [inputValue, setInputValue] = useState(value ?? 0);
   const latestOnChange = useLatest(onChange);
 
   const decrease = () => {
-    if (!value) return;
+    if (!inputValue) return;
 
-    setValue((prev) => prev - 1);
+    setInputValue((prev) => prev - 1);
   };
 
   const increase = () => {
-    setValue((prev) => prev + 1);
+    setInputValue((prev) => prev + 1);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(e.target.value);
     if (newValue > (max ?? Number.MAX_SAFE_INTEGER) || newValue < (min ?? Number.MIN_SAFE_INTEGER)) return;
 
-    setValue(newValue);
+    setInputValue(newValue);
   };
 
-  useEffect(() => {
-    latestOnChange.current(value);
-  }, [value, latestOnChange]);
+  useDidUpdateEffect(() => {
+    latestOnChange.current(inputValue);
+  }, [inputValue, latestOnChange]);
 
   return (
     <div className="relative h-full w-full font-semibold">
@@ -45,7 +47,7 @@ const NumberInput = ({ placeholder, min, max, onChange }: Props) => {
         pattern="[0-9]*"
         inputMode="decimal"
         placeholder={placeholder}
-        value={value || ''}
+        value={inputValue || ''}
         onChange={handleChange}
         min={0}
         max={100}

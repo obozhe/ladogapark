@@ -8,6 +8,28 @@ type Props = {
   objectEntries: Entry[];
 };
 
+export const House = ({ entry }: { entry: Entry }) => {
+  return (
+    <Link
+      href={`booking/${entry.id}`}
+      className="relative flex h-64 flex-col justify-between font-inter font-semibold text-white"
+    >
+      <div className="absolute top-0 -z-10 h-full w-full bg-house-image bg-auto bg-left-top brightness-[60%]" />
+      <div className="flex justify-between p-2 md:p-4">
+        <div className="flex items-center">
+          <IconMan fill="white" />
+          <span>x{entry.seats}</span>
+        </div>
+        <div className="flex gap-2">
+          <span className="rounded-md bg-primary p-1 text-xs">{formatToRuble(entry.priceWeekday)}</span>
+          <span className="rounded-md bg-secondary p-1 text-xs">{formatToRuble(entry.priceWeekend)}</span>
+        </div>
+      </div>
+      <span className="p-2 text-4xl font-semibold md:p-4">{entry.title}</span>
+    </Link>
+  );
+};
+
 const Houses = ({ objectEntries }: Props) => {
   return (
     <section className="flex flex-col gap-8">
@@ -26,28 +48,9 @@ const Houses = ({ objectEntries }: Props) => {
         </div>
       </div>
       <div className="grid gap-9 sm:grid-cols-1 lg:grid-cols-3">
-        {objectEntries.map((entry) => {
-          return (
-            <Link
-              href={`booking/${entry.id}`}
-              className="relative flex h-64 flex-col justify-between font-inter font-semibold text-white"
-              key={entry.id}
-            >
-              <div className="absolute top-0 -z-10 h-full w-full bg-house-image bg-auto bg-left-top brightness-[60%]" />
-              <div className="flex justify-between p-2 md:p-4">
-                <div className="flex items-center">
-                  <IconMan fill="white" />
-                  <span>x{entry.seats}</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="rounded-md bg-primary p-1 text-xs">{formatToRuble(entry.priceWeekday)}</span>
-                  <span className="rounded-md bg-secondary p-1 text-xs">{formatToRuble(entry.priceWeekend)}</span>
-                </div>
-              </div>
-              <span className="p-2 text-4xl font-semibold md:p-4">{entry.title}</span>
-            </Link>
-          );
-        })}
+        {objectEntries.map((entry) => (
+          <House entry={entry} key={entry.id} />
+        ))}
       </div>
     </section>
   );
