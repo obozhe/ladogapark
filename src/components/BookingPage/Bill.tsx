@@ -209,12 +209,12 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
           title={<span className="text-primary">Дополнительные товары</span>}
           description={
             <>
-              {entry.extraServices.map((service) => (
+              {entry.extraCommodities.map((commodity) => (
                 <AdditionalGoods
-                  price={service.price}
-                  name={service.title}
-                  key={service.id}
-                  onChange={(amount) => updateServicesAmount({ amount, title: service.title, price: service.price })}
+                  price={commodity.price}
+                  name={commodity.title}
+                  key={commodity.id}
+                  onChange={(amount) => updateServicesAmount({ amount, title: commodity.title, price: commodity.price })}
                 />
               ))}
               {!Boolean(entry.extraSeats) && (

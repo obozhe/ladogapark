@@ -5,13 +5,13 @@ export const getEntryById = (id: string) => {
 };
 
 export const getEntryByIdWithFuturePrices = (id: string) => {
-  return prisma.entry.findUnique({ where: { id }, include: { group: true, futurePrices: true, extraServices: true } });
+  return prisma.entry.findUnique({ where: { id }, include: { group: true, futurePrices: true, extraCommodities: true } });
 };
 
 export const getEntryByIdWithFutureWithService = (id: string) => {
   return prisma.entry.findUnique({
     where: { id },
-    include: { group: true, futurePrices: true, extraServices: true, units: true },
+    include: { group: true, futurePrices: true, extraCommodities: true, units: true },
   });
 };
 
