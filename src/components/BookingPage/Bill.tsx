@@ -1,8 +1,10 @@
 'use client';
 
+import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import CountUp from 'react-countup';
+import useSWR from 'swr';
 import useLatest from 'hooks/useLatest';
 import usePrevious from 'hooks/usePrevious';
 import useRouterParams from 'hooks/useRouterParams';
@@ -14,12 +16,10 @@ import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
 import NumberInput from 'ui/NumberInput';
-import { PaymentState } from './BookingLayout';
+import { useBookingState } from './StateProvider';
 
 type InfoProps = {
   entry: EntryWithFuturePricesWithGroupWithServices;
-  paymentState: PaymentState;
-  setPaymentState: Dispatch<SetStateAction<PaymentState>>;
 };
 
 type AdditionalGoodsProps = {
@@ -71,8 +71,18 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
   );
 };
 
-const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
-  const prevBillInfoTotal = usePrevious(paymentState.total);
+const Bill = ({ entry }: InfoProps) => {
+  const { bookingState, setBookingState } = useBookingState();
+  const {} = useSWR(['/api/bookings/hydrated', new Date()], ([url, param]) =>
+    axios.get(url, {
+      params: { start: param },
+      headers: {
+        'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY,
+        Accept: 'application/pdf',
+      },
+    })
+  );
+  const prevBillInfoTotal = usePrevious(bookingState.total);
 
   const parking = `${numberInWords(entry.parking)?.[0].toUpperCase()}${numberInWords(entry.parking)?.slice(
     1
@@ -115,8 +125,7 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
   );
 
   const updateTotalByDate = (startDate: Dayjs | null, nightsAmount: number) => {
-    let weekdaysPrice = 0;
-    let weekendsPrice = 0;
+    let totalPrice = 0;
 
     if (startDate && nightsAmount) {
       let currenDate = startDate;
@@ -125,18 +134,22 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
         const weekday = currenDate.day();
         const isWeekend = weekday === 0 || weekday === 6;
 
-        if (isWeekend) {
-          weekendsPrice += entry.priceWeekend;
+        const futurePrice = entry.futurePrices.findLast((futurePrice) => {
+          const futurePriceDayjs = dayjs(futurePrice.start);
+          return currenDate.isSameOrAfter(futurePriceDayjs, 'day');
+        });
+
+        if (futurePrice) {
+          totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
         } else {
-          weekdaysPrice += entry.priceWeekday;
+          totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
         }
 
         currenDate = startDate.add(i, 'day');
       }
     }
 
-    const totalPrice = weekdaysPrice + weekendsPrice;
-    setPaymentState((prev) => ({
+    setBookingState((prev) => ({
       ...prev,
       total: prev.extraServicesTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
       startDate,
@@ -145,7 +158,7 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
   };
 
   const updateServicesAmount = ({ amount, price }: { amount: 1 | -1; title: string; price: number }) => {
-    setPaymentState((prev) => {
+    setBookingState((prev) => {
       return {
         ...prev,
         total: prev.total + amount * price,
@@ -154,7 +167,7 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
     });
   };
   const updateExtraSeats = (amount: 1 | -1) => {
-    setPaymentState((prev) => ({
+    setBookingState((prev) => ({
       ...prev,
       extraSeats: prev.extraSeats + amount,
       total: prev.total + amount * 1000 * prev.nightsAmount,
@@ -180,18 +193,16 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
         <div className="flex flex-col gap-4 lg:flex-row">
           <DatePicker
             placeholderText="Дата заезда"
-            onChange={(date) => {
-              updateTotalByDate(date, paymentState.nightsAmount);
-            }}
-            value={paymentState.startDate?.toDate()}
-            minDate={new Date()}
+            onChange={(date) => updateTotalByDate(date, bookingState.nightsAmount)}
+            value={bookingState.startDate?.toDate()}
             renderDayContents={renderDayContents}
+            minDate={new Date()}
           />
           <NumberInput
             placeholder="Кол-во ночей"
-            value={paymentState.nightsAmount}
+            value={bookingState.nightsAmount}
             onChange={(nightsAmount) => {
-              updateTotalByDate(paymentState.startDate, nightsAmount);
+              updateTotalByDate(bookingState.startDate, nightsAmount);
             }}
           />
         </div>
@@ -214,15 +225,17 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
                   price={commodity.price}
                   name={commodity.title}
                   key={commodity.id}
-                  onChange={(amount) => updateServicesAmount({ amount, title: commodity.title, price: commodity.price })}
+                  onChange={(amount) =>
+                    updateServicesAmount({ amount, title: commodity.title, price: commodity.price })
+                  }
                 />
               ))}
               {!Boolean(entry.extraSeats) && (
                 <AdditionalGoods
                   name="Дополнительное место"
-                  price={1000 ?? entry.priceExtraSeat}
+                  price={entry.priceExtraSeat}
                   onChange={updateExtraSeats}
-                  max={entry.extraSeats ?? 2}
+                  max={entry.extraSeats}
                 />
               )}
             </>
@@ -231,15 +244,12 @@ const Bill = ({ entry, paymentState, setPaymentState }: InfoProps) => {
       </div>
       <div className="flex justify-between py-5 text-2xl">
         <span>Итого:</span>
-        <CountUp start={prevBillInfoTotal ?? 0} end={paymentState.total} suffix=" ₽" duration={0.5} />
+        <CountUp start={prevBillInfoTotal ?? 0} end={bookingState.total} suffix=" ₽" duration={0.5} />
       </div>
       <Button
         color="primary"
         className="mt-5 w-full lg:ml-auto lg:w-fit"
-        onClick={() => {
-          console.log('click');
-          setQueryParams({ queryName: 'isPayment', value: 'true' });
-        }}
+        onClick={() => setQueryParams({ queryName: 'isPayment', value: 'true' })}
       >
         Забронировать
       </Button>

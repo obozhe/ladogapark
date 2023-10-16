@@ -15,7 +15,7 @@ import '../../../public/datePicker.css';
 import Select from './Select';
 
 type Props = {
-  onChange: (value: Dayjs) => void;
+  onChange: (value: Dayjs | null) => void;
   value?: Date;
 } & Omit<ReactDatePickerProps, 'onChange' | 'value'>;
 
@@ -67,7 +67,7 @@ const DatePicker = ({ onChange, selected, value, ...rest }: Props) => {
         locale="ru"
         dateFormat="dd.MM.yyyy"
         onChange={(value) => {
-          onChange(dayjs(value));
+          onChange(value ? dayjs(value) : value);
           setDate(value);
         }}
         open={open}

@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -14,6 +14,7 @@ import { Input } from 'ui/Input';
 import HouseTest from '../../../public/images/test-house.png';
 import Bill from './Bill';
 import BookingTabs from './BookingTabs';
+import BookingStateProvider from './StateProvider';
 
 type InfoProps = {
   entry: EntryWithFuturePricesWithGroup;
@@ -22,13 +23,6 @@ type Props = {
   entry: EntryWithFuturePricesWithGroupWithServices;
   tabs: Tab<string>[];
   isPaymentStep: boolean;
-};
-export type PaymentState = {
-  total: number;
-  startDate: Dayjs | null;
-  nightsAmount: number;
-  extraSeats: number;
-  extraServicesTotal: number;
 };
 
 const Info = ({ entry }: InfoProps) => {
@@ -62,7 +56,7 @@ const Info = ({ entry }: InfoProps) => {
   );
 };
 // TODO: think about move this component to pages and create a uniform interface
-const PaymentStep = ({ paymentInfo }: { paymentInfo: any }) => {
+const PaymentStep = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -72,24 +66,21 @@ const PaymentStep = ({ paymentInfo }: { paymentInfo: any }) => {
   });
 
   const onSubmit = () => {
-    // TODO: validation
-
-    const body: BookingBody = {
-      ...paymentInfo,
-      sendEmail: true,
-      start: paymentInfo.startDate?.format(),
-      end: dayjs(paymentInfo.startDate).add(paymentInfo.nightsAmount, 'day').format(),
-      extraSeats: paymentInfo.extraSeats,
-      total: paymentInfo.total,
-
-      client: {
-        name,
-        email,
-        phone,
-      },
-    };
-
-    trigger(body);
+    // // TODO: validation
+    // const body: BookingBody = {
+    //   ...paymentInfo,
+    //   sendEmail: true,
+    //   start: paymentInfo.startDate?.format(),
+    //   end: dayjs(paymentInfo.startDate).add(paymentInfo.nightsAmount, 'day').format(),
+    //   extraSeats: paymentInfo.extraSeats,
+    //   total: paymentInfo.total,
+    //   client: {
+    //     name,
+    //     email,
+    //     phone,
+    //   },
+    // };
+    // trigger(body);
   };
 
   return (
@@ -103,23 +94,12 @@ const PaymentStep = ({ paymentInfo }: { paymentInfo: any }) => {
 };
 
 const BookingLayout = ({ entry, tabs, isPaymentStep }: Props) => {
-  const [paymentState, setPaymentState] = useState<PaymentState>(() => ({
-    total: 0,
-    startDate: null,
-    nightsAmount: 0,
-    extraSeats: 0,
-    extraServicesTotal: 0,
-    parking: entry.parking,
-    entryId: entry.id,
-    unitId: entry.units[0].id,
-  }));
-
   const MainStep = () => (
     <div className="mt-12 flex flex-col gap-5">
       <BookingTabs activeTab={String(entry.id)} tabs={tabs} />
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
         <Info entry={entry} />
-        <Bill entry={entry} paymentState={paymentState} setPaymentState={setPaymentState} />
+        <Bill entry={entry} />
         <div className="mobile-container block flex-col gap-2 font-semibold lg:hidden ">
           <p className="text-xl">{entry.title}</p>
           <p>{entry.description}</p>
@@ -133,12 +113,13 @@ const BookingLayout = ({ entry, tabs, isPaymentStep }: Props) => {
     </div>
   );
 
-  const content = [
-    { content: <MainStep key="main-step" /> },
-    { content: <PaymentStep paymentInfo={paymentState} key="payment-step" /> },
-  ];
+  const content = [{ content: <MainStep key="main-step" /> }, { content: <PaymentStep key="payment-step" /> }];
 
-  return <Stepper steps={content} step={isPaymentStep ? 1 : 0} />;
+  return (
+    <BookingStateProvider>
+      <Stepper steps={content} step={isPaymentStep ? 1 : 0} />
+    </BookingStateProvider>
+  );
 };
 
 export default BookingLayout;

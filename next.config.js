@@ -5,7 +5,7 @@ const nextConfig = {
     serverActions: true,
   },
   rewrites() {
-    return [{ source: '/api/bookings', destination: process.env.NEXT_PUBLIC_CRM_URL }];
+    return [{ source: '/api/:path*', destination: 'http://localhost:5050', basePath: false }];
   },
   webpack(config) {
     config.module.rules.push({
