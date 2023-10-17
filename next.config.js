@@ -5,7 +5,7 @@ const nextConfig = {
     serverActions: true,
   },
   rewrites() {
-    return [{ source: '/api/:path*', destination: 'http://localhost:5050', basePath: false }];
+    return [{ source: '/api/:path*', destination: `${process.env.NEXT_PUBLIC_CRM_URL}/api/:path*` }];
   },
   webpack(config) {
     config.module.rules.push({
@@ -14,15 +14,6 @@ const nextConfig = {
     });
 
     return config;
-  },
-  async redirects() {
-    return [
-      {
-        source: '/management',
-        destination: '/management/objects',
-        permanent: true,
-      },
-    ];
   },
   images: {
     formats: ['image/avif'],

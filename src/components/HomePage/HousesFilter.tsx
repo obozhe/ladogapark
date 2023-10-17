@@ -8,7 +8,7 @@ import DatePicker from 'ui/DatePicker';
 
 const HousesFilter = () => {
   const [isTransition, startTransition] = useTransition();
-  const [date, setDate] = useState<dayjs.Dayjs>();
+  const [date, setDate] = useState<dayjs.Dayjs | null>();
   const router = useRouter();
   const pathname = usePathname();
 

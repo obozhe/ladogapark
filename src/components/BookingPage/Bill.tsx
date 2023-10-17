@@ -73,12 +73,13 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 
 const Bill = ({ entry }: InfoProps) => {
   const { bookingState, setBookingState } = useBookingState();
+  const [chosenMonth, setChosenMonth] = useState(dayjs().get('M'));
+
   const {} = useSWR(['/api/bookings/hydrated', new Date()], ([url, param]) =>
     axios.get(url, {
-      params: { start: param },
+      params: { start: param, unitId: entry.id, end: new Date() },
       headers: {
         'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY,
-        Accept: 'application/pdf',
       },
     })
   );

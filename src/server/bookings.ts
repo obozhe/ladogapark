@@ -37,5 +37,5 @@ export const updatePaymentToken = (bookingId: string, token: string) => {
 };
 
 export const getBookingById = (id: string) => {
-  return prisma.booking.findUnique({ where: { id: id } });
+  return prisma.booking.findUnique({ where: { number: id } });
 };
