@@ -40,4 +40,4 @@ type StateByDay = [
   },
 ];
 
-export type ObjectBusyness = [{ id: string }, StateByDay[]][];
+export type ObjectBusyness = [{ id: string; status: string }, StateByDay[]][];

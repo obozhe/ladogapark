@@ -1,9 +1,8 @@
 'use client';
 
 import dayjs, { Dayjs } from 'dayjs';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import CountUp from 'react-countup';
-import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import { Commodity } from '@prisma/client';
 import useLatest from 'hooks/useLatest';
@@ -16,7 +15,6 @@ import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
-import NumberInput from 'ui/NumberInput';
 import { useBookingState } from './StateProvider';
 
 type InfoProps = {
@@ -68,7 +66,7 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 
 const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const { bookingState, setBookingState } = useBookingState();
-  const [chosenMonth, setChosenMonth] = useState(dayjs().get('M'));
+  const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
   const isBath = entry.group.type === 'Bath';
   const nightsAmount = dayjs(bookingState.start).diff(dayjs(bookingState.end), 'days');
 
@@ -76,6 +74,8 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
     data: updatedObjectBusyness,
     setSize,
     size,
+    isLoading,
+    isValidating,
   } = useSWRInfinite(
     (index) => {
       const chosenMonth = dayjs().get('M') + index;
@@ -106,8 +106,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
 
             if (isUnitClosed || unit.status === 'Inactive') return;
 
-            // TODO: добавить проверку что бронирование указывает на закрытие
-            if (!bookings.length) {
+            if (!bookings[0]?.isStartingDate) {
               accItem.availableUnits.push(unit.id);
             }
           });
@@ -208,35 +207,41 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
       total: prev.total + amount * 1000 * nightsAmount,
     }));
   };
+
+  // Закрыть даты при открытии календаря в которых есть бронирование
   const flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
+  const startDay = Number(dayjs(bookingState.start).format('D'));
   const closedDates = flattenUpdatedObjectBusyness?.filter((date) => !date.availableUnits.length);
 
-  const startDay = Number(dayjs(bookingState.start).format('D'));
-  const startDayAvailableUnits = flattenUpdatedObjectBusyness?.[startDay - 1]?.availableUnits;
-
-  const unitsMaxAvailableDays = {} as Record<string, number>;
-  for (let i = 0; i < (startDayAvailableUnits?.length ?? 0); i++) {
-    const unit = startDayAvailableUnits?.[i];
-    unitsMaxAvailableDays[unit] = startDay;
-
-    for (let j = startDay; j < (flattenUpdatedObjectBusyness?.length ?? 0); j++) {
-      const nextDayAvailableUnits = flattenUpdatedObjectBusyness?.[j].availableUnits;
-
-      if (nextDayAvailableUnits?.includes(unit)) {
-        unitsMaxAvailableDays[unit] += 1;
-      }
-    }
-  }
   let maxBookingDay;
 
-  if (bookingState.start) {
-    let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
-      ?.date;
+  // При выборе даты заезда смотреть насколько далеко можно выбрать дату выезда
+  if (flattenUpdatedObjectBusyness?.length && startDay) {
+    const startDayAvailableUnits = flattenUpdatedObjectBusyness[startDay - 1].availableUnits;
 
-    maxBookingDay = Math.min(
-      closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
-      Math.max(...Object.values(unitsMaxAvailableDays))
-    );
+    const unitsMaxAvailableDays = {} as Record<string, number>;
+    for (let i = 0; i < (startDayAvailableUnits?.length ?? 0); i++) {
+      const unit = startDayAvailableUnits[i];
+      unitsMaxAvailableDays[unit] = startDay;
+
+      for (let j = startDay; j < (flattenUpdatedObjectBusyness.length ?? 0); j++) {
+        const nextDayAvailableUnits = flattenUpdatedObjectBusyness[j].availableUnits;
+
+        if (nextDayAvailableUnits.includes(unit)) {
+          unitsMaxAvailableDays[unit] += 1;
+        }
+      }
+    }
+
+    if (bookingState.start) {
+      let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
+        ?.date;
+
+      maxBookingDay = Math.min(
+        closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
+        Math.max(...Object.values(unitsMaxAvailableDays))
+      );
+    }
   }
 
   return (
@@ -264,25 +269,22 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
             onChange={([start, end]) => {
               setBookingState((prev) => ({ ...prev, start, end }));
               if (start && end) {
-                // updateTotalByDate(date, bookingState.nightsAmount);
+                const nightsAmount = dayjs(end).diff(dayjs(start), 'd');
+                updateTotalByDate(dayjs(start), nightsAmount);
               }
             }}
             renderDayContents={renderDayContents}
             minDate={new Date()}
-            maxDate={maxBookingDay ? dayjs(bookingState.start).set('D', maxBookingDay).toDate() : null}
+            maxDate={maxBookingDay ? chosenMonth.set('D', maxBookingDay).toDate() : null}
             selected={bookingState.start ?? new Date()}
-            onMonthChange={() => {
-              console.log(size);
-              setSize(size + 1);
+            onMonthChange={(month) => {
+              const monthDifference = dayjs(month).diff(chosenMonth, 'M');
+
+              setChosenMonth(dayjs(month));
+              setSize(size + monthDifference);
             }}
+            isLoading={isLoading || isValidating}
             excludeDates={closedDates?.map(({ date }) => new Date(`${date} 00:00:00`))}
-          />
-          <NumberInput
-            placeholder={isBath ? 'Кол-во часов' : 'Кол-во ночей'}
-            value={bookingState.nightsAmount}
-            onChange={(nightsAmount) => {
-              updateTotalByDate(bookingState.startDate, nightsAmount);
-            }}
           />
         </div>
         <div className="flex flex-col">
