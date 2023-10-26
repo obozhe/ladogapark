@@ -3,12 +3,14 @@ import 'dayjs/locale/ru';
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import utc from 'dayjs/plugin/utc';
 import { DateFormats } from 'core/enums/DateFormats';
 import { getArrayFromRange } from './array';
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(utc);
 
 type GetSelectOptions = {
   date: Dayjs;

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
+    "@mantine/dates": "^7.1.5",
     "@pbe/react-yandex-maps": "^1.2.4",
     "@prisma/client": "^5.1.1",
     "@svgr/webpack": "^8.1.0",

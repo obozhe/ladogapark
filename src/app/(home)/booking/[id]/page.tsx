@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import BookingLayout from 'components/BookingPage/BookingLayout';
 import pluralize from 'core/helpers/pluralize';
+import { getCommonCommodities } from 'server/commodity';
 import { getEntryByIdWithFutureWithService, getGroupById } from 'server/objects/ObjectCollection';
 
 type Props = {
@@ -79,11 +80,13 @@ const BookingId = async ({ params, searchParams }: Props) => {
   }
 
   const group = await getGroupById(entry?.group.id);
+  const commonCommodities = await getCommonCommodities();
 
   return (
     <BookingLayout
       isPaymentStep={searchParams.isPayment}
       entry={entry}
+      commonCommodities={commonCommodities}
       tabs={
         group?.entries.map((entry) => ({
           label: `${entry.seats} ${pluralize(['человек', 'человека', 'человек'], entry.seats)}`,

@@ -1,22 +1,25 @@
-import Image from 'next/image';
 import PhotoAlbum, { RenderPhotoProps } from 'react-photo-album';
 import { getGalleryImages } from 'server/gallery';
+import { getSettings } from 'server/settings';
 
 const Photos = async () => {
-  const images = await getGalleryImages();
+  const settings = await getSettings();
+  const images = await getGalleryImages(settings?.season ?? 'All');
 
   return (
-    <PhotoAlbum
-      layout="rows"
-      photos={[
-        ...images.map((i) => ({ src: process.env.UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-        ...images.map((i) => ({ src: process.env.UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-        ...images.map((i) => ({ src: process.env.UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-        ...images.map((i) => ({ src: process.env.UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-      ]}
-      defaultContainerWidth={1200}
-      sizes={{ size: 'calc(100vw - 240px)' }}
-    />
+    <>
+      <PhotoAlbum
+        layout="rows"
+        photos={[
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
+        ]}
+        defaultContainerWidth={1200}
+        sizes={{ size: 'calc(100vw - 240px)' }}
+      />
+    </>
   );
 
   // return (

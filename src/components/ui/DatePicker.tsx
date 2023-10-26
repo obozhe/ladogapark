@@ -14,14 +14,15 @@ import { getCurrentYear, getSelectOptions } from 'core/helpers/date';
 import '../../../public/datePicker.css';
 import Select from './Select';
 
-type Props = {
-  onChange: (value: Dayjs | null) => void;
-  value?: Date;
-} & Omit<ReactDatePickerProps, 'onChange' | 'value'>;
+type Props<IsRange extends boolean | undefined> = {
+  selectsRange?: boolean;
+} & ReactDatePickerProps<never, IsRange>;
+
+type CustomHeaderProps = ReactDatePickerCustomHeaderProps;
 
 registerLocale('ru', ru);
 
-const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHeaderProps) => {
+const CustomHeader = ({ changeMonth, changeYear, date }: CustomHeaderProps) => {
   const monthsOptions = getSelectOptions({ locale: 'ru', type: 'month', date: dayjs() });
   const currentMonth = dayjs(date).get('M');
   const yearOptions = getSelectOptions({ type: 'year', yearStart: 0, yearEnd: 10, date: dayjs() });
@@ -29,7 +30,14 @@ const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHe
 
   return (
     <div className="flex items-center justify-between">
-      <IconArrowNarrowLeft className="cursor-pointer" onClick={() => changeMonth(currentMonth - 1)} />
+      <IconArrowNarrowLeft
+        className="cursor-pointer"
+        onClick={() => {
+          const newMonth = currentMonth - 1;
+
+          changeMonth(newMonth);
+        }}
+      />
       <div className="flex gap-2">
         <Select
           key={currentMonth + 1}
@@ -48,31 +56,39 @@ const CustomHeader = ({ changeMonth, changeYear, date }: ReactDatePickerCustomHe
           onChange={changeYear}
         />
       </div>
-      <IconArrowNarrowRight className="cursor-pointer" onClick={() => changeMonth(currentMonth + 1)} />
+      <IconArrowNarrowRight
+        className="cursor-pointer"
+        onClick={() => {
+          const newMonth = currentMonth + 1;
+
+          changeMonth(newMonth);
+        }}
+      />
     </div>
   );
 };
 
-const DatePicker = ({ onChange, selected, value, ...rest }: Props) => {
-  const [date, setDate] = useState<Date | null>(value ?? null);
+const DatePicker = <IsRange extends boolean | undefined>({ selectsRange, ...rest }: Props<IsRange>) => {
   const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
 
   useEffect(() => {
-    setOpen(false);
-  }, [date, setOpen]);
+    if ((rest.startDate && rest.endDate) || rest.value) {
+      setOpen(false);
+    }
+  }, [setOpen, rest.startDate, rest.endDate, rest.value]);
 
   return (
     <div className="relative h-full w-full font-semibold" ref={ref} onClick={() => setOpen(true)}>
       <DatePickerLib
         locale="ru"
         dateFormat="dd.MM.yyyy"
-        onChange={(value) => {
-          onChange(value ? dayjs(value) : value);
-          setDate(value);
-        }}
+        selectsRange={selectsRange}
+        // onChange={(value) => {
+        //   onChange(value ? dayjs(value) : value);
+        //   setDate(value);
+        // }}
         open={open}
         className="h-full min-h-[50px] w-full overflow-hidden rounded-[10px] pl-3 pr-[29px]"
-        selected={date}
         renderCustomHeader={CustomHeader}
         {...rest}
       />

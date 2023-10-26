@@ -1,6 +1,7 @@
+import { Season } from '@prisma/client';
 import prisma from 'core/prisma';
 
-export const getGalleryImages = () => {
+export const getGalleryImages = (season: Season) => {
   return prisma.galleryImage.findMany({ orderBy: { sorting: 'asc' }, where: { status: 'Active' } });
 };
 

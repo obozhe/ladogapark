@@ -1,4 +1,4 @@
-type BookingBody = {
+export type CreateBookingBody = {
   entryId: string;
   unitId: string;
   partnerId: string | null;
@@ -30,3 +30,14 @@ type BookingBody = {
     email: string;
   };
 };
+
+type StateByDay = [
+  string,
+  {
+    bookings: { isStartingDate: boolean; isEndingDate: boolean; date: string }[];
+    isUnitClosed: boolean;
+    freeHours: number[];
+  },
+];
+
+export type ObjectBusyness = [{ id: string }, StateByDay[]][];

@@ -22,7 +22,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ladogapark-crm-production.up.railway.app',
         port: '',
-        pathname: '/uploads/**',
+        pathname: '/uploads/public/**',
       },
     ],
   },

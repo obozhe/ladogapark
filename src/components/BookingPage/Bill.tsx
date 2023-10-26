@@ -1,16 +1,17 @@
 'use client';
 
-import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import CountUp from 'react-countup';
 import useSWR from 'swr';
+import useSWRInfinite from 'swr/infinite';
+import { Commodity } from '@prisma/client';
 import useLatest from 'hooks/useLatest';
 import usePrevious from 'hooks/usePrevious';
 import useRouterParams from 'hooks/useRouterParams';
+import axios from 'core/axios';
 import formatToRuble from 'core/helpers/number';
-import numberInWords from 'core/helpers/numberInWords';
-import pluralize from 'core/helpers/pluralize';
+import { ObjectBusyness } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
 import DatePicker from 'ui/DatePicker';
@@ -20,6 +21,7 @@ import { useBookingState } from './StateProvider';
 
 type InfoProps = {
   entry: EntryWithFuturePricesWithGroupWithServices;
+  commonCommodities: Commodity[];
 };
 
 type AdditionalGoodsProps = {
@@ -35,21 +37,14 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 
   const decrease = () => {
     if (!amount) return;
-    setAmount((prev) => {
-      const newValue = prev - 1;
+    setAmount((prev) => prev - 1);
 
-      return newValue;
-    });
     latestOnChange.current(-1);
   };
 
   const increase = () => {
-    setAmount((prev) => {
-      const newValue = prev + 1;
-      if (max && newValue >= max) return prev;
-
-      return newValue;
-    });
+    if (max && amount >= max) return;
+    setAmount((prev) => prev + 1);
 
     latestOnChange.current(1);
   };
@@ -71,24 +66,63 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
   );
 };
 
-const Bill = ({ entry }: InfoProps) => {
+const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState(dayjs().get('M'));
+  const isBath = entry.group.type === 'Bath';
+  const nightsAmount = dayjs(bookingState.start).diff(dayjs(bookingState.end), 'days');
 
-  const {} = useSWR(['/api/bookings/hydrated', new Date()], ([url, param]) =>
-    axios.get(url, {
-      params: { start: param, unitId: entry.id, end: new Date() },
-      headers: {
-        'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY,
-      },
-    })
+  const {
+    data: updatedObjectBusyness,
+    setSize,
+    size,
+  } = useSWRInfinite(
+    (index) => {
+      const chosenMonth = dayjs().get('M') + index;
+      const date = dayjs().set('M', chosenMonth).utcOffset(0);
+
+      const start = date.startOf('month').toISOString();
+      const end = date.endOf('month').toISOString();
+
+      return `/objects-busyness/entry/${entry.id}?start=${start}&end=${end}&entryId=${entry.id}`;
+    },
+    async (url) => {
+      const { data: objectBusyness } = await axios.get<ObjectBusyness>(url);
+
+      const updatedObjectBusyness = objectBusyness?.reduce(
+        (acc, busyness) => {
+          const [unit, stateByDay] = busyness;
+
+          stateByDay.forEach((byDay, index) => {
+            const [date, { bookings, isUnitClosed }] = byDay;
+
+            let accItem;
+            if (acc[index]) {
+              accItem = acc[index];
+            } else {
+              accItem = { date, availableUnits: [] };
+              acc.push(accItem);
+            }
+
+            if (isUnitClosed || unit.status === 'Inactive') return;
+
+            // TODO: добавить проверку что бронирование указывает на закрытие
+            if (!bookings.length) {
+              accItem.availableUnits.push(unit.id);
+            }
+          });
+
+          return acc;
+        },
+        [] as { date: string; availableUnits: string[] }[]
+      );
+
+      return updatedObjectBusyness;
+    },
+    { revalidateOnFocus: false, revalidateFirstPage: false }
   );
-  const prevBillInfoTotal = usePrevious(bookingState.total);
 
-  const parking = `${numberInWords(entry.parking)?.[0].toUpperCase()}${numberInWords(entry.parking)?.slice(
-    1
-  )} ${pluralize(['парковочное', 'парковочных', 'парковочных'], entry.parking)}
-  ${pluralize(['место', 'места', 'мест'], entry.parking)}`;
+  const prevBillInfoTotal = usePrevious(bookingState.total);
 
   const { setQueryParams } = useRouterParams();
 
@@ -171,9 +205,39 @@ const Bill = ({ entry }: InfoProps) => {
     setBookingState((prev) => ({
       ...prev,
       extraSeats: prev.extraSeats + amount,
-      total: prev.total + amount * 1000 * prev.nightsAmount,
+      total: prev.total + amount * 1000 * nightsAmount,
     }));
   };
+  const flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
+  const closedDates = flattenUpdatedObjectBusyness?.filter((date) => !date.availableUnits.length);
+
+  const startDay = Number(dayjs(bookingState.start).format('D'));
+  const startDayAvailableUnits = flattenUpdatedObjectBusyness?.[startDay - 1]?.availableUnits;
+
+  const unitsMaxAvailableDays = {} as Record<string, number>;
+  for (let i = 0; i < (startDayAvailableUnits?.length ?? 0); i++) {
+    const unit = startDayAvailableUnits?.[i];
+    unitsMaxAvailableDays[unit] = startDay;
+
+    for (let j = startDay; j < (flattenUpdatedObjectBusyness?.length ?? 0); j++) {
+      const nextDayAvailableUnits = flattenUpdatedObjectBusyness?.[j].availableUnits;
+
+      if (nextDayAvailableUnits?.includes(unit)) {
+        unitsMaxAvailableDays[unit] += 1;
+      }
+    }
+  }
+  let maxBookingDay;
+
+  if (bookingState.start) {
+    let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
+      ?.date;
+
+    maxBookingDay = Math.min(
+      closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
+      Math.max(...Object.values(unitsMaxAvailableDays))
+    );
+  }
 
   return (
     <section className="mobile-container border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
@@ -193,14 +257,28 @@ const Bill = ({ entry }: InfoProps) => {
       <div className="flex flex-col gap-5 py-5">
         <div className="flex flex-col gap-4 lg:flex-row">
           <DatePicker
+            selectsRange
             placeholderText="Дата заезда"
-            onChange={(date) => updateTotalByDate(date, bookingState.nightsAmount)}
-            value={bookingState.startDate?.toDate()}
+            startDate={bookingState.start}
+            endDate={bookingState.end}
+            onChange={([start, end]) => {
+              setBookingState((prev) => ({ ...prev, start, end }));
+              if (start && end) {
+                // updateTotalByDate(date, bookingState.nightsAmount);
+              }
+            }}
             renderDayContents={renderDayContents}
             minDate={new Date()}
+            maxDate={maxBookingDay ? dayjs(bookingState.start).set('D', maxBookingDay).toDate() : null}
+            selected={bookingState.start ?? new Date()}
+            onMonthChange={() => {
+              console.log(size);
+              setSize(size + 1);
+            }}
+            excludeDates={closedDates?.map(({ date }) => new Date(`${date} 00:00:00`))}
           />
           <NumberInput
-            placeholder="Кол-во ночей"
+            placeholder={isBath ? 'Кол-во часов' : 'Кол-во ночей'}
             value={bookingState.nightsAmount}
             onChange={(nightsAmount) => {
               updateTotalByDate(bookingState.startDate, nightsAmount);
@@ -209,10 +287,9 @@ const Bill = ({ entry }: InfoProps) => {
         </div>
         <div className="flex flex-col">
           <span className="mb-4 text-lg">Включено в стоимость:</span>
-          <span className="text-base">{parking}</span>
-          <span className="text-base">Мангал</span>
-          <span className="text-base">Электричество</span>
-          <span className="text-base">Постельное белье и полотенца (комплект)</span>
+          {entry.includedCommodities.map((includedCommodity) => (
+            <span key={includedCommodity.commodityId}>{includedCommodity.commodity.title}</span>
+          ))}
         </div>
       </div>
       <div className="py-5">
@@ -221,7 +298,7 @@ const Bill = ({ entry }: InfoProps) => {
           title={<span className="text-primary">Дополнительные товары</span>}
           description={
             <>
-              {entry.extraCommodities.map((commodity) => (
+              {[...commonCommodities, ...entry.extraCommodities].map((commodity) => (
                 <AdditionalGoods
                   price={commodity.price}
                   name={commodity.title}
@@ -231,7 +308,7 @@ const Bill = ({ entry }: InfoProps) => {
                   }
                 />
               ))}
-              {!Boolean(entry.extraSeats) && (
+              {Boolean(entry.extraSeats) && (
                 <AdditionalGoods
                   name="Дополнительное место"
                   price={entry.priceExtraSeat}

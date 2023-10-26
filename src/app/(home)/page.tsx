@@ -128,7 +128,7 @@ const Photos = async () => {
       <div className="flex gap-4 overflow-auto md:grid md:grid-cols-3 md:grid-rows-1 md:gap-12">
         {photos.map((photo, index) => (
           <Image
-            src={process.env.UPLOADS_URL + photo.image}
+            src={process.env.NEXT_PUBLIC_UPLOADS_URL + photo.image}
             alt="house"
             key={index}
             width={200}
@@ -157,7 +157,7 @@ export default async function Home({ searchParams }: Props) {
     <main>
       {/* <div className="h-5 w-5">
         <Image
-          src={process.env.UPLOADS_URL + '91f26491-85ce-4596-a875-8cb0dea4b8a9.jpg'}
+          src={process.env.NEXT_PUBLIC_UPLOADS_URL + '91f26491-85ce-4596-a875-8cb0dea4b8a9.jpg'}
           alt="test"
           className="h-full w-full"
           width={0}

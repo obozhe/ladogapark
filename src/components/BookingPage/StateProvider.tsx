@@ -1,10 +1,9 @@
-import { Dayjs } from 'dayjs';
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
 type BookingState = {
   total: number;
-  startDate: Dayjs | null;
-  nightsAmount: number;
+  start: Date | null;
+  end: Date | null;
   extraSeats: number;
   extraServicesTotal: number;
   parking: number | null;
@@ -22,7 +21,8 @@ const BookingContext = createContext<BookingContextType | null>(null);
 const BookingStateProvider = ({ children }: { children: ReactNode }) => {
   const [bookingState, setBookingState] = useState<BookingState>(() => ({
     total: 0,
-    startDate: null,
+    start: null,
+    end: null,
     nightsAmount: 0,
     extraSeats: 0,
     extraServicesTotal: 0,
