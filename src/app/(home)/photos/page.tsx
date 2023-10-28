@@ -11,10 +11,15 @@ const Photos = async () => {
       <PhotoAlbum
         layout="rows"
         photos={[
-          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
-          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 1000 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 100, height: 50 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 200, height: 100 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 500, height: 250 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 400, height: 200 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 600, height: 450 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 1000, height: 500 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 300, height: 150 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 700, height: 400 })),
+          ...images.map((i) => ({ src: process.env.NEXT_PUBLIC_UPLOADS_URL + i.image, width: 100, height: 50 })),
         ]}
         defaultContainerWidth={1200}
         sizes={{ size: 'calc(100vw - 240px)' }}

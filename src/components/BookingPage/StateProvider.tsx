@@ -37,7 +37,7 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
 export const useBookingState = () => {
   const value = useContext(BookingContext);
   if (!value) {
-    throw Error('123');
+    throw Error('Component is not in BookingStateProvider');
   }
 
   return value;

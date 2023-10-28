@@ -13,6 +13,7 @@ import { ObjectTypes } from 'server/objects/types';
 import { getServicesMain } from 'server/services';
 import Disclosure from 'ui/Disclosure';
 import Slider from 'ui/Slider';
+import Loading from './loading';
 import { ServicesItems } from './services/page';
 
 type Props = {

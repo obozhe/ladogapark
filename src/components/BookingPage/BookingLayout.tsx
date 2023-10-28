@@ -28,14 +28,13 @@ type Props = {
 };
 
 const Info = ({ entry }: InfoProps) => {
-  console.log(entry);
   return (
     <section className="flex flex-col gap-7">
       <div className="flex flex-col gap-5">
         <div className="relative h-full w-full">
           <Image
-            width={0}
-            height={0}
+            width={500}
+            height={250}
             src={process.env.NEXT_PUBLIC_UPLOADS_URL + entry.images[0]}
             alt="house image"
             className="h-full w-full"

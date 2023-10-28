@@ -1,20 +1,17 @@
 'use client';
 
-import dayjs, { Dayjs } from 'dayjs';
-import { useMemo, useState } from 'react';
+import dayjs from 'dayjs';
+import { useState } from 'react';
 import CountUp from 'react-countup';
-import useSWRInfinite from 'swr/infinite';
 import { Commodity } from '@prisma/client';
 import useLatest from 'hooks/useLatest';
 import usePrevious from 'hooks/usePrevious';
 import useRouterParams from 'hooks/useRouterParams';
-import axios from 'core/axios';
 import formatToRuble from 'core/helpers/number';
-import { ObjectBusyness } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
-import DatePicker from 'ui/DatePicker';
 import Disclosure from 'ui/Disclosure';
+import EntryTypeCalendar from './EntryTypeCalendar';
 import { useBookingState } from './StateProvider';
 
 type InfoProps = {
@@ -66,130 +63,11 @@ const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) =
 
 const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const { bookingState, setBookingState } = useBookingState();
-  const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
-  const isBath = entry.group.type === 'Bath';
   const nightsAmount = dayjs(bookingState.start).diff(dayjs(bookingState.end), 'days');
-
-  const {
-    data: updatedObjectBusyness,
-    setSize,
-    size,
-    isLoading,
-    isValidating,
-  } = useSWRInfinite(
-    (index) => {
-      const chosenMonth = dayjs().get('M') + index;
-      const date = dayjs().set('M', chosenMonth).utcOffset(0);
-
-      const start = date.startOf('month').toISOString();
-      const end = date.endOf('month').toISOString();
-
-      return `/objects-busyness/entry/${entry.id}?start=${start}&end=${end}&entryId=${entry.id}`;
-    },
-    async (url) => {
-      const { data: objectBusyness } = await axios.get<ObjectBusyness>(url);
-
-      const updatedObjectBusyness = objectBusyness?.reduce(
-        (acc, busyness) => {
-          const [unit, stateByDay] = busyness;
-
-          stateByDay.forEach((byDay, index) => {
-            const [date, { bookings, isUnitClosed }] = byDay;
-
-            let accItem;
-            if (acc[index]) {
-              accItem = acc[index];
-            } else {
-              accItem = { date, availableUnits: [] };
-              acc.push(accItem);
-            }
-
-            if (isUnitClosed || unit.status === 'Inactive') return;
-
-            if (!bookings[0]?.isStartingDate) {
-              accItem.availableUnits.push(unit.id);
-            }
-          });
-
-          return acc;
-        },
-        [] as { date: string; availableUnits: string[] }[]
-      );
-
-      return updatedObjectBusyness;
-    },
-    { revalidateOnFocus: false, revalidateFirstPage: false }
-  );
 
   const prevBillInfoTotal = usePrevious(bookingState.total);
 
   const { setQueryParams } = useRouterParams();
-
-  const renderDayContents = useMemo(
-    // eslint-disable-next-line react/display-name
-    () => (day: number, date: Date | undefined) => {
-      let price;
-
-      const dayjsDate = dayjs(date);
-      const currentDate = dayjs();
-      const isWeekend = dayjsDate.day() === 0 || dayjsDate.day() === 6;
-      const isSameOrAfter = dayjsDate.isSameOrAfter(currentDate, 'day');
-
-      if (isSameOrAfter) {
-        const futurePrice = entry.futurePrices.findLast((futurePrice) => {
-          const futurePriceDayjs = dayjs(futurePrice.start);
-          return dayjsDate.isSameOrAfter(futurePriceDayjs, 'day');
-        });
-
-        if (futurePrice) {
-          price = isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
-        } else {
-          price = isWeekend ? entry.priceWeekend : entry.priceWeekday;
-        }
-      }
-
-      return (
-        <div className="relative mb-2">
-          <span className="">{day}</span>
-          {price && <span className="absolute -bottom-[15px] left-1/2 -translate-x-1/2 text-[10px]">{price}</span>}
-        </div>
-      );
-    },
-    [entry.futurePrices, entry.priceWeekday, entry.priceWeekend]
-  );
-
-  const updateTotalByDate = (startDate: Dayjs | null, nightsAmount: number) => {
-    let totalPrice = 0;
-
-    if (startDate && nightsAmount) {
-      let currenDate = startDate;
-
-      for (let i = 1; i <= nightsAmount; i++) {
-        const weekday = currenDate.day();
-        const isWeekend = weekday === 0 || weekday === 6;
-
-        const futurePrice = entry.futurePrices.findLast((futurePrice) => {
-          const futurePriceDayjs = dayjs(futurePrice.start);
-          return currenDate.isSameOrAfter(futurePriceDayjs, 'day');
-        });
-
-        if (futurePrice) {
-          totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
-        } else {
-          totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
-        }
-
-        currenDate = startDate.add(i, 'day');
-      }
-    }
-
-    setBookingState((prev) => ({
-      ...prev,
-      total: prev.extraServicesTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
-      startDate,
-      nightsAmount,
-    }));
-  };
 
   const updateServicesAmount = ({ amount, price }: { amount: 1 | -1; title: string; price: number }) => {
     setBookingState((prev) => {
@@ -208,42 +86,6 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
     }));
   };
 
-  // Закрыть даты при открытии календаря в которых есть бронирование
-  const flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
-  const startDay = Number(dayjs(bookingState.start).format('D'));
-  const closedDates = flattenUpdatedObjectBusyness?.filter((date) => !date.availableUnits.length);
-
-  let maxBookingDay;
-
-  // При выборе даты заезда смотреть насколько далеко можно выбрать дату выезда
-  if (flattenUpdatedObjectBusyness?.length && startDay) {
-    const startDayAvailableUnits = flattenUpdatedObjectBusyness[startDay - 1].availableUnits;
-
-    const unitsMaxAvailableDays = {} as Record<string, number>;
-    for (let i = 0; i < (startDayAvailableUnits?.length ?? 0); i++) {
-      const unit = startDayAvailableUnits[i];
-      unitsMaxAvailableDays[unit] = startDay;
-
-      for (let j = startDay; j < (flattenUpdatedObjectBusyness.length ?? 0); j++) {
-        const nextDayAvailableUnits = flattenUpdatedObjectBusyness[j].availableUnits;
-
-        if (nextDayAvailableUnits.includes(unit)) {
-          unitsMaxAvailableDays[unit] += 1;
-        }
-      }
-    }
-
-    if (bookingState.start) {
-      let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
-        ?.date;
-
-      maxBookingDay = Math.min(
-        closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
-        Math.max(...Object.values(unitsMaxAvailableDays))
-      );
-    }
-  }
-
   return (
     <section className="mobile-container border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
       <div className="grid grid-cols-[max-content_max-content] grid-rows-[max-content_max-content] gap-2 pb-2">
@@ -260,33 +102,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
         ))}
       </div>
       <div className="flex flex-col gap-5 py-5">
-        <div className="flex flex-col gap-4 lg:flex-row">
-          <DatePicker
-            selectsRange
-            placeholderText="Дата заезда"
-            startDate={bookingState.start}
-            endDate={bookingState.end}
-            onChange={([start, end]) => {
-              setBookingState((prev) => ({ ...prev, start, end }));
-              if (start && end) {
-                const nightsAmount = dayjs(end).diff(dayjs(start), 'd');
-                updateTotalByDate(dayjs(start), nightsAmount);
-              }
-            }}
-            renderDayContents={renderDayContents}
-            minDate={new Date()}
-            maxDate={maxBookingDay ? chosenMonth.set('D', maxBookingDay).toDate() : null}
-            selected={bookingState.start ?? new Date()}
-            onMonthChange={(month) => {
-              const monthDifference = dayjs(month).diff(chosenMonth, 'M');
-
-              setChosenMonth(dayjs(month));
-              setSize(size + monthDifference);
-            }}
-            isLoading={isLoading || isValidating}
-            excludeDates={closedDates?.map(({ date }) => new Date(`${date} 00:00:00`))}
-          />
-        </div>
+        <EntryTypeCalendar entry={entry} />
         <div className="flex flex-col">
           <span className="mb-4 text-lg">Включено в стоимость:</span>
           {entry.includedCommodities.map((includedCommodity) => (
