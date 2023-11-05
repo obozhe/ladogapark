@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    legacyBrowsers: false,
-    serverActions: true,
-  },
   rewrites() {
     return [{ source: '/api/:path*', destination: `${process.env.NEXT_PUBLIC_CRM_URL}/api/:path*` }];
   },

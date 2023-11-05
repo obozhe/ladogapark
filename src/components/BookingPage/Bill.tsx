@@ -11,54 +11,13 @@ import formatToRuble from 'core/helpers/number';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
 import Disclosure from 'ui/Disclosure';
+import CommodityDisclosure from './CommodityDisclosure';
 import EntryTypeCalendar from './EntryTypeCalendar';
 import { useBookingState } from './StateProvider';
 
 type InfoProps = {
   entry: EntryWithFuturePricesWithGroupWithServices;
   commonCommodities: Commodity[];
-};
-
-type AdditionalGoodsProps = {
-  name: string;
-  price: number;
-  onChange: (amount: 1 | -1) => void;
-  max?: number;
-};
-
-const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) => {
-  const [amount, setAmount] = useState(0);
-  const latestOnChange = useLatest(onChange);
-
-  const decrease = () => {
-    if (!amount) return;
-    setAmount((prev) => prev - 1);
-
-    latestOnChange.current(-1);
-  };
-
-  const increase = () => {
-    if (max && amount >= max) return;
-    setAmount((prev) => prev + 1);
-
-    latestOnChange.current(1);
-  };
-
-  return (
-    <div className="grid grid-cols-[1fr_80px_100px] py-2">
-      <span className="text-tertiary">{name}</span>
-      <span className="justify-self-end text-tertiary">{formatToRuble(price)}</span>
-      <div className="justify-self-end">
-        <button className="cursor-pointer px-2 text-tertiary" onClick={decrease}>
-          -
-        </button>
-        <span className="px-2">{amount}</span>
-        <button className="cursor-pointer px-2" onClick={increase}>
-          +
-        </button>
-      </div>
-    </div>
-  );
 };
 
 const Bill = ({ entry, commonCommodities }: InfoProps) => {
@@ -86,6 +45,14 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
     }));
   };
 
+  const commoditiesDisclosure = [...commonCommodities, ...entry.extraCommodities].map((commodity) => ({
+    name: commodity.title,
+    price: commodity.price,
+    max: Number.MAX_SAFE_INTEGER,
+    onChange: (amount: 1 | -1) => updateServicesAmount({ amount, title: commodity.title, price: commodity.price }),
+    isActive: true,
+  }));
+
   return (
     <section className="mobile-container border-tertiary font-semibold [&>*:not(:last-child)]:border-b-2">
       <div className="grid grid-cols-[max-content_max-content] grid-rows-[max-content_max-content] gap-2 pb-2">
@@ -111,31 +78,17 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
         </div>
       </div>
       <div className="py-5">
-        <Disclosure
-          showIcon={false}
-          title={<span className="text-primary">Дополнительные товары</span>}
-          description={
-            <>
-              {[...commonCommodities, ...entry.extraCommodities].map((commodity) => (
-                <AdditionalGoods
-                  price={commodity.price}
-                  name={commodity.title}
-                  key={commodity.id}
-                  onChange={(amount) =>
-                    updateServicesAmount({ amount, title: commodity.title, price: commodity.price })
-                  }
-                />
-              ))}
-              {Boolean(entry.extraSeats) && (
-                <AdditionalGoods
-                  name="Дополнительное место"
-                  price={entry.priceExtraSeat}
-                  onChange={updateExtraSeats}
-                  max={entry.extraSeats}
-                />
-              )}
-            </>
-          }
+        <CommodityDisclosure
+          commodities={[
+            ...commoditiesDisclosure,
+            {
+              price: entry.priceExtraSeat,
+              name: 'Дополнительное место',
+              onChange: updateExtraSeats,
+              isActive: Boolean(entry.extraSeats),
+              max: entry.extraSeats,
+            },
+          ]}
         />
       </div>
       <div className="flex justify-between py-5 text-2xl">

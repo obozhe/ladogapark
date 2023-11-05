@@ -2,6 +2,7 @@ import { getWeather } from 'api/weather';
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';

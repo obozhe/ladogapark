@@ -1,20 +1,15 @@
 'use client';
 
-import axios from 'axios';
 import { sanitize } from 'isomorphic-dompurify';
 import Image from 'next/image';
-import { useState } from 'react';
-import useSWRMutation from 'swr/mutation';
 import { Commodity } from '@prisma/client';
 import Stepper from 'components/Stepper';
-import { CreateBookingBody } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroup, EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import { Tab } from 'core/types/Tab';
-import Button from 'ui/Button';
-import { Input } from 'ui/Input';
 import HouseTest from '../../../public/images/test-house.png';
 import Bill from './Bill';
 import BookingTabs from './BookingTabs';
+import PaymentStep from './PaymentStep';
 import BookingStateProvider from './StateProvider';
 
 type InfoProps = {
@@ -63,65 +58,39 @@ const Info = ({ entry }: InfoProps) => {
     </section>
   );
 };
-// TODO: think about move this component to pages and create a uniform interface
-const PaymentStep = () => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
 
-  const { trigger } = useSWRMutation('/api/bookings', (url, { arg }: { arg: CreateBookingBody }) => {
-    return axios.post<CreateBookingBody>(url, arg);
-  });
-
-  const onSubmit = () => {
-    // // TODO: validation
-    // const body: BookingBody = {
-    //   ...paymentInfo,
-    //   sendEmail: true,
-    //   start: paymentInfo.startDate?.format(),
-    //   end: dayjs(paymentInfo.startDate).add(paymentInfo.nightsAmount, 'day').format(),
-    //   extraSeats: paymentInfo.extraSeats,
-    //   total: paymentInfo.total,
-    //   client: {
-    //     name,
-    //     email,
-    //     phone,
-    //   },
-    // };
-    // trigger(body);
-  };
-
-  return (
-    <>
-      <Input value={name} onChange={(e) => setName(e.target.value)} />
-      <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-      <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-      <Button onClick={() => onSubmit()}>Оплатить</Button>
-    </>
-  );
-};
-
-const BookingLayout = ({ entry, tabs, isPaymentStep, commonCommodities }: Props) => {
-  const MainStep = () => (
-    <div className="mt-12 flex flex-col gap-5">
-      <BookingTabs activeTab={String(entry.id)} tabs={tabs} />
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
-        <Info entry={entry} />
-        <Bill entry={entry} commonCommodities={commonCommodities} />
-        <div className="mobile-container block flex-col gap-2 font-semibold lg:hidden ">
-          <p className="text-xl">{entry.title}</p>
-          <p>{entry.description}</p>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sanitize(entry.content),
-            }}
-          />
-        </div>
+const MainStep = ({
+  entry,
+  tabs,
+  commonCommodities,
+}: {
+  entry: EntryWithFuturePricesWithGroupWithServices;
+  tabs: Tab<string>[];
+  commonCommodities: Commodity[];
+}) => (
+  <div className="mt-12 flex flex-col gap-5">
+    <BookingTabs activeTab={String(entry.id)} tabs={tabs} />
+    <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
+      <Info entry={entry} />
+      <Bill entry={entry} commonCommodities={commonCommodities} />
+      <div className="mobile-container block flex-col gap-2 font-semibold lg:hidden ">
+        <p className="text-xl">{entry.title}</p>
+        <p>{entry.description}</p>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: sanitize(entry.content),
+          }}
+        />
       </div>
     </div>
-  );
+  </div>
+);
 
-  const content = [{ content: <MainStep key="main-step" /> }, { content: <PaymentStep key="payment-step" /> }];
+const BookingLayout = ({ entry, tabs, isPaymentStep, commonCommodities }: Props) => {
+  const content = [
+    { content: <MainStep key="main-step" entry={entry} tabs={tabs} commonCommodities={commonCommodities} /> },
+    { content: <PaymentStep key="payment-step" entry={entry} commonCommodities={commonCommodities} /> },
+  ];
 
   return (
     <BookingStateProvider>
