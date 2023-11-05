@@ -425,7 +425,7 @@ model Settings {
   singleton         Boolean   @unique @default(true)
   workHours         WorkHours
   houseBookingHours WorkHours
-  season            Season
+  season            Season?
 }
 
 model Documents {
