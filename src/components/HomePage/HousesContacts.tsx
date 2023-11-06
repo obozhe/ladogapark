@@ -1,7 +1,7 @@
 import { IconLocation, IconMail, IconPhone } from '@tabler/icons-react';
 import YandexMap from 'components/HomePage/YandexMap';
 import MediaLinks from 'components/MediaLinks';
-import YandexReviews from 'components/YandeReviews';
+import YandexReviews from 'components/YandexReviews';
 
 const HousesContacts = () => {
   return (

@@ -2,6 +2,7 @@
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
 import { ChangeEvent, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import useLatest from 'hooks/useLatest';
 
@@ -12,9 +13,10 @@ type Props = {
   min?: number;
   max?: number;
   value?: number;
+  className?: string;
 };
 
-const NumberInput = ({ placeholder, min, max, onChange, value }: Props) => {
+const NumberInput = ({ placeholder, min, max, onChange, value, className }: Props) => {
   const [inputValue, setInputValue] = useState(value ?? 0);
   const latestOnChange = useLatest(onChange);
 
@@ -40,7 +42,7 @@ const NumberInput = ({ placeholder, min, max, onChange, value }: Props) => {
   }, [inputValue, latestOnChange]);
 
   return (
-    <div className="relative h-full w-full font-semibold">
+    <div className={twMerge('relative h-full w-full font-semibold', className)}>
       <input
         className="h-full min-h-[50px] w-full rounded-[10px] pl-[10px]"
         type="number"

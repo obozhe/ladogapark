@@ -70,7 +70,12 @@ const CustomHeader = ({ changeMonth, changeYear, date }: CustomHeaderProps) => {
   );
 };
 
-const DatePicker = <IsRange extends boolean | undefined>({ isLoading, selectsRange, ...rest }: Props<IsRange>) => {
+const DatePicker = <IsRange extends boolean | undefined>({
+  isLoading,
+  selectsRange,
+  className,
+  ...rest
+}: Props<IsRange>) => {
   const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
 
   useEffect(() => {
@@ -80,7 +85,7 @@ const DatePicker = <IsRange extends boolean | undefined>({ isLoading, selectsRan
   }, [setOpen, rest.startDate, rest.endDate, rest.value]);
 
   return (
-    <div className="relative h-full w-full font-semibold" ref={ref} onClick={() => setOpen(true)}>
+    <div className={twMerge('relative h-full w-full font-semibold', className)} ref={ref} onClick={() => setOpen(true)}>
       {isLoading}
       <DatePickerLib
         locale="ru"

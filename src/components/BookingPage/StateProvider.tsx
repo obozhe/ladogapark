@@ -9,6 +9,8 @@ type BookingState = {
   parking: number | null;
   entryId: string | null;
   unitId: string | null;
+  services: Record<string, number>;
+  nightsAmount: number;
 };
 
 export type BookingContextType = {
@@ -29,6 +31,7 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
     parking: null,
     entryId: null,
     unitId: null,
+    services: {},
   }));
 
   return <BookingContext.Provider value={{ bookingState, setBookingState }}>{children}</BookingContext.Provider>;

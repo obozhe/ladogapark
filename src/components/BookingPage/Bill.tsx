@@ -22,28 +22,31 @@ type InfoProps = {
 
 const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const { bookingState, setBookingState } = useBookingState();
-  const nightsAmount = dayjs(bookingState.start).diff(dayjs(bookingState.end), 'days');
 
   const prevBillInfoTotal = usePrevious(bookingState.total);
 
   const { setQueryParams } = useRouterParams();
 
-  const updateServicesAmount = ({ amount, price }: { amount: 1 | -1; title: string; price: number }) => {
+  const updateServicesAmount = ({ amount, price, title }: { amount: 1 | -1; title: string; price: number }) => {
     setBookingState((prev) => {
       return {
         ...prev,
         total: prev.total + amount * price,
         extraServicesTotal: prev.extraServicesTotal + amount * price,
+        services: { ...prev.services, [title]: (prev.services[title] ?? 0) + amount },
       };
     });
   };
   const updateExtraSeats = (amount: 1 | -1) => {
+    console.log(bookingState);
     setBookingState((prev) => ({
       ...prev,
       extraSeats: prev.extraSeats + amount,
-      total: prev.total + amount * 1000 * nightsAmount,
+      total: prev.total + amount * 1000 * prev.nightsAmount,
     }));
   };
+
+  console.log(bookingState);
 
   const commoditiesDisclosure = [...commonCommodities, ...entry.extraCommodities].map((commodity) => ({
     name: commodity.title,

@@ -17,7 +17,7 @@ const Stepper = ({ steps, step }: Props) => {
   }, [step, setCurrentStep]);
 
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-x-hidden">
       <div className="grid h-full w-full grid-rows-[1fr_auto]">
         {steps.map(({ content }, i) => (
           <Transition

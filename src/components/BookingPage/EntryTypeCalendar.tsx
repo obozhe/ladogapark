@@ -22,6 +22,7 @@ const BathCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   return (
     <div className="flex items-center gap-5">
       <DatePicker
+        className="h-fit"
         selectsRange={false}
         selected={bookingState.start}
         minDate={new Date()}
@@ -181,6 +182,7 @@ const HouseCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   return (
     <DatePicker
       selectsRange
+      className="h-fit"
       placeholderText="Дата заезда"
       startDate={bookingState.start}
       endDate={bookingState.end}
@@ -188,6 +190,7 @@ const HouseCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
         setBookingState((prev) => ({ ...prev, start, end }));
         if (start && end) {
           const nightsAmount = dayjs(end).diff(dayjs(start), 'd');
+          console.log(nightsAmount);
           updateTotalByDate(dayjs(start), nightsAmount);
         }
       }}

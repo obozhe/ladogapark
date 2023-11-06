@@ -4,7 +4,14 @@ import formatToRuble from 'core/helpers/number';
 import Disclosure from 'ui/Disclosure';
 
 type Props = {
-  commodities: { price: number; name: string; onChange: (amount: 1 | -1) => void; max: number; isActive: boolean }[];
+  commodities: {
+    price: number;
+    name: string;
+    onChange: (amount: 1 | -1) => void;
+    max: number;
+    isActive: boolean;
+    value?: number;
+  }[];
 };
 
 type AdditionalGoodsProps = {
@@ -12,10 +19,11 @@ type AdditionalGoodsProps = {
   price: number;
   onChange: (amount: 1 | -1) => void;
   max?: number;
+  value?: number;
 };
 
-const AdditionalGoods = ({ name, price, onChange, max }: AdditionalGoodsProps) => {
-  const [amount, setAmount] = useState(0);
+const AdditionalGoods = ({ name, price, onChange, max, value = 0 }: AdditionalGoodsProps) => {
+  const [amount, setAmount] = useState(value);
   const latestOnChange = useLatest(onChange);
 
   const decrease = () => {
@@ -53,7 +61,7 @@ const CommodityDisclosure = ({ commodities }: Props) => {
   return (
     <Disclosure
       showIcon={false}
-      title={<span className="text-primary">Дополнительные товары</span>}
+      title={<span className="font-semibold text-primary">Дополнительные товары</span>}
       description={commodities.map(
         (commodity) =>
           commodity.isActive && (
@@ -63,6 +71,7 @@ const CommodityDisclosure = ({ commodities }: Props) => {
               name={commodity.name}
               onChange={commodity.onChange}
               max={commodity.max}
+              value={commodity.value}
             />
           )
       )}
