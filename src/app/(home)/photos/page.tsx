@@ -4,7 +4,7 @@ import { getSettings } from 'server/settings';
 
 const Photos = async () => {
   const settings = await getSettings();
-  const images = await getGalleryImages(settings?.season ?? 'All');
+  const images = await getGalleryImages(settings?.global.season ?? 'All');
 
   return (
     <>
