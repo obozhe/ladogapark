@@ -85,7 +85,11 @@ const DatePicker = <IsRange extends boolean | undefined>({
   }, [setOpen, rest.startDate, rest.endDate, rest.value]);
 
   return (
-    <div className={twMerge('relative h-full w-full font-semibold', className)} ref={ref} onClick={() => setOpen(true)}>
+    <div
+      className={twMerge('relative h-full w-full rounded-[10px] font-semibold', className)}
+      ref={ref}
+      onClick={() => setOpen(true)}
+    >
       {isLoading}
       <DatePickerLib
         locale="ru"
@@ -96,7 +100,7 @@ const DatePicker = <IsRange extends boolean | undefined>({
         //   setDate(value);
         // }}
         open={open}
-        className="h-full min-h-[50px] w-full overflow-hidden rounded-[10px] pl-3 pr-[29px]"
+        className="h-full min-h-[50px] w-full overflow-hidden rounded-[10px] pl-3 pr-[29px] focus:outline-none"
         popperClassName={twMerge(
           isLoading &&
             "relative before:absolute before:w-[calc(100%-10px)] before:left-1/2 before:-translate-x-1/2 before:h-[calc(100%-72px)] before:top-[60px] before:backdrop-blur-sm before:z-10 after:content-['loading'] after:absolute after:z-20 after:left-1/2 after:-translate-x-1/2 after:top-1/2 after:-translate-y-1/2"

@@ -16,6 +16,8 @@ type BookingState = {
 export type BookingContextType = {
   bookingState: BookingState;
   setBookingState: Dispatch<SetStateAction<BookingState>>;
+  updateExtraSeats: (amount: number) => void;
+  updateServicesAmount: (params: { amount: 1 | -1; price: number; title: string }) => void;
 };
 
 const BookingContext = createContext<BookingContextType | null>(null);
@@ -34,7 +36,30 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
     services: {},
   }));
 
-  return <BookingContext.Provider value={{ bookingState, setBookingState }}>{children}</BookingContext.Provider>;
+  const updateExtraSeats = (amount: number) => {
+    setBookingState((prev) => ({
+      ...prev,
+      extraSeats: prev.extraSeats + amount,
+      total: prev.total + amount * 1000 * prev.nightsAmount,
+    }));
+  };
+
+  const updateServicesAmount = ({ amount, price, title }: { amount: 1 | -1; title: string; price: number }) => {
+    setBookingState((prev) => {
+      return {
+        ...prev,
+        total: prev.total + amount * price,
+        extraServicesTotal: prev.extraServicesTotal + amount * price,
+        services: { ...prev.services, [title]: (prev.services[title] ?? 0) + amount },
+      };
+    });
+  };
+
+  return (
+    <BookingContext.Provider value={{ bookingState, setBookingState, updateExtraSeats, updateServicesAmount }}>
+      {children}
+    </BookingContext.Provider>
+  );
 };
 
 export const useBookingState = () => {

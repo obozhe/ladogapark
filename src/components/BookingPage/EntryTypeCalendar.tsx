@@ -10,19 +10,21 @@ import { useBookingState } from './StateProvider';
 
 type Props = {
   entry: EntryWithFuturePricesWithGroup;
+  className?: string;
 };
 type HouseCalendarProps = {
   renderDayContents: (day: number, date: Date | undefined) => JSX.Element;
   entry: EntryWithFuturePricesWithGroup;
+  className?: string;
 };
 
-const BathCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
+const BathCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
 
   return (
     <div className="flex items-center gap-5">
       <DatePicker
-        className="h-fit"
+        className={className}
         selectsRange={false}
         selected={bookingState.start}
         minDate={new Date()}
@@ -39,11 +41,12 @@ const BathCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   );
 };
 
-const DailyCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
+const DailyCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
 
   return (
     <DatePicker
+      className={className}
       selectsRange={false}
       selected={bookingState.start}
       minDate={new Date()}
@@ -54,7 +57,7 @@ const DailyCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   );
 };
 
-const HouseCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
+const HouseCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
   const {
@@ -182,7 +185,7 @@ const HouseCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   return (
     <DatePicker
       selectsRange
-      className="h-fit"
+      className={className}
       placeholderText="Дата заезда"
       startDate={bookingState.start}
       endDate={bookingState.end}
@@ -210,7 +213,7 @@ const HouseCalendar = ({ renderDayContents, entry }: HouseCalendarProps) => {
   );
 };
 
-const EntryTypeCalendar = ({ entry }: Props) => {
+const EntryTypeCalendar = ({ entry, className }: Props) => {
   const renderDayContents = useMemo(
     // eslint-disable-next-line react/display-name
     () => (day: number, date: Date | undefined) => {
@@ -245,11 +248,11 @@ const EntryTypeCalendar = ({ entry }: Props) => {
   );
 
   return entry.group.type === 'House' ? (
-    <HouseCalendar renderDayContents={renderDayContents} entry={entry} />
+    <HouseCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
   ) : entry.group.type === 'Daily' ? (
-    <DailyCalendar renderDayContents={renderDayContents} entry={entry} />
+    <DailyCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
   ) : (
-    <BathCalendar renderDayContents={renderDayContents} entry={entry} />
+    <BathCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
   );
 };
 

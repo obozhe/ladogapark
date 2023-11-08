@@ -1,40 +1,22 @@
-import { useEffect, useRef } from 'react';
-
-export enum CheckboxStates {
-  Checked = 'Checked',
-  Indeterminate = 'Indeterminate',
-  Empty = 'Empty',
-}
+import { IconX } from '@tabler/icons-react';
 
 type Props = {
-  isDisabled?: boolean;
-  value: CheckboxStates;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  value: boolean;
+  onChange: () => void;
+  text: string;
 };
 
-const Checkbox = ({ value, isDisabled, onChange }: Props) => {
-  const checkboxRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!checkboxRef.current) {
-      return;
-    }
-
-    if (value === CheckboxStates.Checked) {
-      checkboxRef.current.checked = true;
-      checkboxRef.current.indeterminate = false;
-    } else if (value === CheckboxStates.Empty) {
-      checkboxRef.current.checked = false;
-      checkboxRef.current.indeterminate = false;
-    } else if (value === CheckboxStates.Indeterminate) {
-      checkboxRef.current.checked = false;
-      checkboxRef.current.indeterminate = true;
-    }
-  }, [value]);
-
+const Checkbox = ({ value, onChange, text }: Props) => {
   return (
-    <label>
-      <input ref={checkboxRef} type="checkbox" onChange={onChange} disabled={isDisabled} />
+    <label className="flex cursor-pointer items-center gap-5" onClick={onChange}>
+      <div className="flex h-5 w-5 items-center justify-center rounded border-2 border-tertiary">
+        {value && (
+          <span>
+            <IconX width={16} height={16} className="stroke-tertiary" />
+          </span>
+        )}
+      </div>
+      <span className="text-sm font-semibold">{text}</span>
     </label>
   );
 };

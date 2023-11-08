@@ -25,8 +25,8 @@ export const Input = React.forwardRef(
             ref={ref}
             style={{ height: sizes[_size] }}
             className={twMerge(
-              'w-full rounded border-2 p-2',
-              'focus:border-secondary focus:outline-none',
+              'w-full rounded-[10px] border-2 p-2',
+              'focus:border-primary focus:outline-none',
               'disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500',
               endAdornment ? 'pr-12' : '',
               error ? 'border-error text-error' : '',
@@ -42,7 +42,9 @@ export const Input = React.forwardRef(
           )}
         </div>
         {!disableHelper && (
-          <div className={twMerge('h-5 text-sm', error ? 'text-error' : 'text-gray-500')}>{error || helper || ''}</div>
+          <div className={twMerge('pt-2 text-sm font-semibold', error ? 'text-error' : 'text-tertiary')}>
+            {error || helper || ''}
+          </div>
         )}
       </fieldset>
     );
