@@ -177,9 +177,9 @@ const PaymentStep = ({ entry, commonCommodities }: Props) => {
     // };
     // trigger(body);
 
-    // const shopId = process.env.YOOKASSA_SHOP_ID as string;
-    // const secretKey = process.env.YOOKASSA_API as string;
-    // const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
+    const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
+    const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
+    const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
     // // const booking = await createBooking(total, dayjs(), dayjs().add(1, 'd'), entryId);
 
     // const body = {
@@ -196,16 +196,16 @@ const PaymentStep = ({ entry, commonCommodities }: Props) => {
     //   metadata: { id: '123' },
     // };
 
-    // const res = await fetch('/v3/payments', {
-    //   method: 'POST',
+    const res = await fetch('/v3/payments', {
+      method: 'GET',
 
-    //   headers: {
-    //     Authorization: `Basic ${t}`,
-    //     'Content-Type': 'application/json',
-    //     'Idempotence-Key': String(Math.random()),
-    //   },
-    //   body: JSON.stringify(body),
-    // });
+      headers: {
+        Authorization: `Basic ${t}`,
+        'Content-Type': 'application/json',
+        'Idempotence-Key': String(Math.random()),
+      },
+      // body: JSON.stringify(body),
+    });
     // const json = (await res.json()) as {
     //   id: string;
     //   status: 'pending';
@@ -225,12 +225,9 @@ const PaymentStep = ({ entry, commonCommodities }: Props) => {
     // // await updatePaymentToken(booking.id, json.id);
     // redirect(json.confirmation.confirmation_url);
 
-    const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
-    const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
-
-    const checkout = new YooCheckout({ shopId, secretKey });
-    console.log(secretKey, shopId);
-    const paymentList = await checkout.getPaymentList();
+    // const checkout = new YooCheckout({ shopId, secretKey });
+    // console.log(secretKey, shopId);
+    // const paymentList = await checkout.getPaymentList();
   });
 
   useEffect(() => {

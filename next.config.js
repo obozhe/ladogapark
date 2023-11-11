@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   rewrites() {
-    return [{ source: '/api/:path*', destination: `${process.env.NEXT_PUBLIC_CRM_URL}/api/:path*` }];
+    return [
+      { source: '/api/:path*', destination: `${process.env.NEXT_PUBLIC_CRM_URL}/api/:path*` },
+      { source: '/v3/:path*', destination: 'https://api.yookassa.ru/v3/:path*' },
+    ];
   },
   webpack(config) {
     config.module.rules.push({
