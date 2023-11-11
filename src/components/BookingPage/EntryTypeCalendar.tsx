@@ -11,14 +11,16 @@ import { useBookingState } from './StateProvider';
 type Props = {
   entry: EntryWithFuturePricesWithGroup;
   className?: string;
+  error?: string;
 };
 type HouseCalendarProps = {
   renderDayContents: (day: number, date: Date | undefined) => JSX.Element;
   entry: EntryWithFuturePricesWithGroup;
   className?: string;
+  error?: string;
 };
 
-const BathCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
+const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
 
   return (
@@ -31,6 +33,7 @@ const BathCalendar = ({ renderDayContents, entry, className }: HouseCalendarProp
         placeholderText="Дата посещения"
         renderDayContents={renderDayContents}
         onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
+        error={error}
       />
       <Select
         options={['10:00', '11:00', '12:00'].map((value) => ({ value, label: value }))}
@@ -41,7 +44,7 @@ const BathCalendar = ({ renderDayContents, entry, className }: HouseCalendarProp
   );
 };
 
-const DailyCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
+const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
 
   return (
@@ -53,11 +56,12 @@ const DailyCalendar = ({ renderDayContents, entry, className }: HouseCalendarPro
       placeholderText="Дата заезда"
       renderDayContents={renderDayContents}
       onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
+      error={error}
     />
   );
 };
 
-const HouseCalendar = ({ renderDayContents, entry, className }: HouseCalendarProps) => {
+const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
   const {
@@ -209,11 +213,12 @@ const HouseCalendar = ({ renderDayContents, entry, className }: HouseCalendarPro
       }}
       isLoading={isLoading || isValidating}
       excludeDates={closedDates?.map(({ date }) => new Date(`${date} 00:00:00`))}
+      error={error}
     />
   );
 };
 
-const EntryTypeCalendar = ({ entry, className }: Props) => {
+const EntryTypeCalendar = ({ entry, className, error }: Props) => {
   const renderDayContents = useMemo(
     // eslint-disable-next-line react/display-name
     () => (day: number, date: Date | undefined) => {
@@ -248,11 +253,11 @@ const EntryTypeCalendar = ({ entry, className }: Props) => {
   );
 
   return entry.group.type === 'House' ? (
-    <HouseCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
+    <HouseCalendar renderDayContents={renderDayContents} entry={entry} className={className} error={error} />
   ) : entry.group.type === 'Daily' ? (
-    <DailyCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
+    <DailyCalendar renderDayContents={renderDayContents} entry={entry} className={className} error={error} />
   ) : (
-    <BathCalendar renderDayContents={renderDayContents} entry={entry} className={className} />
+    <BathCalendar renderDayContents={renderDayContents} entry={entry} className={className} error={error} />
   );
 };
 

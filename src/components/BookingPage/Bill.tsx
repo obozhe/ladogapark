@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import CountUp from 'react-countup';
 import { Commodity } from '@prisma/client';
 import usePrevious from 'hooks/usePrevious';
@@ -18,6 +19,7 @@ type InfoProps = {
 
 const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const { bookingState, updateExtraSeats, updateServicesAmount } = useBookingState();
+  const [dateError, setDateError] = useState<string>();
 
   const prevBillInfoTotal = usePrevious(bookingState.total);
 
@@ -47,7 +49,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
         ))}
       </div>
       <div className="flex flex-col gap-5 py-5">
-        <EntryTypeCalendar entry={entry} />
+        <EntryTypeCalendar entry={entry} error={dateError} />
         <div className="flex flex-col">
           <span className="mb-4 text-lg">Включено в стоимость:</span>
           {entry.includedCommodities.map((includedCommodity) => (
@@ -76,7 +78,17 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
       <Button
         color="primary"
         className="mt-5 w-full lg:ml-auto lg:w-fit"
-        onClick={() => setQueryParams({ queryName: 'isPayment', value: 'true' })}
+        onClick={() => {
+          if (!bookingState.start || !bookingState.end) {
+            setDateError('Обязательное поле');
+
+            return;
+          } else {
+            setDateError(undefined);
+          }
+
+          setQueryParams({ queryName: 'isPayment', value: 'true' });
+        }}
       >
         Забронировать
       </Button>

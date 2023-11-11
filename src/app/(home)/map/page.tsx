@@ -3,6 +3,7 @@ import MapImage from 'images/map.avif';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { objectsInfo } from 'core/mapObjects';
+import Tooltip from 'ui/Tooltip';
 
 const MapObjects = () => {
   return (
@@ -16,17 +17,18 @@ const MapObjects = () => {
               className="absolute"
               style={{ top: top - width / 4, left: left - width / 4, width: width * 1.5, height: height * 1.5 }}
             >
-              <div
+              <Tooltip
                 className={twMerge(
                   'group absolute flex h-full w-full cursor-pointer items-center justify-center rounded-full',
                   objects.entryId && 'bg-[hsla(0,0%,100%,.5)]'
                 )}
+                text={objects.title}
               >
                 <span className="absolute -top-12 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black p-2 text-white group-hover:inline-block">
                   {objects.title}
                 </span>
                 <Image src={`/icons/map/${objectType}.svg`} alt={objectType} width={width} height={height} />
-              </div>
+              </Tooltip>
             </div>
           );
         })

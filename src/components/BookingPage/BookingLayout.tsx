@@ -89,7 +89,9 @@ const MainStep = ({
 const BookingLayout = ({ entry, tabs, isPaymentStep, commonCommodities }: Props) => {
   const content = [
     { content: <MainStep key="main-step" entry={entry} tabs={tabs} commonCommodities={commonCommodities} /> },
-    { content: <PaymentStep key="payment-step" entry={entry} commonCommodities={commonCommodities} /> },
+    {
+      content: <PaymentStep key="payment-step" entry={entry} commonCommodities={commonCommodities} />,
+    },
   ];
 
   return (
