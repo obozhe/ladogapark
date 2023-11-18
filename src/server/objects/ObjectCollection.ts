@@ -1,3 +1,4 @@
+import { group } from 'console';
 import prisma from 'core/prisma';
 
 export const getEntryById = (id: string) => {
@@ -9,6 +10,10 @@ export const getEntryByIdWithFuturePrices = (id: string) => {
     where: { id },
     include: { group: true, futurePrices: true, extraCommodities: true },
   });
+};
+
+export const getUnitByIdWithEntryWithGroup = (id: string) => {
+  return prisma.unit.findUnique({ where: { id }, include: { entry: { include: { group: true } } } });
 };
 
 export const getEntryByIdWithFutureWithService = (id: string) => {

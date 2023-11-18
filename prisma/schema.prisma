@@ -307,7 +307,6 @@ model Client {
   email     String
   isVIP     Boolean   @default(false)
   bookings  Booking[]
-  payments  Payment[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -315,10 +314,13 @@ model Client {
 model BusinessClient {
   id                   String    @id @default(auto()) @map("_id") @db.ObjectId
   name                 String
+  bankName             String
+  KPP                  String
+  address              String
   ORGN                 String
   INN                  String    @unique
-  OKPO                 String
-  OKVED                String    @default("")
+  OKPO                 String?   @default("")
+  OKVED                String?   @default("")
   BIK                  String
   checkingAccount      String
   correspondentAccount String
@@ -344,6 +346,8 @@ model Booking {
   partnerFee        Int                 @default(0)
   sourcePoll        SourcePoll          @default(SocialNetwork)
   status            BookingStatus       @default(PendingPayment)
+  tempClient        String?
+  tempOrganization  String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   payments          Payment[]
@@ -353,8 +357,8 @@ model Booking {
   promoCode         PromoCode?          @relation(fields: [promoCodeId], references: [id])
   partnerId         String?             @db.ObjectId
   partner           Partner?            @relation(fields: [partnerId], references: [id])
-  clientId          String              @db.ObjectId
-  client            Client              @relation(fields: [clientId], references: [id])
+  clientId          String?             @db.ObjectId
+  client            Client?             @relation(fields: [clientId], references: [id])
   organizationId    String?             @db.ObjectId
   organization      BusinessClient?     @relation(fields: [organizationId], references: [id])
   commoditiesOrders CommoditiesOrder[]
@@ -392,8 +396,6 @@ model Payment {
   token              String?
   paidDate           DateTime?         @db.Date
   status             PaymentStatus     @default(Pending)
-  clientId           String?           @db.ObjectId
-  client             Client?           @relation(fields: [clientId], references: [id])
   bookingId          String?           @db.ObjectId
   booking            Booking?          @relation(fields: [bookingId], references: [id])
   commoditiesOrder   CommoditiesOrder? @relation(fields: [commoditiesOrderId], references: [id])

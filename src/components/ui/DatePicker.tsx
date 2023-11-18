@@ -76,6 +76,7 @@ const DatePicker = <IsRange extends boolean | undefined>({
   selectsRange,
   className,
   error,
+  placeholderText,
   ...rest
 }: Props<IsRange>) => {
   const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
@@ -92,8 +93,12 @@ const DatePicker = <IsRange extends boolean | undefined>({
       ref={ref}
       onClick={() => setOpen(true)}
     >
+      <span className="text-sm font-semibold text-tertiary">{placeholderText}</span>
       <div
-        className={twMerge('relative h-full w-full rounded-[10px]', error ? 'border-2 border-error text-error' : '')}
+        className={twMerge(
+          'relative h-full w-full rounded-[10px] border-2 border-black focus-within:border-primary',
+          error ? ' border-error text-error' : ''
+        )}
       >
         <DatePickerLib
           locale="ru"

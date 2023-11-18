@@ -27,6 +27,7 @@ type Props = {
 
 const Search = async () => {
   // const weather = await getWeather();
+  const t = await new Promise((res) => setTimeout(() => res(1), 10000));
   const news = await getNews();
 
   return (
@@ -166,7 +167,9 @@ export default async function Home({ searchParams }: Props) {
           height={0}
         />
       </div> */}
-      <Search />
+      <Suspense>
+        <Search />
+      </Suspense>
       <div className="layout-container flex flex-col gap-36 pt-[150px]">
         <Houses objectEntries={objectEntries} />
         <Services openModal={searchParams.openModal} />

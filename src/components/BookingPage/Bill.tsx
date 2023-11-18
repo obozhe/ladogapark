@@ -5,9 +5,10 @@ import CountUp from 'react-countup';
 import { Commodity } from '@prisma/client';
 import usePrevious from 'hooks/usePrevious';
 import useRouterParams from 'hooks/useRouterParams';
-import formatToRuble from 'core/helpers/number';
+import { formatToRuble } from 'core/helpers/number';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
+import NumberInput from 'ui/NumberInput';
 import CommodityDisclosure from './CommodityDisclosure';
 import EntryTypeCalendar from './EntryTypeCalendar';
 import { useBookingState } from './StateProvider';
@@ -29,7 +30,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
     name: commodity.title,
     price: commodity.price,
     max: Number.MAX_SAFE_INTEGER,
-    onChange: (amount: 1 | -1) => updateServicesAmount({ amount, title: commodity.title, price: commodity.price }),
+    onChange: (amount: 1 | -1) => updateServicesAmount({ amount, id: commodity.id, price: commodity.price }),
     isActive: true,
   }));
 
@@ -50,6 +51,15 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
       </div>
       <div className="flex flex-col gap-5 py-5">
         <EntryTypeCalendar entry={entry} error={dateError} />
+        {Boolean(entry.extraSeats) && (
+          <NumberInput
+            className="h-fit rounded-[10px] border-2 border-black"
+            placeholder={`Дополнительные места (макс. ${entry.extraSeats})`}
+            value={bookingState.extraSeats}
+            onChange={(amount) => updateExtraSeats(amount, entry.priceExtraSeat)}
+            max={entry.extraSeats}
+          />
+        )}
         <div className="flex flex-col">
           <span className="mb-4 text-lg">Включено в стоимость:</span>
           {entry.includedCommodities.map((includedCommodity) => (
@@ -58,18 +68,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
         </div>
       </div>
       <div className="py-5">
-        <CommodityDisclosure
-          commodities={[
-            ...commoditiesDisclosure,
-            {
-              price: entry.priceExtraSeat,
-              name: 'Дополнительное место',
-              onChange: updateExtraSeats,
-              isActive: Boolean(entry.extraSeats),
-              max: entry.extraSeats,
-            },
-          ]}
-        />
+        <CommodityDisclosure commodities={commoditiesDisclosure} />
       </div>
       <div className="flex justify-between py-5 text-2xl">
         <span>Итого:</span>

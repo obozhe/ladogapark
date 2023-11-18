@@ -11,9 +11,10 @@ type Props = {
 
 // eslint-disable-next-line react/display-name
 const Textarea = forwardRef<HTMLTextAreaElement | null, Props>(
-  ({ label, error, helper, endAdornment, disableHelper, className = '', ...rest }, ref) => {
+  ({ label, error, helper, endAdornment, disableHelper, placeholder, className = '', ...rest }, ref) => {
     return (
-      <fieldset>
+      <fieldset className="flex flex-col gap-[5px]">
+        <span className="text-sm font-semibold text-tertiary">{placeholder}</span>
         <textarea
           ref={ref}
           {...rest}

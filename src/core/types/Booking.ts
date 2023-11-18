@@ -1,19 +1,23 @@
+import { SourcePoll } from '@prisma/client';
+
 export type CreateBookingBody = {
-  entryId: string;
   unitId: string;
-  partnerId: string | null;
-  promoCodeId: string | null;
+  entryId: string;
+
+  promoCodeId?: string;
   start: string;
   end: string;
   extraSeats: number;
   parking: number;
-  //   sourcePoll: SourcePoll;
+  sourcePoll: SourcePoll;
   prePay: number;
   total: number;
   comment?: string;
-  sendEmail: true;
 
-  organization: {
+  commoditiesOrder: { id: string; count: number }[];
+  commoditiesOrderTotal: number;
+
+  organization?: {
     name: string;
     ORGN: string;
     INN: string;
@@ -22,7 +26,7 @@ export type CreateBookingBody = {
     BIK: string;
     checkingAccount: string;
     correspondentAccount: string;
-  } | null;
+  };
 
   client: {
     name: string;

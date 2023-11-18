@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import formatToRuble from 'core/helpers/number';
+import { formatToRuble } from 'core/helpers/number';
 import { truthy } from 'core/helpers/typeGuards';
 import { GroupWithEntriesWithFuturePrices } from 'core/types/Prisma';
 import Button from 'ui/Button';

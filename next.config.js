@@ -6,6 +6,9 @@ const nextConfig = {
       { source: '/v3/:path*', destination: 'https://api.yookassa.ru/v3/:path*' },
     ];
   },
+  experimental: {
+    ppr: true,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

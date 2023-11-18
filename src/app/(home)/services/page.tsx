@@ -2,8 +2,8 @@ import { sanitize } from 'isomorphic-dompurify';
 import { ReactNode } from 'react';
 import { Service } from '@prisma/client';
 import DynamicTablerIcon from 'components/DynamicTablerIcon';
-import ServicesDialog from 'components/Services/ServicesDialog';
-import ShowInfo from 'components/Services/ServicesShowInfo';
+import ServicesDialog from 'components/ServicesPage/ServicesDialog';
+import ShowInfo from 'components/ServicesPage/ServicesShowInfo';
 import { getServicesSorted } from 'server/services';
 
 type Props = {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useLatest from 'hooks/useLatest';
-import formatToRuble from 'core/helpers/number';
+import { formatToRuble } from 'core/helpers/number';
 import Disclosure from 'ui/Disclosure';
 
 type Props = {

@@ -1,7 +1,7 @@
 import { IconMan } from '@tabler/icons-react';
 import Link from 'next/link';
 import { Entry } from '@prisma/client';
-import formatToRuble from 'core/helpers/number';
+import { formatToRuble } from 'core/helpers/number';
 import HousesTabs from './HousesTabs';
 
 type Props = {

@@ -1,7 +1,11 @@
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
 import type { Metadata } from 'next';
 import { Inter, Raleway } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
 import '../../public/globals.css';
+
+dayjs.locale('ru');
 
 const raleway = Raleway({ subsets: ['latin'], variable: '--raleway' });
 const inter = Inter({ subsets: ['latin'], variable: '--inter' });

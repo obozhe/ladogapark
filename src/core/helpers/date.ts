@@ -1,5 +1,4 @@
 import dayjs, { Dayjs, ManipulateType } from 'dayjs';
-import 'dayjs/locale/ru';
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';

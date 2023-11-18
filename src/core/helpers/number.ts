@@ -1,4 +1,4 @@
-const formatToRuble = (price: number, options?: Intl.NumberFormatOptions) => {
+export const formatToRuble = (price: number, options?: Intl.NumberFormatOptions) => {
   const Ruble = new Intl.NumberFormat('ru', {
     style: 'currency',
     currency: 'RUB',
@@ -9,4 +9,21 @@ const formatToRuble = (price: number, options?: Intl.NumberFormatOptions) => {
   return Ruble.format(price);
 };
 
-export default formatToRuble;
+export const calculateDiscount = ({
+  price,
+  type,
+  discount,
+}: {
+  price?: number | null;
+  type: 'Percent' | 'Amount';
+  discount: number;
+}) => {
+  let result = price ?? 0;
+  if (type === 'Amount') {
+    result = result ? result - discount : result;
+  } else {
+    result -= (discount / 100) * result;
+  }
+
+  return result;
+};

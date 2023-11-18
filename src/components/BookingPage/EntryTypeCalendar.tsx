@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 import axios from 'core/axios';
 import { ObjectBusyness } from 'core/types/Booking';
@@ -142,7 +142,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 
     setBookingState((prev) => ({
       ...prev,
-      total: prev.extraServicesTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
+      total: prev.commoditiesOrderTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
       startDate,
       nightsAmount,
     }));
@@ -153,7 +153,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
   const startDay = Number(dayjs(bookingState.start).format('D'));
   const closedDates = flattenUpdatedObjectBusyness?.filter((date) => !date.availableUnits.length);
 
-  let maxBookingDay;
+  let maxBookingDay: { unitId?: string; days?: number } = {};
 
   // При выборе даты заезда смотреть насколько далеко можно выбрать дату выезда
   if (flattenUpdatedObjectBusyness?.length && startDay) {
@@ -177,14 +177,27 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
         ?.date;
 
-      maxBookingDay = Math.min(
-        closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
-        Math.max(...Object.values(unitsMaxAvailableDays))
-      );
+      const maxDays = Math.max(...Object.values(unitsMaxAvailableDays));
+      const unitWithMaxDays = Object.keys(unitsMaxAvailableDays).find((key) => unitsMaxAvailableDays[key] === maxDays)!;
+
+      maxBookingDay = {
+        days: Math.min(
+          closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
+          maxDays
+        ),
+        unitId: unitWithMaxDays,
+      };
     }
   }
   const minDate =
     bookingState.start && !bookingState.end ? dayjs(bookingState.start).add(1, 'day').toDate() : new Date();
+
+  useEffect(() => {
+    if (bookingState.start && maxBookingDay.unitId) {
+      setBookingState((prev) => ({ ...prev, unitId: maxBookingDay.unitId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookingState.start, maxBookingDay.unitId]);
 
   return (
     <DatePicker
@@ -203,7 +216,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       }}
       renderDayContents={renderDayContents}
       minDate={minDate}
-      maxDate={maxBookingDay ? chosenMonth.set('D', maxBookingDay).toDate() : null}
+      maxDate={maxBookingDay?.days ? chosenMonth.set('D', maxBookingDay.days).toDate() : null}
       selected={bookingState.start ?? new Date()}
       onMonthChange={(month) => {
         const monthDifference = dayjs(month).diff(chosenMonth, 'M');

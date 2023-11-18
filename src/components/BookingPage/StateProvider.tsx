@@ -5,19 +5,19 @@ type BookingState = {
   start: Date | null;
   end: Date | null;
   extraSeats: number;
-  extraServicesTotal: number;
+  commoditiesOrderTotal: number;
   parking: number | null;
   entryId: string | null;
-  unitId: string | null;
-  services: Record<string, number>;
+  unitId?: string;
+  commoditiesOrder: Record<string, number>;
   nightsAmount: number;
 };
 
 export type BookingContextType = {
   bookingState: BookingState;
   setBookingState: Dispatch<SetStateAction<BookingState>>;
-  updateExtraSeats: (amount: number) => void;
-  updateServicesAmount: (params: { amount: 1 | -1; price: number; title: string }) => void;
+  updateExtraSeats: (amount: number, cost: number) => void;
+  updateServicesAmount: (params: { amount: 1 | -1; price: number; id: string }) => void;
 };
 
 const BookingContext = createContext<BookingContextType | null>(null);
@@ -29,28 +29,27 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
     end: null,
     nightsAmount: 0,
     extraSeats: 0,
-    extraServicesTotal: 0,
+    commoditiesOrderTotal: 0,
     parking: null,
     entryId: null,
-    unitId: null,
-    services: {},
+    commoditiesOrder: {},
   }));
 
-  const updateExtraSeats = (amount: number) => {
+  const updateExtraSeats = (amount: number, cost: number) => {
     setBookingState((prev) => ({
       ...prev,
-      extraSeats: prev.extraSeats + amount,
-      total: prev.total + amount * 1000 * prev.nightsAmount,
+      extraSeats: amount,
+      total: prev.total + amount * 1000 * prev.nightsAmount - prev.extraSeats * 1000 * prev.nightsAmount,
     }));
   };
 
-  const updateServicesAmount = ({ amount, price, title }: { amount: 1 | -1; title: string; price: number }) => {
+  const updateServicesAmount = ({ amount, price, id }: { amount: 1 | -1; id: string; price: number }) => {
     setBookingState((prev) => {
       return {
         ...prev,
         total: prev.total + amount * price,
-        extraServicesTotal: prev.extraServicesTotal + amount * price,
-        services: { ...prev.services, [title]: (prev.services[title] ?? 0) + amount },
+        commoditiesOrderTotal: prev.commoditiesOrderTotal + amount * price,
+        commoditiesOrder: { ...prev.commoditiesOrder, [id]: (prev.commoditiesOrder[id] ?? 0) + amount },
       };
     });
   };
