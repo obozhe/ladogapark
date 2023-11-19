@@ -21,7 +21,7 @@ const Contacts = () => {
           <form action={onSubmit}>
             <Input required name="name" placeholder="Имя" _size="lg" />
             <Input required type="email" name="email" placeholder="E-mail" _size="lg" />
-            <Textarea required name="message" placeholder="Введите сообщение..." />
+            <Textarea required name="message" placeholder="Введите сообщение" />
             <Button type="submit" color="primary" fullWidth>
               Отправить
             </Button>

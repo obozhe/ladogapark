@@ -10,9 +10,10 @@ type Props = {
   description: ReactNode;
   showIcon?: boolean;
   className?: string;
+  endAdornment?: ReactNode;
 };
 
-const Disclosure = ({ title, description, showIcon = true, className }: Props) => {
+const Disclosure = ({ title, description, showIcon = true, className, endAdornment }: Props) => {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [maxHeight, setMaxHeight] = useState<string | 0>(0);
 
@@ -33,6 +34,7 @@ const Disclosure = ({ title, description, showIcon = true, className }: Props) =
                   <IconCircleArrowDown size={30} />
                 </span>
               )}
+              {!showIcon && endAdornment}
             </DisclosureUI.Button>
             <DisclosureUI.Panel
               static

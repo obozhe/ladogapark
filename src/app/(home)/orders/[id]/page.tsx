@@ -1,12 +1,20 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { redirect } from 'next/navigation';
-import { PaymentStatus, PaymentType } from '@prisma/client';
+import { twMerge } from 'tailwind-merge';
+import { Payment, PaymentStatus, PaymentType, PromoCode } from '@prisma/client';
+import PaymentButtons from 'components/OrdersPage/PaymentButtons';
+import { bookingStatusTranslate } from 'core/bookingsStatusTranslate';
+import { calculateDiscount, formatToRuble } from 'core/helpers/number';
 import pluralize from 'core/helpers/pluralize';
 import { getBookingById } from 'server/bookings';
 import { getClientById } from 'server/client';
 import { getUnitByIdWithEntryWithGroup } from 'server/objects/ObjectCollection';
+import { UnitWithGroupWithEntry } from 'server/objects/types';
 import { getPaymentByBookingId } from 'server/payments';
+import { getPromoCodeById } from 'server/promoCode';
+import Button from 'ui/Button';
+import Disclosure from 'ui/Disclosure';
 
 type Props = {
   params: {
@@ -14,21 +22,39 @@ type Props = {
   };
   searchParams: {
     token?: string;
+    paymentType: string;
   };
 };
 
-const Order = async ({ params: { id }, searchParams: { token } }: Props) => {
+const Order = async ({ params: { id }, searchParams: { token, paymentType } }: Props) => {
   const booking = await getBookingById(id);
 
   if (!booking) {
     return <main className="layout-container flex h-full items-center justify-center">Бронирование не найдено</main>;
   }
-  const payment = await getPaymentByBookingId(booking.id);
-  const unit = await getUnitByIdWithEntryWithGroup(booking.unitId);
 
-  console.log(booking);
+  let payment: Payment[] = [],
+    unit: UnitWithGroupWithEntry | null = null,
+    promoCode: PromoCode | null = null;
+  const [paymentResult, unitResult, promoCodeResult] = await Promise.allSettled([
+    getPaymentByBookingId(booking.id),
+    getUnitByIdWithEntryWithGroup(booking.unitId),
+    getPromoCodeById(booking.promoCodeId ?? ''),
+  ]);
+
+  if (paymentResult.status === 'fulfilled') {
+    payment = paymentResult.value;
+  }
+
+  if (unitResult.status === 'fulfilled') {
+    unit = unitResult.value;
+  }
+
+  if (promoCodeResult.status === 'fulfilled') {
+    promoCode = promoCodeResult.value;
+  }
+
   if (payment.length) {
-    console.log(payment[0].token);
     const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
     const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
     const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
@@ -108,31 +134,89 @@ const Order = async ({ params: { id }, searchParams: { token } }: Props) => {
     <main className="layout-container">
       <h2 className="mb-14">Бронирование #{booking.number}</h2>
       <div className="flex justify-between">
-        <div>
+        <div className="[&>*:nth-last-child(n+3)]:border-b-2">
           <div className="text flex flex-col gap-2 pb-5 text-xl font-semibold">
             <span>{unit?.entry.title}</span>
             <span>
               {`${dayjs(booking.start).format('DD MMMM YYYY')} ${unit?.entry.group.startHour}:00`} -
               {`${dayjs(booking.end).format('DD MMMM YYYY')} ${unit?.entry.group.endHour}:00`}
             </span>
-            <span>Статус: </span>
+            <span>
+              Статус: <span className="text-secondary">{bookingStatusTranslate[booking.status]}</span>
+            </span>
+          </div>
+          <div className="py-5 text-lg font-semibold">
+            {booking.commoditiesOrders.length ? (
+              <Disclosure
+                showIcon={false}
+                title={
+                  <span className="text-primary">{`${booking.commoditiesOrders.length} ${pluralize(
+                    ['дополнительный человек', 'дополнительных товара', 'дополнительных товаров'],
+                    booking.commoditiesOrders.length
+                  )}:`}</span>
+                }
+                description={booking.commoditiesOrders.map((commodity) => (
+                  <div className="flex justify-between" key={commodity.id}>
+                    <span>{commodity.id}</span>
+                    <span>{commodity.number}</span>
+                  </div>
+                ))}
+                endAdornment={<span className="text-lg text-primary">{booking.total}</span>}
+              />
+            ) : (
+              <div className="flex justify-between">
+                <span>0 дополнительных товаров</span>
+                <span>{formatToRuble(0)}</span>
+              </div>
+            )}
+          </div>
+          <div className="grid auto-rows-min grid-cols-2 gap-5 py-5 text-2xl font-semibold">
+            <span>Предоплата:</span>
+            <div className="flex gap-4 justify-self-end font-inter">
+              <span className={twMerge(promoCode && 'line-through')}>{formatToRuble(booking.prePay)}</span>
+              {promoCode && (
+                <span>
+                  {formatToRuble(
+                    calculateDiscount({ price: booking.prePay, type: promoCode.type, discount: promoCode.discount })
+                  )}
+                </span>
+              )}
+            </div>
+            <span>Всего:</span>
+            <div className="flex gap-4 justify-self-end font-inter">
+              <span className={twMerge(promoCode && 'line-through')}>{formatToRuble(booking.prePay)}</span>
+              {promoCode && (
+                <span>
+                  {formatToRuble(
+                    calculateDiscount({ price: booking.total, type: promoCode.type, discount: promoCode.discount })
+                  )}
+                </span>
+              )}
+            </div>
           </div>
           <div className="py-5">
-            {`${booking.commoditiesOrders.length} ${pluralize(
-              ['дополнительный человек', 'дополнительных товара', 'дополнительных товаров'],
-              booking.commoditiesOrders.length
-            )}`}
+            <PaymentButtons paymentType={paymentType} />
           </div>
-          <p>
-            {dayjs(booking.start).format('dd.MM.YYYY')} - {dayjs(booking.end).format('dd.MM.YYYY')}
-          </p>
-          <p> Статус - {booking.status}</p>
-          <p>Всего - {booking.total}</p>
-          <ol>
-            <li>Фамилия: {isAuthorized ? client?.name : `${client?.name[0]}***`}</li>
-            <li>Почта: {isAuthorized ? client?.email : `${client?.email[0]}***`}</li>
-            <li>Телефон: {isAuthorized ? client?.phone : `${client?.phone.slice(0, 2)}***`}</li>
-          </ol>
+          <div className="pb-2 pt-5">
+            <Button color="primary" fullWidth size="xxl">
+              ОПЛАТИТЬ
+            </Button>
+          </div>
+          <span className="text-sm font-semibold text-tertiary">
+            Вы также сможете оплатить на месте наличными или картой, когда приедете в “Ладога Парк”
+          </span>
+        </div>
+        <div className="grid auto-rows-min grid-cols-2 gap-5 text-xl text-tertiary">
+          <span>Фамилия и имя:</span>
+          <span>{isAuthorized ? client?.name : `${client?.name[0]}***`}</span>
+          <span>Телефон:</span>
+          <span>{isAuthorized ? client.phone : `${client?.phone.slice(0, 3)}***`}</span>
+          <span>E-mail:</span>
+          <span>{isAuthorized ? client.email : `${client.email.slice(0, 2)}***`}</span>
+          <span>Количество человек:</span>
+          <span>{(unit?.entry.seats ?? 0) + booking.extraSeats}</span>
+          <span>Парковочных мест:</span>
+          <span>{booking.parking}</span>
           <form action={pay}>
             <button>send</button>
           </form>

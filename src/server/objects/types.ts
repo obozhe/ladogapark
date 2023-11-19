@@ -12,6 +12,11 @@ const entryWithGroup = Prisma.validator<Prisma.EntryArgs>()({
 });
 export type EntryWithGroup = Prisma.EntryGetPayload<typeof entryWithGroup>;
 
+const unitWithEntryWithGroup = Prisma.validator<Prisma.UnitArgs>()({
+  include: { entry: { include: { group: true } } },
+});
+export type UnitWithGroupWithEntry = Prisma.UnitGetPayload<typeof unitWithEntryWithGroup>;
+
 export type CreateFuturePriceDTO = {
   entryId: string;
   priceWeekend: number;

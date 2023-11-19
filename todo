@@ -1,19 +1,4 @@
- - 'api/bookings/hydrated' - get заппрос который возвращает все бронирования
-query params: {
-    filters: {
-        start: "iso date",
-        end: "iso date",
-        entryId: "string",
-    }
-}
-
-type: {
-  select: {
-    id: true,
-    number: true,
-    start: true,
-    end: true,
-  },
-}
-
- - 'api/settings' есть query parametr seasons для галлереи
+finish orders id page
+booking calendar add min days for booking, discount if startBooking in range of entry discount
+bookings calendar close days for day entries close hours for hours entry
+finish main page calendar and weather section 

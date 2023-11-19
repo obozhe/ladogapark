@@ -121,33 +121,6 @@ const CheckForm = ({ entry, onSubmit }: Props) => {
           )}
         </div>
       </div>
-      {/* <div className="py-5">
-    <RadioButtons
-      value=""
-      items={[
-        { label: 'Оплатить всю сумму', id: '1' },
-        { label: 'Внести предоплату (50%)', id: '2' },
-      ]}
-      onChange={() => {}}
-    />
-  </div> */}
-      {/* <div className="py-5">
-    <Controller
-      name="paymentType"
-      control={control}
-      render={({ field: { value, onChange } }) => (
-        <RadioButtons
-          value={value}
-          items={[
-            { label: 'Оплатить банковской картой', id: '3' },
-            { label: 'Оплатить кошельком YooMoney', id: '4' },
-            { label: 'Оплата для юридических лиц', id: '5' },
-          ]}
-          onChange={onChange}
-        />
-      )}
-    />
-  </div> */}
       <div className="flex flex-col gap-4 py-5  font-semibold">
         <span className="text-lg">Откуда вы о нас узнали?</span>
         <div className="flex gap-4">
