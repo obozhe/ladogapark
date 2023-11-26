@@ -4,8 +4,8 @@ import useRouterParams from 'hooks/useRouterParams';
 import RadioButtons from 'ui/RadioButtons';
 
 const paymentTypes = [
-  { label: 'Оплатить картой', id: 'card' },
-  { label: 'Оплатить кошельком YooMoney', id: 'yoomoney' },
+  { label: 'Оплатить полностью', id: 'full' },
+  { label: 'Оплатить 50 %', id: 'half' },
 ];
 
 type Props = {

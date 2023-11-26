@@ -7,6 +7,7 @@ import PaymentButtons from 'components/OrdersPage/PaymentButtons';
 import { bookingStatusTranslate } from 'core/bookingsStatusTranslate';
 import { calculateDiscount, formatToRuble } from 'core/helpers/number';
 import pluralize from 'core/helpers/pluralize';
+import { YookassaPayment } from 'core/types/YookassaPayment';
 import { getBookingById } from 'server/bookings';
 import { getClientById } from 'server/client';
 import { getUnitByIdWithEntryWithGroup } from 'server/objects/ObjectCollection';
@@ -22,7 +23,7 @@ type Props = {
   };
   searchParams: {
     token?: string;
-    paymentType: string;
+    paymentType: 'full' | 'half';
   };
 };
 
@@ -35,7 +36,8 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
 
   let payment: Payment[] = [],
     unit: UnitWithGroupWithEntry | null = null,
-    promoCode: PromoCode | null = null;
+    promoCode: PromoCode | null = null,
+    yookassaPayment: YookassaPayment | null = null;
   const [paymentResult, unitResult, promoCodeResult] = await Promise.allSettled([
     getPaymentByBookingId(booking.id),
     getUnitByIdWithEntryWithGroup(booking.unitId),
@@ -59,22 +61,45 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
     const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
     const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
 
-    const yokassaRes = await axios.get(`https://api.yookassa.ru/v3/payments/${payment[0].token}`, {
-      headers: {
-        Authorization: `Basic ${t}`,
-        'Content-Type': 'application/json',
-        'Idempotence-Key': String(booking.number),
-      },
-    });
+    try {
+      const yookassaRes = await axios.get<YookassaPayment>(`https://api.yookassa.ru/v3/payments/${payment[0].token}`, {
+        headers: {
+          Authorization: `Basic ${t}`,
+          'Content-Type': 'application/json',
+          'Idempotence-Key': String(booking.number),
+        },
+      });
+      console.log(yookassaRes.data);
+      if (yookassaRes.data.status === 'pending') {
+        yookassaPayment = yookassaRes.data;
+      }
 
-    console.log(yokassaRes.data);
+      if (yookassaRes.data.status === 'succeeded') {
+        payment = await axios.patch(
+          `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments/${payment[0].id}`,
+          { status: PaymentStatus.Paid },
+          {
+            headers: {
+              'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY as string,
+            },
+          }
+        );
+      }
+    } catch (e) {}
+
     //TODO: if status = success update payment
   }
 
   const client = booking.clientId ? await getClientById(booking?.clientId) : JSON.parse(booking.tempClient!);
   const isAuthorized = token === booking.token;
 
-  const paymentAmount = booking.commoditiesOrders.reduce((acc, commodity) => acc + commodity.total, booking.total);
+  let paymentAmount = booking.commoditiesOrders.reduce((acc, commodity) => acc + commodity.total, booking.total);
+  if (promoCode) {
+    paymentAmount = calculateDiscount({ price: paymentAmount, type: promoCode.type, discount: promoCode.discount });
+  }
+  if (paymentType === 'half') {
+    paymentAmount /= 2;
+  }
 
   const pay = async () => {
     'use server';
@@ -85,7 +110,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
 
     const body = {
       amount: {
-        value: `${booking.total}.00`,
+        value: `${paymentAmount}.00`,
         currency: 'RUB',
       },
       capture: true,
@@ -95,39 +120,37 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
       },
     };
 
-    const yookassaRes = await fetch('https://api.yookassa.ru/v3/payments', {
-      method: 'POST',
-
-      headers: {
-        Authorization: `Basic ${t}`,
-        'Content-Type': 'application/json',
-        'Idempotence-Key': String(booking.number),
-      },
-      body: JSON.stringify(body),
-    });
-    const yookassa = await yookassaRes.json();
-
-    const paymentsRes = await axios
-      .post(
-        `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments`,
-        {
-          amount: paymentAmount,
-          bookingId: booking.id,
-          status: PaymentStatus.Pending,
-          token: yookassa.id,
-          paidDate: dayjs().toISOString(),
-          type: PaymentType.Electronic,
+    if (!yookassaPayment) {
+      const yookassaRes = await axios.post('https://api.yookassa.ru/v3/payments', body, {
+        headers: {
+          Authorization: `Basic ${t}`,
+          'Content-Type': 'application/json',
+          'Idempotence-Key': String(booking.number),
         },
-        {
-          headers: {
-            'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY as string,
-          },
-        }
-      )
-      .catch((e) => console.log(e));
-    console.log(paymentsRes);
+      });
+      yookassaPayment = await yookassaRes.data();
+    }
 
-    // redirect(yookassa.confirmation.confirmation_url);
+    // await axios
+    //   .post(
+    //     `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments`,
+    //     {
+    //       amount: paymentAmount,
+    //       bookingId: booking.id,
+    //       status: PaymentStatus.Pending,
+    //       token: yookassaPayment?.id,
+    //       paidDate: dayjs().toISOString(),
+    //       type: PaymentType.Electronic,
+    //     },
+    //     {
+    //       headers: {
+    //         'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY as string,
+    //       },
+    //     }
+    //   )
+    //   .catch((e) => console.log(e));
+
+    // redirect(yookassaPayment.confirmation.confirmation_url);
   };
 
   return (
@@ -198,9 +221,11 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
             <PaymentButtons paymentType={paymentType} />
           </div>
           <div className="pb-2 pt-5">
-            <Button color="primary" fullWidth size="xxl">
-              ОПЛАТИТЬ
-            </Button>
+            <form action={pay}>
+              <Button color="primary" fullWidth size="xxl" type="submit">
+                ОПЛАТИТЬ
+              </Button>
+            </form>
           </div>
           <span className="text-sm font-semibold text-tertiary">
             Вы также сможете оплатить на месте наличными или картой, когда приедете в “Ладога Парк”
@@ -217,9 +242,6 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
           <span>{(unit?.entry.seats ?? 0) + booking.extraSeats}</span>
           <span>Парковочных мест:</span>
           <span>{booking.parking}</span>
-          <form action={pay}>
-            <button>send</button>
-          </form>
         </div>
       </div>
     </main>

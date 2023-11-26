@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import axios from 'core/axios';
 import { ObjectBusyness } from 'core/types/Booking';
@@ -64,6 +65,20 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
+  const { data: bookingLimitation } = useSWR(
+    '/objects/booking-limitations',
+    (url) => axios.get(url, { params: { id: entry.id } }),
+    {
+      revalidateOnFocus: false,
+    }
+  );
+  const { data: discountByDays } = useSWR(
+    '/objects/discounts-by-days',
+    (url) => axios.get(url, { params: { id: entry.id } }),
+    {
+      revalidateOnFocus: false,
+    }
+  );
   const {
     data: updatedObjectBusyness,
     setSize,
