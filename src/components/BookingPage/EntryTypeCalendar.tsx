@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import axios from 'core/axios';
+import { calculateDiscount } from 'core/helpers/number';
 import { ObjectBusyness } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
 import DatePicker from 'ui/DatePicker';
@@ -65,20 +66,29 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
-  const { data: bookingLimitation } = useSWR(
+  const { data: bookingLimitations } = useSWR(
     '/objects/booking-limitations',
-    (url) => axios.get(url, { params: { id: entry.id } }),
+    async (url) => {
+      const res = await axios.get<{ start: string; end: string; minDays: number }[]>(url, { params: { id: entry.id } });
+      return res.data;
+    },
     {
       revalidateOnFocus: false,
     }
   );
   const { data: discountByDays } = useSWR(
     '/objects/discounts-by-days',
-    (url) => axios.get(url, { params: { id: entry.id } }),
+    async (url) => {
+      const res = await axios.get<{ start: string; end: string; daysCount: number; discount: number }[]>(url, {
+        params: { id: entry.id },
+      });
+      return res.data;
+    },
     {
       revalidateOnFocus: false,
     }
   );
+
   const {
     data: updatedObjectBusyness,
     setSize,
@@ -132,6 +142,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 
   const updateTotalByDate = (startDate: Dayjs | null, nightsAmount: number) => {
     let totalPrice = 0;
+    let daysDiscount: number | null = null;
 
     if (startDate && nightsAmount) {
       let currenDate = startDate;
@@ -155,23 +166,64 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       }
     }
 
+    if (discountByDays && startDate) {
+      const bookingEndDate = startDate.add(nightsAmount, 'D');
+      const discountByDay = discountByDays.find(
+        (discount) =>
+          startDate.isSameOrAfter(dayjs(discount.start)) && bookingEndDate.isSameOrBefore(dayjs(discount.end))
+      );
+
+      if (discountByDay && nightsAmount >= discountByDay?.daysCount) {
+        totalPrice = calculateDiscount({ price: totalPrice, type: 'Percent', discount: discountByDay.discount });
+        daysDiscount = discountByDay.discount;
+        console.log(totalPrice);
+      }
+    }
+
+    console.log(totalPrice);
+
     setBookingState((prev) => ({
       ...prev,
       total: prev.commoditiesOrderTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
+      discountByDays: daysDiscount,
       startDate,
       nightsAmount,
     }));
   };
 
   // Закрыть даты при открытии календаря в которых есть бронирование
-  const flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
-  const startDay = Number(dayjs(bookingState.start).format('D'));
-  const closedDates = flattenUpdatedObjectBusyness?.filter((date) => !date.availableUnits.length);
+  let flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
+  let startDay = Number(dayjs(bookingState.start).format('D'));
+  const monthDifference = dayjs(bookingState.start).diff(dayjs().startOf('M'), 'M');
 
+  // Если выбрали дату не из текущего месяца - берем только нужные данные
+  let monthDaysSum = 0;
+  for (let i = 0; i < monthDifference; i++) {
+    const daysInMonth = dayjs().month(i).daysInMonth();
+    monthDaysSum += daysInMonth;
+  }
+  if (monthDaysSum) {
+    flattenUpdatedObjectBusyness = flattenUpdatedObjectBusyness?.slice(
+      monthDaysSum,
+      flattenUpdatedObjectBusyness.length
+    );
+  }
+
+  const closedDates = flattenUpdatedObjectBusyness?.reduce((acc, date) => {
+    if (!date.availableUnits.length) {
+      const excludedDate = dayjs(date.date);
+      acc.push(excludedDate.startOf('d').toDate());
+
+      if (excludedDate.get('D') !== 1) {
+        acc.push(excludedDate.add(-1, 'D').startOf('D').toDate());
+      }
+    }
+
+    return acc;
+  }, [] as Date[]);
   let maxBookingDay: { unitId?: string; days?: number } = {};
 
-  // При выборе даты заезда смотреть насколько далеко можно выбрать дату выезда
-  if (flattenUpdatedObjectBusyness?.length && startDay) {
+  const findMaxAvailableDays = (flattenUpdatedObjectBusyness: any[], startDay: number) => {
     const startDayAvailableUnits = flattenUpdatedObjectBusyness[startDay - 1].availableUnits;
 
     const unitsMaxAvailableDays = {} as Record<string, number>;
@@ -184,26 +236,75 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 
         if (nextDayAvailableUnits.includes(unit)) {
           unitsMaxAvailableDays[unit] += 1;
+        } else {
+          break;
         }
       }
     }
 
-    if (bookingState.start) {
-      let closestClosedDate = closedDates?.find(({ date }) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)))
-        ?.date;
+    return unitsMaxAvailableDays;
+  };
 
-      const maxDays = Math.max(...Object.values(unitsMaxAvailableDays));
-      const unitWithMaxDays = Object.keys(unitsMaxAvailableDays).find((key) => unitsMaxAvailableDays[key] === maxDays)!;
+  // При выборе даты заезда смотреть насколько далеко можно выбрать дату выезда
+  if (flattenUpdatedObjectBusyness?.length && startDay) {
+    let closestClosedDate = closedDates?.find((date) => dayjs(bookingState.start).isSameOrBefore(dayjs(date)));
+    const unitsMaxAvailableDays = findMaxAvailableDays(flattenUpdatedObjectBusyness, startDay);
 
-      maxBookingDay = {
-        days: Math.min(
-          closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
-          maxDays
-        ),
-        unitId: unitWithMaxDays,
-      };
+    const maxDays = Math.max(...Object.values(unitsMaxAvailableDays));
+    const unitWithMaxDays = Object.keys(unitsMaxAvailableDays).find((key) => unitsMaxAvailableDays[key] === maxDays)!;
+
+    maxBookingDay = {
+      days: Math.min(
+        closestClosedDate ? Number(dayjs(closestClosedDate).format('D')) : Number.MAX_SAFE_INTEGER,
+        maxDays
+      ),
+      unitId: unitWithMaxDays,
+    };
+  }
+
+  // Убираем даты, у которых возможность бронирования < чем минимальное ограничение бронирования
+  if (bookingLimitations && flattenUpdatedObjectBusyness) {
+    for (let i = 0; i < bookingLimitations.length; i++) {
+      const limitation = bookingLimitations[i];
+
+      const startDayLimitation = dayjs(limitation.start).startOf('d');
+      const endDayLimitation = dayjs(limitation.end).startOf('d');
+      const difference = endDayLimitation.diff(startDayLimitation, 'd');
+
+      // Проверяем что хотя бы одна из дат совпадает с выбранным месяцем в календаре
+      if (
+        startDayLimitation.startOf('M').diff(chosenMonth.startOf('M'), 'M') === 0 ||
+        endDayLimitation.startOf('M').diff(chosenMonth.startOf('M'), 'M') === 0
+      ) {
+        for (let j = 0; j <= difference; j++) {
+          const startDay = Number(startDayLimitation.add(j, 'd').format('D'));
+          const unitsMaxAvailableDays = findMaxAvailableDays(flattenUpdatedObjectBusyness, startDay);
+
+          const maxAvailableDays = Math.max(...Object.values(unitsMaxAvailableDays));
+
+          if (!maxAvailableDays || maxAvailableDays < startDay + limitation.minDays) {
+            closedDates?.push(dayjs().set('D', startDay).toDate());
+          }
+        }
+      }
     }
   }
+
+  // Если дата заезда находится в ограничении на бронировании, убрать дата заезда + ограниченные дни
+  if (bookingState.start && bookingLimitations) {
+    const bookingLimitation = bookingLimitations.find((limitation) => {
+      const startDate = dayjs(bookingState.start);
+      return startDate.isSameOrAfter(limitation.start) && startDate.isSameOrBefore(limitation.end);
+    });
+
+    if (bookingLimitation) {
+      for (let i = 1; i <= bookingLimitation.minDays; i++) {
+        const newExcludedDate = dayjs(bookingState.start).add(i, 'd').startOf('d').toDate();
+        closedDates?.push(newExcludedDate);
+      }
+    }
+  }
+
   const minDate =
     bookingState.start && !bookingState.end ? dayjs(bookingState.start).add(1, 'day').toDate() : new Date();
 
@@ -225,7 +326,6 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
         setBookingState((prev) => ({ ...prev, start, end }));
         if (start && end) {
           const nightsAmount = dayjs(end).diff(dayjs(start), 'd');
-          console.log(nightsAmount);
           updateTotalByDate(dayjs(start), nightsAmount);
         }
       }}
@@ -240,7 +340,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
         setSize(size + monthDifference);
       }}
       isLoading={isLoading || isValidating}
-      excludeDates={closedDates?.map(({ date }) => new Date(`${date} 00:00:00`))}
+      excludeDates={closedDates}
       error={error}
     />
   );

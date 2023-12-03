@@ -1,4 +1,6 @@
-finish orders id page
+finish orders id page:
+ 1. Создаем один payment на бронь, один payment на доп товары если она есть. Предоплата на доп товары всегда 100%. 
 booking calendar add min days for booking, discount if startBooking in range of entry discount
 bookings calendar close days for day entries close hours for hours entry
-finish main page calendar and weather section 
+finish main page calendar and weather section
+add loading on booking buttons

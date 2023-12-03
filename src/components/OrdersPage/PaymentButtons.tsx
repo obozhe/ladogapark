@@ -3,17 +3,18 @@
 import useRouterParams from 'hooks/useRouterParams';
 import RadioButtons from 'ui/RadioButtons';
 
-const paymentTypes = [
-  { label: 'Оплатить полностью', id: 'full' },
-  { label: 'Оплатить 50 %', id: 'half' },
-];
-
 type Props = {
   paymentType: string;
+  discount?: number;
 };
 
-const PaymentButtons = ({ paymentType }: Props) => {
+const PaymentButtons = ({ paymentType, discount }: Props) => {
   const { setQueryParams } = useRouterParams();
+
+  const paymentTypes = [
+    { label: 'Оплатить полностью', id: 'full' },
+    { label: `Оплатить ${discount} %`, id: 'half' },
+  ];
 
   return (
     <RadioButtons

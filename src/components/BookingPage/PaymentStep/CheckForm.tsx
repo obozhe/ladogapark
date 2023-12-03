@@ -9,6 +9,7 @@ import { sourcePollItems } from 'core/sourcePollItems';
 import { CreateBookingBody } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import Button from 'ui/Button';
+import SubmitButton from 'ui/SubmitButton';
 import { useBookingState } from '../StateProvider';
 import { TPaymentSchema } from './PaymentStep';
 
@@ -53,7 +54,7 @@ const CheckForm = ({ entry, onSubmit }: Props) => {
     });
   }
 
-  const handleClick = handleSubmit(async (data) => {
+  const submit = handleSubmit(async (data) => {
     const bookingBody: CreateBookingBody = {
       start: bookingState.start!.toISOString(),
       end: bookingState.end!.toISOString(),
@@ -82,7 +83,8 @@ const CheckForm = ({ entry, onSubmit }: Props) => {
       },
     };
 
-    onSubmit(bookingBody).then((booking) => router.push(`/orders/${booking?.number}?token=${booking?.token}`));
+    const booking = await onSubmit(bookingBody);
+    router.push(`/orders/${booking?.number}?token=${booking?.token}`);
   });
 
   return (
@@ -139,9 +141,10 @@ const CheckForm = ({ entry, onSubmit }: Props) => {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Button size="xxl" fullWidth color="primary" onClick={handleClick}>
-          Оплатить
-        </Button>
+        {/* @ts-ignore */}
+        <form action={submit}>
+          <SubmitButton>Оплатить</SubmitButton>
+        </form>
         <p className="text-sm font-semibold text-tertiary">
           Бронируя данный объект, вы подтверждаете своё согласие с договором оферты.
         </p>
