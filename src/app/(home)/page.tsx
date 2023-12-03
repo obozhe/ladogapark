@@ -27,7 +27,6 @@ type Props = {
 
 const Search = async () => {
   // const weather = await getWeather();
-  const t = await new Promise((res) => setTimeout(() => res(1), 10000));
   const news = await getNews();
 
   return (
