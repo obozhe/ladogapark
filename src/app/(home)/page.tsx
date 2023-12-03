@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import HousesFilter from '../../components/HomePage/HousesFilter';
 import Houses from 'components/HomePage/Houses';
 import HousesContacts from 'components/HomePage/HousesContacts';
+import ServicesItems from 'components/ServicesPage/ServicesItems';
 import { getMainPageImages } from 'server/gallery';
 import { getNews } from 'server/news';
 import { getObjectEntries } from 'server/objects/ObjectCollection';
@@ -15,7 +16,6 @@ import { getServicesMain } from 'server/services';
 import Disclosure from 'ui/Disclosure';
 import Slider from 'ui/Slider';
 import Loading from './loading';
-import { ServicesItems } from './services/page';
 
 type Props = {
   searchParams: {
