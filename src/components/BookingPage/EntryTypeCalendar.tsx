@@ -1,14 +1,18 @@
 import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/ru';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import axios from 'core/axios';
 import { calculateDiscount } from 'core/helpers/number';
+import pluralize from 'core/helpers/pluralize';
 import { ObjectBusyness } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
 import DatePicker from 'ui/DatePicker';
 import Select from 'ui/Select';
 import { useBookingState } from './StateProvider';
+
+dayjs.locale('ru');
 
 type Props = {
   entry: EntryWithFuturePricesWithGroup;
@@ -25,8 +29,17 @@ type HouseCalendarProps = {
 const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
 
+  let selectOptions = [];
+  for (let i = entry.group.startHour; i <= entry.group.endHour; i++) {
+    if (i / 10 < 1) {
+      selectOptions.push({ label: `0${i}:00`, value: i });
+    } else {
+      selectOptions.push({ label: `${i}:00`, value: i });
+    }
+  }
+
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex flex-col gap-5">
       <DatePicker
         className={className}
         selectsRange={false}
@@ -37,16 +50,61 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
         onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
         error={error}
       />
-      <Select
-        options={['10:00', '11:00', '12:00'].map((value) => ({ value, label: value }))}
-        value={'10:00'}
-        onChange={() => {}}
-      />
+      <Select value={10} fullWidth options={selectOptions} onChange={() => {}} />
     </div>
   );
 };
 
 const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
+  const [chosenMonth, setChosenMonth] = useState(dayjs());
+
+  const { data: updatedObjectBusyness, isLoading } = useSWR(
+    [chosenMonth, `/objects-busyness/entry/${entry.id}`],
+    async ([chosenMonth, url]) => {
+      const date = dayjs().set('M', chosenMonth.get('month')).utcOffset(0);
+
+      const { data: objectBusyness } = await axios.get<ObjectBusyness>(url, {
+        params: {
+          start: date.startOf('month').toISOString(),
+          end: date.endOf('month').toISOString(),
+          entryId: entry.id,
+        },
+      });
+
+      const updatedObjectBusyness = objectBusyness?.reduce(
+        (acc, busyness) => {
+          const [unit, stateByDay] = busyness;
+
+          stateByDay.forEach((byDay, index) => {
+            const [date, { bookings, isUnitClosed }] = byDay;
+
+            let accItem;
+            if (acc[index]) {
+              accItem = acc[index];
+            } else {
+              accItem = { date, availableUnits: [] };
+              acc.push(accItem);
+            }
+
+            if (isUnitClosed || unit.status === 'Inactive') return;
+
+            if (!bookings[0]?.isStartingDate) {
+              accItem.availableUnits.push(unit.id);
+            }
+          });
+
+          return acc;
+        },
+        [] as { date: string; availableUnits: string[] }[]
+      );
+
+      return updatedObjectBusyness;
+    },
+    { revalidateOnFocus: false, revalidateFirstPage: false }
+  );
+
+  const closedDates = updatedObjectBusyness?.filter((objectBusyness) => !objectBusyness.availableUnits.length);
+
   const { bookingState, setBookingState } = useBookingState();
 
   return (
@@ -56,6 +114,12 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       selected={bookingState.start}
       minDate={new Date()}
       placeholderText="Дата заезда"
+      excludeDates={closedDates?.map(({ date }) => dayjs(date).toDate())}
+      onMonthChange={(month) => {
+        const currentMonth = dayjs(month).startOf('month');
+        setChosenMonth(currentMonth);
+      }}
+      isLoading={isLoading}
       renderDayContents={renderDayContents}
       onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
       error={error}
@@ -64,6 +128,8 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 };
 
 const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
+  let popperHelperText: string[] = [];
+
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState<Dayjs>(dayjs());
   const { data: bookingLimitations } = useSWR(
@@ -142,7 +208,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 
   const updateTotalByDate = (startDate: Dayjs | null, nightsAmount: number) => {
     let totalPrice = 0;
-    let daysDiscount: number | null = null;
+    let discountByDaysFrom: number | null = null;
 
     if (startDate && nightsAmount) {
       let currenDate = startDate;
@@ -166,7 +232,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       }
     }
 
-    if (discountByDays && startDate) {
+    if (discountByDays?.length && startDate) {
       const bookingEndDate = startDate.add(nightsAmount, 'D');
       const discountByDay = discountByDays.find(
         (discount) =>
@@ -174,22 +240,43 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       );
 
       if (discountByDay && nightsAmount >= discountByDay?.daysCount) {
+        discountByDaysFrom = totalPrice;
+        console.log(
+          totalPrice,
+          calculateDiscount({ price: totalPrice, type: 'Percent', discount: discountByDay.discount })
+        );
         totalPrice = calculateDiscount({ price: totalPrice, type: 'Percent', discount: discountByDay.discount });
-        daysDiscount = discountByDay.discount;
-        console.log(totalPrice);
       }
     }
-
-    console.log(totalPrice);
 
     setBookingState((prev) => ({
       ...prev,
       total: prev.commoditiesOrderTotal + totalPrice + prev.extraSeats * 1000 * nightsAmount,
-      discountByDays: daysDiscount,
+      discountByDaysFrom,
       startDate,
       nightsAmount,
     }));
   };
+
+  if (discountByDays?.length && bookingState.start) {
+    const discountByStartDay = discountByDays.find((discount) => {
+      return (
+        dayjs(bookingState.start).startOf('D').isSameOrAfter(dayjs(discount.start).startOf('D')) &&
+        dayjs(bookingState.start).startOf('D').isSameOrBefore(dayjs(discount.end).startOf('D'))
+      );
+    });
+
+    if (discountByStartDay) {
+      popperHelperText.push(
+        `При заезде ${dayjs(bookingState.start).format('DD MMM')} скидка ${
+          discountByStartDay.discount
+        }% при бронировании от ${discountByStartDay.daysCount} ${pluralize(
+          ['ночь', 'ночей', 'ночей'],
+          discountByStartDay.daysCount
+        )}`
+      );
+    }
+  }
 
   // Закрыть даты при открытии календаря в которых есть бронирование
   let flattenUpdatedObjectBusyness = updatedObjectBusyness?.flat();
@@ -298,7 +385,12 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
     });
 
     if (bookingLimitation) {
-      for (let i = 1; i <= bookingLimitation.minDays; i++) {
+      popperHelperText.push(
+        `При заезде ${dayjs(bookingState.start).format('DD MMM')} минимальный срок — ${
+          bookingLimitation.minDays
+        } ${pluralize(['ночь', 'ночи', 'ночей'], bookingLimitation.minDays)}`
+      );
+      for (let i = 1; i < bookingLimitation.minDays; i++) {
         const newExcludedDate = dayjs(bookingState.start).add(i, 'd').startOf('d').toDate();
         closedDates?.push(newExcludedDate);
       }
@@ -330,6 +422,7 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
         }
       }}
       renderDayContents={renderDayContents}
+      popperHelperText={popperHelperText}
       minDate={minDate}
       maxDate={maxBookingDay?.days ? chosenMonth.set('D', maxBookingDay.days).toDate() : null}
       selected={bookingState.start ?? new Date()}

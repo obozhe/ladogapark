@@ -26,7 +26,7 @@ const HousesFilter = () => {
   return (
     <div className="grid grid-cols-[minmax(250px,1fr)] grid-rows-2 gap-3 md:grid-cols-[2fr,1fr] md:grid-rows-1">
       <DatePicker
-        placeholderText="Дата заезда"
+        placeholder="Дата заезда"
         onChange={(value) => setDate(value ? dayjs(value) : null)}
         minDate={new Date()}
         selectsRange={false}

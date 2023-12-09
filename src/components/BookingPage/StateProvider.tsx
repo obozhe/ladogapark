@@ -11,7 +11,7 @@ type BookingState = {
   unitId?: string;
   commoditiesOrder: Record<string, number>;
   nightsAmount: number;
-  discountByDays: null | number;
+  discountByDaysFrom: null | number;
 };
 
 export type BookingContextType = {
@@ -34,7 +34,7 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
     parking: null,
     entryId: null,
     commoditiesOrder: {},
-    discountByDays: null,
+    discountByDaysFrom: null,
   }));
 
   const updateExtraSeats = (amount: number, cost: number) => {
@@ -50,6 +50,7 @@ const BookingStateProvider = ({ children }: { children: ReactNode }) => {
       return {
         ...prev,
         total: prev.total + amount * price,
+        discountByDaysFrom: prev.discountByDaysFrom && prev.discountByDaysFrom + amount * price,
         commoditiesOrderTotal: prev.commoditiesOrderTotal + amount * price,
         commoditiesOrder: { ...prev.commoditiesOrder, [id]: (prev.commoditiesOrder[id] ?? 0) + amount },
       };

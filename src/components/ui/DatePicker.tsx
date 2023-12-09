@@ -4,6 +4,7 @@ import ru from 'date-fns/locale/ru';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import DatePickerLib, {
+  CalendarContainer,
   ReactDatePickerCustomHeaderProps,
   ReactDatePickerProps,
   registerLocale,
@@ -19,6 +20,8 @@ type Props<IsRange extends boolean | undefined> = {
   selectsRange?: boolean;
   isLoading?: boolean;
   error?: string;
+  placeholder?: string;
+  popperHelperText?: string[];
 } & ReactDatePickerProps<never, IsRange>;
 
 type CustomHeaderProps = ReactDatePickerCustomHeaderProps;
@@ -77,6 +80,8 @@ const DatePicker = <IsRange extends boolean | undefined>({
   className,
   error,
   placeholderText,
+  placeholder,
+  popperHelperText,
   ...rest
 }: Props<IsRange>) => {
   const { ref, open, setOpen } = useOutsideClick<HTMLDivElement>();
@@ -93,7 +98,7 @@ const DatePicker = <IsRange extends boolean | undefined>({
       ref={ref}
       onClick={() => setOpen(true)}
     >
-      <span className="text-sm font-semibold text-tertiary">{placeholderText}</span>
+      {placeholderText && <span className="text-sm font-semibold text-tertiary">{placeholderText}</span>}
       <div
         className={twMerge(
           'relative h-full w-full rounded-[10px] border-2 border-black focus-within:border-primary',
@@ -104,6 +109,7 @@ const DatePicker = <IsRange extends boolean | undefined>({
           locale="ru"
           dateFormat="dd.MM.yyyy"
           selectsRange={selectsRange}
+          placeholderText={placeholder}
           open={open}
           className="h-full min-h-[50px] w-full overflow-hidden rounded-[10px] pl-3 pr-[29px] focus:outline-none"
           popperClassName={twMerge(
@@ -111,6 +117,20 @@ const DatePicker = <IsRange extends boolean | undefined>({
               "relative before:absolute before:w-[calc(100%-10px)] before:left-1/2 before:-translate-x-1/2 before:h-[calc(100%-72px)] before:top-[60px] before:backdrop-blur-sm before:z-10 after:content-['loading'] after:absolute after:z-20 after:left-1/2 after:-translate-x-1/2 after:top-1/2 after:-translate-y-1/2"
           )}
           renderCustomHeader={CustomHeader}
+          calendarContainer={({ className, children }) => {
+            return (
+              <CalendarContainer className={className}>
+                <div style={{ position: 'relative' }}>{children}</div>
+                {Boolean(popperHelperText?.length) && (
+                  <div className="flex flex-col p-[10px] text-tertiary">
+                    {popperHelperText!.map((text) => (
+                      <span key={text}>{text}</span>
+                    ))}
+                  </div>
+                )}
+              </CalendarContainer>
+            );
+          }}
           {...rest}
         />
         <div className="absolute right-[2px] top-1/2 flex h-[calc(100%-4px)] w-[30px] -translate-y-1/2 cursor-pointer items-center justify-center">

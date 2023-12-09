@@ -23,6 +23,7 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
   const [dateError, setDateError] = useState<string>();
 
   const prevBillInfoTotal = usePrevious(bookingState.total);
+  let prevDiscountByDaysFrom = usePrevious(bookingState.discountByDaysFrom);
 
   const { setQueryParams } = useRouterParams();
 
@@ -72,7 +73,19 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
       </div>
       <div className="flex justify-between py-5 text-2xl">
         <span>Итого:</span>
-        <CountUp start={prevBillInfoTotal ?? 0} end={bookingState.total} suffix=" ₽" duration={0.5} />
+        <div className="flex gap-2">
+          {bookingState.discountByDaysFrom && (
+            <span className="line-through">
+              <CountUp
+                start={prevDiscountByDaysFrom ?? 0}
+                end={bookingState.discountByDaysFrom}
+                suffix=" ₽"
+                duration={0.5}
+              />
+            </span>
+          )}
+          <CountUp start={prevBillInfoTotal ?? 0} end={bookingState.total} suffix=" ₽" duration={0.5} />
+        </div>
       </div>
       <Button
         color="primary"

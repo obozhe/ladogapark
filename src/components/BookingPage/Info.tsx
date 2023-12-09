@@ -92,8 +92,9 @@ const Info = ({ entry }: Props) => {
                 alt="house image"
                 width={150}
                 height={50}
-                fetchPriority="low"
+                priority
                 className="w-[150px] cursor-pointer"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 onClick={() => setMainImage(image)}
               />
             );
