@@ -83,8 +83,13 @@ const CheckForm = ({ entry, onSubmit }: Props) => {
       },
     };
 
-    const booking = await onSubmit(bookingBody);
-    router.push(`/orders/${booking?.number}?token=${booking?.token}`);
+    console.log(bookingBody);
+    try {
+      const booking = await onSubmit(bookingBody);
+      router.push(`/orders/${booking?.number}?token=${booking?.token}`);
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   return (

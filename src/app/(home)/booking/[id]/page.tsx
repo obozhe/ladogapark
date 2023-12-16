@@ -29,6 +29,7 @@ const onSubmit = async (bookingBody: CreateBookingBody) => {
     return res.data;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 };
 

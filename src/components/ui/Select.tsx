@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { Size, sizes } from 'core/enums/ui-sizes';
 import { Listbox, Transition } from '@headlessui/react';
 
-type Option = { label: string; value: string | number };
+type Option = { label: string; value: string | number; isDisabled?: boolean };
 
 export type CustomOptionProps = {
   option: Option;
@@ -13,7 +13,7 @@ export type CustomOptionProps = {
 
 type Props<Value> = {
   label?: string;
-  value: Value;
+  value?: Value;
   onChange: (value: Value) => void;
   options: Option[];
   fullWidth?: boolean;
@@ -22,6 +22,7 @@ type Props<Value> = {
   className?: string;
   CustomOption?: ({ option, label }: CustomOptionProps) => React.JSX.Element;
   showIcon?: boolean;
+  error?: string;
 };
 
 const Select = <Value extends string | number>({
@@ -35,8 +36,12 @@ const Select = <Value extends string | number>({
   CustomOption,
   size = 'sm',
   showIcon = true,
+  error,
 }: Props<Value>) => {
-  const [selectedOptionValue, setSelectedOptionValue] = useState<Value>(value);
+  const [selectedOptionValue, setSelectedOptionValue] = useState<Value | undefined>(
+    // @ts-ignore
+    () => value ?? options.find((option) => !option.isDisabled)?.value ?? ''
+  );
 
   const handleChange = (newOptionValue: Value) => {
     setSelectedOptionValue(newOptionValue);
@@ -44,20 +49,20 @@ const Select = <Value extends string | number>({
   };
 
   return (
-    <fieldset style={{ width: fullWidth ? '100%' : 'fit-content' }}>
+    <fieldset style={{ width: fullWidth ? '100%' : 'fit-content' }} className="flex flex-col gap-2">
       {label && (
-        <label htmlFor={label + '-field'}>
-          <span className={twMerge('text-sm font-semibold')}>{label}</span>
+        <label htmlFor={label + '-field'} className="text-sm font-semibold text-tertiary">
+          <span>{label}</span>
         </label>
       )}
 
       <Listbox value={selectedOptionValue} onChange={handleChange}>
         {({ open }) => (
-          <div className="relative w-full">
+          <div className="relative h-full w-full">
             <Listbox.Button
               style={{ height: sizes[size] }}
               className={twMerge(
-                'bg-bg-main relative w-full cursor-default rounded border-2 border-primary pl-3 pr-10 text-left focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary',
+                'bg-bg-main relative h-full w-full cursor-default rounded-[10px] border-2 border-black pl-3 pr-10 text-left focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary',
                 className
               )}
             >
@@ -91,10 +96,13 @@ const Select = <Value extends string | number>({
                     <Listbox.Option
                       key={`${label}_${option.value}_${index}`}
                       className={({ active }) =>
-                        `relative cursor-default select-none px-4 py-2 ${
-                          active ? 'bg-secondary text-white' : 'text-primary'
-                        }`
+                        twMerge(
+                          'relative cursor-pointer select-none px-4 py-2',
+                          active ? 'bg-secondary text-white' : 'text-primary',
+                          option.isDisabled && 'text-gray-400'
+                        )
                       }
+                      disabled={option.isDisabled}
                       value={option.value}
                     >
                       {({ selected }) => (
@@ -112,6 +120,7 @@ const Select = <Value extends string | number>({
           </div>
         )}
       </Listbox>
+      {error && <span className="text-sm font-semibold text-error">{error}</span>}
     </fieldset>
   );
 };

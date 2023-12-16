@@ -26,13 +26,15 @@ const BookingForm = ({ entry, commonCommodities }: Props) => {
   return (
     <div className="flex flex-col gap-4">
       <EntryTypeCalendar entry={entry} className="h-fit" />
-      <NumberInput
-        className="h-fit rounded-[10px] border-2 border-black"
-        placeholder="Дополнительные места"
-        value={bookingState.extraSeats}
-        onChange={(amount) => updateExtraSeats(amount, entry.priceExtraSeat)}
-        max={entry.extraSeats}
-      />
+      {Boolean(entry.extraSeats) && (
+        <NumberInput
+          className="h-fit rounded-[10px] border-2 border-black"
+          placeholder="Дополнительные места"
+          value={bookingState.extraSeats}
+          onChange={(amount) => updateExtraSeats(amount, entry.priceExtraSeat)}
+          max={entry.extraSeats}
+        />
+      )}
       <CommodityDisclosure commodities={commoditiesDisclosure} />
     </div>
   );

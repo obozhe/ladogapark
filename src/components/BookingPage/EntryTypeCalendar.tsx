@@ -7,7 +7,7 @@ import axios from 'core/axios';
 import { calculateDiscount } from 'core/helpers/number';
 import pluralize from 'core/helpers/pluralize';
 import { ObjectBusyness } from 'core/types/Booking';
-import { EntryWithFuturePricesWithGroup } from 'core/types/Prisma';
+import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import DatePicker from 'ui/DatePicker';
 import Select from 'ui/Select';
 import { useBookingState } from './StateProvider';
@@ -15,28 +15,98 @@ import { useBookingState } from './StateProvider';
 dayjs.locale('ru');
 
 type Props = {
-  entry: EntryWithFuturePricesWithGroup;
+  entry: EntryWithFuturePricesWithGroupWithServices;
   className?: string;
   error?: string;
 };
 type HouseCalendarProps = {
   renderDayContents: (day: number, date: Date | undefined) => JSX.Element;
-  entry: EntryWithFuturePricesWithGroup;
+  entry: EntryWithFuturePricesWithGroupWithServices;
   className?: string;
   error?: string;
 };
 
 const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
+  const [chosenMonth, setChosenMonth] = useState(dayjs());
+
+  const updateTotalByDate = (startDate: Dayjs | null) => {
+    let totalPrice = 0;
+
+    if (startDate) {
+      const weekday = startDate.day();
+      const isWeekend = weekday === 0 || weekday === 6;
+
+      const futurePrice = entry.futurePrices.findLast((futurePrice) => {
+        const futurePriceDayjs = dayjs(futurePrice.start);
+        return startDate.isSameOrAfter(futurePriceDayjs, 'day');
+      });
+
+      if (futurePrice) {
+        totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
+      } else {
+        totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
+      }
+    }
+
+    setBookingState((prev) => ({
+      ...prev,
+      total: prev.commoditiesOrderTotal + totalPrice,
+    }));
+  };
+
+  const { data: updatedObjectBusyness, isLoading } = useSWR(
+    [chosenMonth, `/objects-busyness/entry/${entry.id}`],
+    async ([chosenMonth, url]) => {
+      const date = dayjs().set('M', chosenMonth.get('month')).utcOffset(0);
+
+      const { data: objectBusyness } = await axios.get<ObjectBusyness>(url, {
+        params: {
+          start: date.startOf('month').toISOString(),
+          end: date.endOf('month').toISOString(),
+          entryId: entry.id,
+        },
+      });
+
+      const updatedObjectBusyness = objectBusyness[0][1]?.reduce(
+        (acc, busyness) => {
+          const value = {
+            [busyness[0]]: busyness[1].freeHours.length ? busyness[1].freeHours : null,
+          };
+          acc.push(value);
+
+          return acc;
+        },
+        [] as { [key: string]: number[] | null }[]
+      );
+
+      return updatedObjectBusyness;
+    },
+    { revalidateOnFocus: false, revalidateFirstPage: false }
+  );
+
+  console.log(entry);
 
   let selectOptions = [];
-  for (let i = entry.group.startHour; i <= entry.group.endHour; i++) {
+  const selectedDateBusyness = updatedObjectBusyness?.find((busyness) => {
+    const date = dayjs(Object.keys(busyness)[0]);
+    const currentDate = bookingState.start ? dayjs(bookingState.start) : dayjs();
+
+    return date.isSame(currentDate);
+  });
+
+  for (let i = entry.group.startHour; i < entry.group.endHour; i++) {
+    const availableHours = Object.values(selectedDateBusyness ?? {})[0];
+    const isDisabled = !availableHours?.includes(i);
+
     if (i / 10 < 1) {
-      selectOptions.push({ label: `0${i}:00`, value: i });
+      selectOptions.push({ label: `0${i}:00`, value: i, isDisabled });
     } else {
-      selectOptions.push({ label: `${i}:00`, value: i });
+      selectOptions.push({ label: `${i}:00`, value: i, isDisabled });
     }
   }
+
+  const closedDates = updatedObjectBusyness?.filter((busyness) => !Object.values(busyness)[0]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -46,11 +116,35 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
         selected={bookingState.start}
         minDate={new Date()}
         placeholderText="Дата посещения"
+        value={bookingState.start ? dayjs(bookingState.start).format('DD.MM.YYYY') : undefined}
         renderDayContents={renderDayContents}
         onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
-        error={error}
+        error={!bookingState.start ? error : undefined}
+        excludeDates={closedDates?.map((date) => dayjs(Object.keys(date)[0]).toDate())}
+        onMonthChange={(month) => {
+          const currentMonth = dayjs(month).startOf('month');
+          setChosenMonth(currentMonth);
+        }}
+        isLoading={isLoading}
       />
-      <Select value={10} fullWidth options={selectOptions} onChange={() => {}} />
+      <Select
+        fullWidth
+        label="Часы"
+        error={!bookingState.end ? error : undefined}
+        size="xxl"
+        value={bookingState.start?.getHours()}
+        options={selectOptions}
+        onChange={(value: number) => {
+          setBookingState((prev) => ({
+            ...prev,
+            start: dayjs(prev.start).set('hours', value).toDate(),
+            end: dayjs(prev.start).set('hours', value).toDate(),
+            unitId: entry.units[0].id,
+          }));
+
+          updateTotalByDate(dayjs(bookingState.start));
+        }}
+      />
     </div>
   );
 };
@@ -103,6 +197,31 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
     { revalidateOnFocus: false, revalidateFirstPage: false }
   );
 
+  const updateTotalByDate = (startDate: Dayjs | null) => {
+    let totalPrice = 0;
+
+    if (startDate) {
+      const weekday = startDate.day();
+      const isWeekend = weekday === 0 || weekday === 6;
+
+      const futurePrice = entry.futurePrices.findLast((futurePrice) => {
+        const futurePriceDayjs = dayjs(futurePrice.start);
+        return startDate.isSameOrAfter(futurePriceDayjs, 'day');
+      });
+
+      if (futurePrice) {
+        totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
+      } else {
+        totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
+      }
+    }
+
+    setBookingState((prev) => ({
+      ...prev,
+      total: prev.commoditiesOrderTotal + totalPrice,
+    }));
+  };
+
   const closedDates = updatedObjectBusyness?.filter((objectBusyness) => !objectBusyness.availableUnits.length);
 
   const { bookingState, setBookingState } = useBookingState();
@@ -114,6 +233,7 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       selected={bookingState.start}
       minDate={new Date()}
       placeholderText="Дата заезда"
+      value={bookingState.start ? dayjs(bookingState.start).format('DD.MM.YYYY') : undefined}
       excludeDates={closedDates?.map(({ date }) => dayjs(date).toDate())}
       onMonthChange={(month) => {
         const currentMonth = dayjs(month).startOf('month');
@@ -121,7 +241,18 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       }}
       isLoading={isLoading}
       renderDayContents={renderDayContents}
-      onChange={(value) => setBookingState((prev) => ({ ...prev, start: value }))}
+      onChange={(value) => {
+        const startDate = value && dayjs(value).startOf('D').set('hours', entry.group.startHour).toDate();
+        const endDate = value && dayjs(value).startOf('D').set('hours', entry.group.endHour).toDate();
+
+        let unitId: undefined | string;
+        if (startDate && updatedObjectBusyness) {
+          unitId = updatedObjectBusyness?.[startDate?.getDate() - 1].availableUnits[0];
+        }
+
+        updateTotalByDate(dayjs(startDate));
+        setBookingState((prev) => ({ ...prev, start: startDate, end: endDate, unitId }));
+      }}
       error={error}
     />
   );
@@ -241,10 +372,6 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
 
       if (discountByDay && nightsAmount >= discountByDay?.daysCount) {
         discountByDaysFrom = totalPrice;
-        console.log(
-          totalPrice,
-          calculateDiscount({ price: totalPrice, type: 'Percent', discount: discountByDay.discount })
-        );
         totalPrice = calculateDiscount({ price: totalPrice, type: 'Percent', discount: discountByDay.discount });
       }
     }
@@ -415,7 +542,14 @@ const HouseCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       startDate={bookingState.start}
       endDate={bookingState.end}
       onChange={([start, end]) => {
-        setBookingState((prev) => ({ ...prev, start, end }));
+        const startDate = start && dayjs(start).startOf('D').set('hours', entry.group.startHour).toDate();
+        const endDate = end && dayjs(end).startOf('D').set('hours', entry.group.endHour).toDate();
+
+        setBookingState((prev) => ({
+          ...prev,
+          start: startDate,
+          end: endDate,
+        }));
         if (start && end) {
           const nightsAmount = dayjs(end).diff(dayjs(start), 'd');
           updateTotalByDate(dayjs(start), nightsAmount);

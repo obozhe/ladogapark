@@ -57,38 +57,44 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
   }
 
   const isNonPaidPayment = payments.filter((payment) => payment.status === PaymentStatus.Pending);
+  console.log(payments);
 
-  if (isNonPaidPayment.length) {
-    const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
-    const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
-    const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
+  // if (isNonPaidPayment.length) {
+  //   const shopId = process.env.NEXT_PUBLIC_YOOKASSA_SHOP_ID as string;
+  //   const secretKey = process.env.NEXT_PUBLIC_YOOKASSA_API as string;
+  //   const t = Buffer.from(`${shopId}:${secretKey}`, 'utf8').toString('base64');
 
-    try {
-      const yookassaRes = await axios.get<YookassaPayment>(`https://api.yookassa.ru/v3/payments/${payments[0].token}`, {
-        headers: {
-          Authorization: `Basic ${t}`,
-          'Content-Type': 'application/json',
-          'Idempotence-Key': String(booking.number),
-        },
-      });
+  //   try {
+  //     const yookassaRes = await axios.get<YookassaPayment>(`https://api.yookassa.ru/v3/payments/${payments[0].token}`, {
+  //       headers: {
+  //         Authorization: `Basic ${t}`,
+  //         'Content-Type': 'application/json',
+  //         'Idempotence-Key': String(booking.number),
+  //       },
+  //     });
 
-      if (yookassaRes.data.status === 'succeeded' && Number(yookassaRes.data.amount.value) === booking.total) {
-        const promises = payments.map((payment) =>
-          axios.patch(
-            `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments/${payment.id}`,
-            { status: PaymentStatus.Paid },
-            {
-              headers: {
-                'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY as string,
-              },
-            }
-          )
-        );
+  //     if (yookassaRes.data.status === 'succeeded') {
+  //       if (Number(yookassaRes.data.amount.value) === booking.total) {
+  //         const promises = payments.map((payment) =>
+  //           axios.patch(
+  //             `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments/${payment.id}`,
+  //             { status: PaymentStatus.Paid },
+  //             {
+  //               headers: {
+  //                 'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY as string,
+  //               },
+  //             }
+  //           )
+  //         );
 
-        await Promise.allSettled(promises);
-      }
-    } catch (e) {}
-  }
+  //         await Promise.allSettled(promises);
+  //       }
+  //       if (booking.commoditiesOrders.length) {
+  //         const commoditiesPayment = payments.find((payment) => payment.amount === booking.commoditiesOrders[0].total);
+  //       }
+  //     }
+  //   } catch (e) {}
+  // }
 
   const client = booking.clientId ? await getClientById(booking?.clientId) : JSON.parse(booking.tempClient!);
   const isAuthorized = token === booking.token;
@@ -131,7 +137,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
       .post(
         `${process.env.NEXT_PUBLIC_CRM_URL}/api/payments`,
         {
-          amount: booking.total,
+          amount: paymentAmount,
           bookingId: booking.id,
           status: PaymentStatus.Pending,
           token: yookassaRes.data.id,
@@ -149,8 +155,6 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
     redirect(yookassaRes.data.confirmation.confirmation_url);
   };
 
-  console.log(booking.commoditiesOrders[0].commodities);
-
   return (
     <main className="layout-container">
       <h2 className="mb-14">Бронирование #{booking.number}</h2>
@@ -167,16 +171,16 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
             </span>
           </div>
           <div className="py-5 text-lg font-semibold">
-            {booking.commoditiesOrders[0].commodities.length ? (
+            {booking.commoditiesOrders?.[0]?.commodities.length ? (
               <Disclosure
                 showIcon={false}
                 title={
-                  <span className="text-primary">{`${booking.commoditiesOrders[0].commodities.length} ${pluralize(
+                  <span className="text-primary">{`${booking.commoditiesOrders?.[0]?.commodities.length} ${pluralize(
                     ['дополнительный товар', 'дополнительных товара', 'дополнительных товаров'],
-                    booking.commoditiesOrders[0].commodities.length
+                    booking.commoditiesOrders?.[0]?.commodities.length
                   )}:`}</span>
                 }
-                description={booking.commoditiesOrders[0]?.commodities.map((commodity) => (
+                description={booking.commoditiesOrders?.[0]?.commodities.map((commodity) => (
                   <div className="flex justify-between" key={commodity.id}>
                     <span>{commodity.commodity.title}</span>
                     <div className="flex gap-3">
@@ -210,7 +214,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
             </div>
             <span>Всего:</span>
             <div className="flex gap-4 justify-self-end font-inter">
-              <span className={twMerge(promoCode && 'line-through')}>{formatToRuble(booking.prePay)}</span>
+              <span className={twMerge(promoCode && 'line-through')}>{formatToRuble(booking.total)}</span>
               {promoCode && (
                 <span>
                   {formatToRuble(
@@ -221,7 +225,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
             </div>
           </div>
           <div className="py-5">
-            <PaymentButtons paymentType={paymentType} discount={unit?.entry.prePay} />
+            <PaymentButtons paymentType={paymentType} discount={unit?.entry.prePay} token={token} />
           </div>
           <div className="pb-2 pt-5">
             <form action={pay}>
