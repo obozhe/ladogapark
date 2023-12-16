@@ -23,10 +23,15 @@ const FullImage = ({ image, onClose, isOpen }: { image: string; onClose: () => v
         onClose();
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'initial';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
@@ -44,7 +49,7 @@ const FullImage = ({ image, onClose, isOpen }: { image: string; onClose: () => v
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
+      <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
         <div className="relative h-1/2 w-1/2" ref={ref}>
           <Image
             fill

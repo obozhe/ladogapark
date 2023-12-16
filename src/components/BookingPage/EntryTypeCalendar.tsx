@@ -85,8 +85,6 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
     { revalidateOnFocus: false, revalidateFirstPage: false }
   );
 
-  console.log(entry);
-
   let selectOptions = [];
   const selectedDateBusyness = updatedObjectBusyness?.find((busyness) => {
     const date = dayjs(Object.keys(busyness)[0]);
@@ -151,6 +149,7 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
 
 const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const [chosenMonth, setChosenMonth] = useState(dayjs());
+  const { bookingState, setBookingState } = useBookingState();
 
   const { data: updatedObjectBusyness, isLoading } = useSWR(
     [chosenMonth, `/objects-busyness/entry/${entry.id}`],
@@ -223,8 +222,6 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
   };
 
   const closedDates = updatedObjectBusyness?.filter((objectBusyness) => !objectBusyness.availableUnits.length);
-
-  const { bookingState, setBookingState } = useBookingState();
 
   return (
     <DatePicker
