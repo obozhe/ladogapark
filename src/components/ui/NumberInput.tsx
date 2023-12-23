@@ -1,7 +1,7 @@
 'use client';
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useDidUpdateEffect } from 'hooks/useDidUpdateEffect';
 import useLatest from 'hooks/useLatest';
@@ -14,11 +14,18 @@ type Props = {
   max?: number;
   value?: number;
   className?: string;
+  error?: string;
 };
 
-const NumberInput = ({ placeholder, min, max, onChange, value, className }: Props) => {
+const NumberInput = ({ placeholder, min, max, onChange, value, className, error }: Props) => {
   const [inputValue, setInputValue] = useState(value ?? 0);
   const latestOnChange = useLatest(onChange);
+
+  useDidUpdateEffect(() => {
+    if (value || value === 0) {
+      setInputValue(value);
+    }
+  }, [value]);
 
   const decrease = () => {
     if (!inputValue || inputValue < (min ?? Number.MIN_SAFE_INTEGER)) return;
@@ -41,7 +48,7 @@ const NumberInput = ({ placeholder, min, max, onChange, value, className }: Prop
 
   useDidUpdateEffect(() => {
     latestOnChange.current(inputValue);
-  }, [inputValue, latestOnChange]);
+  }, [inputValue]);
 
   return (
     <div className="flex flex-col gap-[5px]">
@@ -66,6 +73,7 @@ const NumberInput = ({ placeholder, min, max, onChange, value, className }: Prop
           </button>
         </div>
       </div>
+      {error && <span className="text-sm font-semibold text-error">{error}</span>}
     </div>
   );
 };

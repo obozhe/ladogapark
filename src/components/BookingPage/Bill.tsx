@@ -91,7 +91,12 @@ const Bill = ({ entry, commonCommodities }: InfoProps) => {
         color="primary"
         className="mt-5 w-full lg:ml-auto lg:w-fit"
         onClick={() => {
-          if (!bookingState.start || !bookingState.end) {
+          if (
+            !bookingState.start ||
+            !bookingState.end ||
+            !bookingState.start.getHours() ||
+            !bookingState.end.getHours()
+          ) {
             setDateError('Обязательное поле');
 
             return;

@@ -10,12 +10,10 @@ import HousesContacts from 'components/HomePage/HousesContacts';
 import ServicesItems from 'components/ServicesPage/ServicesItems';
 import { getMainPageImages } from 'server/gallery';
 import { getNews } from 'server/news';
-import { getObjectEntries } from 'server/objects/ObjectCollection';
 import { ObjectTypes } from 'server/objects/types';
 import { getServicesMain } from 'server/services';
 import Disclosure from 'ui/Disclosure';
 import Slider from 'ui/Slider';
-import Loading from './loading';
 
 type Props = {
   searchParams: {
@@ -151,10 +149,6 @@ const Photos = async () => {
 };
 
 export default async function Home({ searchParams }: Props) {
-  const objectEntries = (await getObjectEntries()).filter(
-    (entry) => entry.group.type === (searchParams.type ?? 'Daily')
-  );
-
   return (
     <main>
       {/* <div className="h-5 w-5">
@@ -170,7 +164,7 @@ export default async function Home({ searchParams }: Props) {
         <Search />
       </Suspense>
       <div className="layout-container flex flex-col gap-36 pt-[150px]">
-        <Houses objectEntries={objectEntries} />
+        <Houses entryType={searchParams.type} from={searchParams.from} />
         <Services openModal={searchParams.openModal} />
         <Faq />
         <Photos />

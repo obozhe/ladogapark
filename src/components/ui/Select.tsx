@@ -63,13 +63,18 @@ const Select = <Value extends string | number>({
               style={{ height: sizes[size] }}
               className={twMerge(
                 'bg-bg-main relative h-full w-full cursor-default rounded-[10px] border-2 border-black pl-3 pr-10 text-left focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary',
+                error && 'border-error',
                 className
               )}
             >
               <span className="block truncate">{options.find((o) => o.value === selectedOptionValue)?.label}</span>
               {showIcon && (
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <IconSelect className={twMerge('h-5 w-5', open && 'rotate-180')} aria-hidden="true" />
+                  <IconSelect
+                    className={twMerge('h-5 w-5', open && 'rotate-180')}
+                    aria-hidden="true"
+                    color={error ? 'rgb(204,39,39)' : 'black'}
+                  />
                 </span>
               )}
             </Listbox.Button>

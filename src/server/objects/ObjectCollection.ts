@@ -1,5 +1,6 @@
 import { group } from 'console';
 import prisma from 'core/prisma';
+import { ObjectTypes } from './types';
 
 export const getEntryById = (id: string) => {
   return prisma.entry.findUnique({ where: { id }, include: { group: true } });
@@ -29,8 +30,8 @@ export const getEntryByIdWithFutureWithService = (id: string) => {
   });
 };
 
-export const getObjectEntries = () => {
-  return prisma.entry.findMany({ include: { group: true } });
+export const getObjectEntries = (type: ObjectTypes) => {
+  return prisma.entry.findMany({ include: { group: true }, where: { group: { type } } });
 };
 
 export const getGroupsWithEntries = () => {

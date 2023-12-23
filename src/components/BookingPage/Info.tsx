@@ -94,7 +94,7 @@ const Info = ({ entry }: Props) => {
               <Image
                 key={image}
                 src={process.env.NEXT_PUBLIC_UPLOADS_URL + image}
-                alt="house image"
+                alt=""
                 width={150}
                 height={50}
                 priority

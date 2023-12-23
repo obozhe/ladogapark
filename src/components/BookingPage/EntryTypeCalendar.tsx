@@ -3,12 +3,14 @@ import 'dayjs/locale/ru';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
+import { twMerge } from 'tailwind-merge';
 import axios from 'core/axios';
 import { calculateDiscount } from 'core/helpers/number';
 import pluralize from 'core/helpers/pluralize';
 import { ObjectBusyness } from 'core/types/Booking';
 import { EntryWithFuturePricesWithGroupWithServices } from 'core/types/Prisma';
 import DatePicker from 'ui/DatePicker';
+import NumberInput from 'ui/NumberInput';
 import Select from 'ui/Select';
 import { useBookingState } from './StateProvider';
 
@@ -29,8 +31,9 @@ type HouseCalendarProps = {
 const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState(dayjs());
+  const [hours, setHours] = useState(0);
 
-  const updateTotalByDate = (startDate: Dayjs | null) => {
+  const updateTotalByDate = (startDate: Dayjs | null, hoursAmount: number) => {
     let totalPrice = 0;
 
     if (startDate) {
@@ -42,10 +45,12 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
         return startDate.isSameOrAfter(futurePriceDayjs, 'day');
       });
 
-      if (futurePrice) {
-        totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
-      } else {
-        totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
+      for (let i = 0; i < hoursAmount; i++) {
+        if (futurePrice) {
+          totalPrice += isWeekend ? futurePrice.priceWeekend : futurePrice.priceWeekday;
+        } else {
+          totalPrice += isWeekend ? entry.priceWeekend : entry.priceWeekday;
+        }
       }
     }
 
@@ -88,14 +93,14 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
   let selectOptions = [];
   const selectedDateBusyness = updatedObjectBusyness?.find((busyness) => {
     const date = dayjs(Object.keys(busyness)[0]);
-    const currentDate = bookingState.start ? dayjs(bookingState.start) : dayjs();
+    const currentDate = bookingState.start ? dayjs(bookingState.start).startOf('d') : dayjs();
 
     return date.isSame(currentDate);
   });
 
   for (let i = entry.group.startHour; i < entry.group.endHour; i++) {
     const availableHours = Object.values(selectedDateBusyness ?? {})[0];
-    const isDisabled = !availableHours?.includes(i);
+    const isDisabled = !availableHours?.includes(i) || i === 15;
 
     if (i / 10 < 1) {
       selectOptions.push({ label: `0${i}:00`, value: i, isDisabled });
@@ -105,6 +110,20 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
   }
 
   const closedDates = updatedObjectBusyness?.filter((busyness) => !Object.values(busyness)[0]);
+
+  let maxHoursNumber = selectOptions.length;
+  for (let i = 0; i < selectOptions.length; i++) {
+    const startHours = bookingState.start?.getHours();
+    const option = selectOptions[i];
+
+    if (startHours) {
+      if (option.value > startHours && option.isDisabled) {
+        maxHoursNumber = option.value - startHours;
+
+        break;
+      }
+    }
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -123,12 +142,12 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
           const currentMonth = dayjs(month).startOf('month');
           setChosenMonth(currentMonth);
         }}
-        isLoading={isLoading}
+        // isLoading={isLoading}
       />
       <Select
         fullWidth
-        label="Часы"
-        error={!bookingState.end ? error : undefined}
+        label="Время начала"
+        error={!bookingState.start?.getHours() ? error : undefined}
         size="xxl"
         value={bookingState.start?.getHours()}
         options={selectOptions}
@@ -136,12 +155,27 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
           setBookingState((prev) => ({
             ...prev,
             start: dayjs(prev.start).set('hours', value).toDate(),
-            end: dayjs(prev.start).set('hours', value).toDate(),
+            end: null,
+          }));
+          setHours(1);
+        }}
+      />
+      <NumberInput
+        placeholder={`Кол-во часов (макс. ${maxHoursNumber})`}
+        value={hours}
+        max={maxHoursNumber}
+        onChange={(value) => {
+          setBookingState((prev) => ({
+            ...prev,
+            end: prev.start ? dayjs(prev.start).add(value, 'hours').toDate() : null,
             unitId: entry.units[0].id,
           }));
+          setHours(value);
 
-          updateTotalByDate(dayjs(bookingState.start));
+          updateTotalByDate(dayjs(bookingState.start), value);
         }}
+        error={!bookingState.end ? error : undefined}
+        className={twMerge('rounded-[10px] border-2 border-black', !bookingState.end && error && 'border-error')}
       />
     </div>
   );

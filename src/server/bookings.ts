@@ -10,3 +10,7 @@ export const getBookingById = (id: string) => {
 export const getBookingLimitations = (entryId: string) => {
   return prisma.entryBookingLimitation.findUnique({ where: { id: entryId, entryId } });
 };
+
+export const getBookingsByDate = (date: Date) => {
+  return prisma.booking.findMany({ where: { createdAt: { gte: date } } });
+};

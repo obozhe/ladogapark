@@ -1,11 +1,16 @@
-import { IconMan } from '@tabler/icons-react';
+import { IconLoader2, IconMan } from '@tabler/icons-react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { Entry } from '@prisma/client';
 import { formatToRuble } from 'core/helpers/number';
+import { getBookingsByDate } from 'server/bookings';
+import { getObjectEntries } from 'server/objects/ObjectCollection';
+import { ObjectTypes } from 'server/objects/types';
 import HousesTabs from './HousesTabs';
 
 type Props = {
-  objectEntries: Entry[];
+  entryType: ObjectTypes;
+  from: string;
 };
 
 export const House = ({ entry }: { entry: Entry }) => {
@@ -30,7 +35,20 @@ export const House = ({ entry }: { entry: Entry }) => {
   );
 };
 
-const Houses = ({ objectEntries }: Props) => {
+const ObjectEntries = async ({ entryType, from }: Props) => {
+  const objectEntries = await getObjectEntries(entryType);
+  const bookings = from && (await getBookingsByDate(new Date(from)));
+
+  return (
+    <div className="grid gap-9 sm:grid-cols-1 lg:grid-cols-3">
+      {objectEntries.map((entry) => (
+        <House entry={entry} key={entry.id} />
+      ))}
+    </div>
+  );
+};
+
+const Houses = async ({ entryType, from }: Props) => {
   return (
     <section className="flex flex-col gap-8">
       <h2 className="mobile-container">Каталог домов</h2>
@@ -47,11 +65,17 @@ const Houses = ({ objectEntries }: Props) => {
           </div>
         </div>
       </div>
-      <div className="grid gap-9 sm:grid-cols-1 lg:grid-cols-3">
-        {objectEntries.map((entry) => (
-          <House entry={entry} key={entry.id} />
-        ))}
-      </div>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center">
+            <div className="layout-container flex h-full flex-1 items-center justify-center">
+              <IconLoader2 className="animate-spin" />
+            </div>
+          </div>
+        }
+      >
+        <ObjectEntries entryType={entryType} from={from} />
+      </Suspense>
     </section>
   );
 };
