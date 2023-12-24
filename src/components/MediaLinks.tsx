@@ -1,25 +1,27 @@
 import { IconBrandInstagram, IconBrandTelegram, IconBrandVk, IconBrandWhatsapp } from '@tabler/icons-react';
 import Link from 'next/link';
+import { Contacts } from '@prisma/client';
 
 type Props = {
   className?: string;
   size?: number;
   color?: string;
+  contacts?: Contacts;
 };
 
-const MediaLinks = ({ className, color, size = 20 }: Props) => {
+const MediaLinks = ({ className, color, size = 20, contacts }: Props) => {
   return (
     <>
-      <Link href="https://www.instagram.com/ladoga_park/" target="_blank" className={className}>
+      <Link href={contacts?.instagram ?? ''} target="_blank" className={className}>
         <IconBrandInstagram size={size} color={color} />
       </Link>
-      <Link href="https://t.me/ladogapark" target="_blank" className={className}>
+      <Link href={contacts?.telegram ?? ''} target="_blank" className={className}>
         <IconBrandTelegram size={size} color={color} />
       </Link>
-      <Link href="https://vk.com/ladogapark" target="_blank" className={className}>
+      <Link href={contacts?.vk ?? ''} target="_blank" className={className}>
         <IconBrandVk size={size} color={color} />
       </Link>
-      <Link href="https://wa.me/+79312130048" target="_blank" className={className}>
+      <Link href={contacts?.whatsapp ?? ''} target="_blank" className={className}>
         <IconBrandWhatsapp size={size} color={color} />
       </Link>
     </>

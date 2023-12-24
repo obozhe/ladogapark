@@ -5,16 +5,18 @@ import RadioButtons from 'ui/RadioButtons';
 
 type Props = {
   paymentType: string;
-  discount?: number;
+  prePay?: number;
   token?: string;
+  isPrePaid: boolean;
 };
 
-const PaymentButtons = ({ paymentType, discount, token }: Props) => {
+const PaymentButtons = ({ paymentType, prePay, token, isPrePaid }: Props) => {
   const { setQueryParams } = useRouterParams();
 
   const paymentTypes = [
-    { label: 'Оплатить полностью', id: 'full' },
-    Boolean(discount) && { label: `Оплатить ${discount} %`, id: 'half' },
+    !isPrePaid && { label: 'Оплатить полностью', id: 'full' },
+    Boolean(prePay) && !isPrePaid && { label: `Оплатить ${prePay} %`, id: 'half' },
+    isPrePaid && { label: 'Оплатить оставшееся', id: 'remain' },
   ].filter(Boolean) as { id: string; label: string }[];
 
   return (

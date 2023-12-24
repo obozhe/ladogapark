@@ -31,7 +31,11 @@ type HouseCalendarProps = {
 const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalendarProps) => {
   const { bookingState, setBookingState } = useBookingState();
   const [chosenMonth, setChosenMonth] = useState(dayjs());
-  const [hours, setHours] = useState(0);
+  const [hours, setHours] = useState(
+    (bookingState.end?.getHours() ?? 0) - (bookingState.start?.getHours() ?? 0) > 0
+      ? (bookingState.end?.getHours() ?? 0) - (bookingState.start?.getHours() ?? 0)
+      : 0
+  );
 
   const updateTotalByDate = (startDate: Dayjs | null, hoursAmount: number) => {
     let totalPrice = 0;
@@ -100,7 +104,7 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
 
   for (let i = entry.group.startHour; i < entry.group.endHour; i++) {
     const availableHours = Object.values(selectedDateBusyness ?? {})[0];
-    const isDisabled = !availableHours?.includes(i) || i === 15;
+    const isDisabled = !availableHours?.includes(i);
 
     if (i / 10 < 1) {
       selectOptions.push({ label: `0${i}:00`, value: i, isDisabled });
@@ -142,7 +146,7 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
           const currentMonth = dayjs(month).startOf('month');
           setChosenMonth(currentMonth);
         }}
-        // isLoading={isLoading}
+        isLoading={isLoading}
       />
       <Select
         fullWidth
@@ -167,7 +171,7 @@ const BathCalendar = ({ renderDayContents, entry, className, error }: HouseCalen
         onChange={(value) => {
           setBookingState((prev) => ({
             ...prev,
-            end: prev.start ? dayjs(prev.start).add(value, 'hours').toDate() : null,
+            end: !value ? null : prev.start ? dayjs(prev.start).add(value, 'hours').toDate() : null,
             unitId: entry.units[0].id,
           }));
           setHours(value);
@@ -254,7 +258,6 @@ const DailyCalendar = ({ renderDayContents, entry, className, error }: HouseCale
       total: prev.commoditiesOrderTotal + totalPrice,
     }));
   };
-
   const closedDates = updatedObjectBusyness?.filter((objectBusyness) => !objectBusyness.availableUnits.length);
 
   return (
@@ -637,6 +640,8 @@ const EntryTypeCalendar = ({ entry, className, error }: Props) => {
     },
     [entry.futurePrices, entry.priceWeekday, entry.priceWeekend]
   );
+
+  console.log(entry);
 
   return entry.group.type === 'House' ? (
     <HouseCalendar renderDayContents={renderDayContents} entry={entry} className={className} error={error} />

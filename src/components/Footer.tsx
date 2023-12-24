@@ -1,8 +1,11 @@
 import LogoWhiteIcon from 'icons/logo-white.svg';
 import Link from 'next/link';
+import { getSettings } from 'server/settings';
 import MediaLinks from './MediaLinks';
 
-const Footer = () => {
+const Footer = async () => {
+  const settings = await getSettings();
+
   return (
     <footer className="mt-[300px] bg-[#221F20] px-2 pb-5 pt-7 text-sm font-semibold text-white">
       <div className="layout-container flex justify-center pb-5 lg:justify-between lg:border-b-2 lg:border-white">
@@ -23,17 +26,19 @@ const Footer = () => {
         </div>
         <div className="hidden flex-col gap-5 lg:flex">
           <div className="flex justify-between">
-            <MediaLinks />
+            <MediaLinks contacts={settings?.contacts} />
           </div>
           <div className="flex flex-col items-end font-inter">
-            <span>+7 (929) 111-01-51</span>
-            <span> +7 (931) 213-00-48</span>
+            <span>{settings?.contacts.phones[0]}</span>
+            <span>{settings?.contacts.phones[1]}</span>
           </div>
           <span>booking@ladogapark.ru</span>
         </div>
       </div>
       <div className="layout-container hidden justify-between pt-5 lg:flex">
-        <span>© ООО «Аква Марин Групп», 2005-2023</span>
+        <span>
+          {settings?.global.copyrights}, {settings?.global.foundingYear}-{new Date().getFullYear()}
+        </span>
         <span>qtaki</span>
       </div>
     </footer>

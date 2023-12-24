@@ -7,8 +7,13 @@ import LogoIcon from 'icons/logo.svg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
+import { Settings } from '@prisma/client';
 import DropDown from 'ui/Dropdown';
-import MediaLinks from './MediaLinks';
+import MediaLinks from '../MediaLinks';
+
+type Props = {
+  settings: Settings | null;
+};
 
 const navLinks = [
   { link: '/booking', title: 'Бронирование' },
@@ -18,7 +23,7 @@ const navLinks = [
   { link: '/contacts', title: 'Контакты' },
 ];
 
-const Header = () => {
+const HeaderContent = ({ settings }: Props) => {
   const location = usePathname();
   const isHomePage = location === '/';
 
@@ -46,10 +51,10 @@ const Header = () => {
       </div>
       <div className="hidden lg:flex lg:flex-col lg:justify-between lg:font-inter lg:font-semibold">
         <div className="flex gap-4 self-end">
-          <MediaLinks />
+          <MediaLinks contacts={settings?.contacts} />
         </div>
-        <span>+7 (929) 111-01-51</span>
-        <span>+7 (929) 111-01-51</span>
+        <span>{settings?.contacts.phones[0]}</span>
+        <span>{settings?.contacts.phones[1]}</span>
       </div>
 
       <DropDown
@@ -61,4 +66,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderContent;
