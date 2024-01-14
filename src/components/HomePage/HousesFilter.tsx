@@ -30,9 +30,10 @@ const HousesFilter = () => {
         selected={date?.toDate()}
         onChange={(value) => setDate(value ? dayjs(value) : null)}
         minDate={new Date()}
+        classNames={{ input: 'border-0' }}
         selectsRange={false}
       />
-      <Button size="xxl" color="primary" className="w-full md:w-fit" type="submit" onClick={handleClick}>
+      <Button color="primary" size="full" className="w-full md:w-fit" type="submit" onClick={handleClick}>
         {isTransition ? 'loading...' : 'Показать объекты'}
       </Button>
     </div>

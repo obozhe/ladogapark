@@ -641,8 +641,6 @@ const EntryTypeCalendar = ({ entry, className, error }: Props) => {
     [entry.futurePrices, entry.priceWeekday, entry.priceWeekend]
   );
 
-  console.log(entry);
-
   return entry.group.type === 'House' ? (
     <HouseCalendar renderDayContents={renderDayContents} entry={entry} className={className} error={error} />
   ) : entry.group.type === 'Daily' ? (

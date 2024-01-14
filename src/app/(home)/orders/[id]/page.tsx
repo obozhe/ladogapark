@@ -91,6 +91,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
             )
           );
           await Promise.allSettled(promises);
+          booking.status = BookingStatus.Paid;
 
           if (booking.commoditiesOrders.length) {
             const commoditiesPayment = payments.find(
@@ -134,7 +135,7 @@ const Order = async ({ params: { id }, searchParams: { token, paymentType } }: P
       capture: true,
       confirmation: {
         type: 'redirect',
-        return_url: `http://localhost:3000/orders/${booking.number}?token=${booking.token}`,
+        return_url: `https://ladogapark.vercel.app/orders/${booking.number}?token=${booking.token}`,
       },
     };
     const paidDate = dayjs().toISOString();

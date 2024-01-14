@@ -22,6 +22,7 @@ type Props<IsRange extends boolean | undefined> = {
   error?: string;
   placeholder?: string;
   popperHelperText?: string[];
+  classNames?: { input: string };
 } & ReactDatePickerProps<never, IsRange>;
 
 type CustomHeaderProps = ReactDatePickerCustomHeaderProps;
@@ -78,6 +79,7 @@ const DatePicker = <IsRange extends boolean | undefined>({
   isLoading,
   selectsRange,
   className,
+  classNames,
   error,
   placeholderText,
   placeholder,
@@ -102,7 +104,8 @@ const DatePicker = <IsRange extends boolean | undefined>({
       <div
         className={twMerge(
           'relative h-full w-full rounded-[10px] border-2 border-black focus-within:border-primary',
-          error ? ' border-error text-error' : ''
+          error ? ' border-error text-error' : '',
+          classNames?.input
         )}
       >
         <DatePickerLib

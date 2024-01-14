@@ -6,6 +6,7 @@ export const sizes = {
   md: 36,
   lg: 40,
   xxl: 50,
+  full: '100%',
 } as const;
 
 export type Size = keyof typeof sizes;
